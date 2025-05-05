@@ -23,22 +23,24 @@ model Article {
 }
 
 model Market {
-  id         Int      @id @default(autoincrement())
-  article    Article  @relation(fields: [articleId], references: [id])
-  articleId  Int      @unique
-  totalTrue  Float    @default(0)
-  totalFalse Float    @default(0)
-  createdAt  DateTime @default(now())
-  bets       Bet[]
+  id             Int      @id @default(autoincrement())
+  articleId      Int      @unique
+  resolved       Boolean  @default(false)
+  outcome        Boolean? // true/false if resolved, null otherwise
+  createdAt      DateTime @default(now())
+  stakes         Stake[]
+  article        Article  @relation(fields: [articleId], references: [id])
 }
 
-model Bet {
-  id        Int      @id @default(autoincrement())
-  amount    Float
-  choice    String   // "true" or "false"
-  createdAt DateTime @default(now())
-  market    Market   @relation(fields: [marketId], references: [id])
-  marketId  Int
+model Stake {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  marketId       Int
+  prediction     Boolean
+  stakeAmount    Int
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id])
+  market         Market   @relation(fields: [marketId], references: [id])
 }
 
 model User {
@@ -46,6 +48,8 @@ model User {
   username String   @unique
   email    String   @unique
   password String
+  provePoints Int   @default(100)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  stakes   Stake[]
 }
