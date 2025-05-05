@@ -1,0 +1,36 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL") // Reads the DATABASE_URL from the .env file
+}
+
+generator client {
+  provider = "prisma-client-js" // Use Prisma Client for interacting with the DB
+  output   = "./src/prisma/generated"
+}
+
+model Article {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  market    Market?
+}
+
+model Market {
+  id         Int      @id @default(autoincrement())
+  article    Article  @relation(fields: [articleId], references: [id])
+  articleId  Int      @unique
+  totalTrue  Float    @default(0)
+  totalFalse Float    @default(0)
+  createdAt  DateTime @default(now())
+  bets       Bet[]
+}
+
+model Bet {
+  id        Int      @id @default(autoincrement())
+  amount    Float
+  choice    String   // "true" or "false"
+  createdAt DateTime @default(now())
+  market    Market   @relation(fields: [marketId], references: [id])
+  marketId  Int
+}
