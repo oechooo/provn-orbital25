@@ -1,0 +1,48 @@
+/* Import Bootstrap CSS */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Custom styles for confidence indicators */
+.confidence-high {
+  color: #28a745;
+  background-color: rgba(40, 167, 69, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.confidence-medium {
+  color: #ffc107;
+  background-color: rgba(255, 193, 7, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.confidence-low {
+  color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+/* Custom shadow styles */
+.shadow-soft {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-medium {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
