@@ -5,14 +5,20 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js" // Use Prisma Client for interacting with the DB
-  output   = "../src/prisma/client"
 }
 
 model Article {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String
-  createdAt DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  sourceName   String
+  author       String?
+  title        String
+  description  String?
+  url          String   @unique
+  urlToImage   String?
+  publishedAt  DateTime
+  content      String?
+  createdAt    DateTime @default(now())
+  category     String?
   market    Market?
 }
 

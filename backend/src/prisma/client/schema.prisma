@@ -9,11 +9,17 @@ generator client {
 }
 
 model Article {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String
-  createdAt DateTime @default(now())
-  market    Market?
+  id          Int      @id @default(autoincrement())
+  sourceName  String
+  author      String?
+  title       String
+  description String?
+  url         String   @unique
+  urlToImage  String?
+  publishedAt DateTime
+  content     String?
+  createdAt   DateTime @default(now())
+  market      Market?
 }
 
 model Market {
