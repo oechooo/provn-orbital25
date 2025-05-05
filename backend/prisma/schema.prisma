@@ -37,7 +37,7 @@ model Stake {
   userId         Int
   marketId       Int
   prediction     Boolean
-  stakeAmount    Int
+  stakeAmount    Float
   createdAt      DateTime @default(now())
   user           User     @relation(fields: [userId], references: [id])
   market         Market   @relation(fields: [marketId], references: [id])
@@ -48,7 +48,7 @@ model User {
   username String   @unique
   email    String   @unique
   password String
-  provePoints Int   @default(100)
+  provePoints Float   @default(100)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   stakes   Stake[]
