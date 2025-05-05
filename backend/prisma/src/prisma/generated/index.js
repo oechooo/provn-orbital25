@@ -135,7 +135,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\joelt\\Documents\\Codespace\\provn-orbital25\\backend\\prisma\\src\\prisma\\generated",
+      "value": "C:\\Users\\yyulu\\Coding Projects\\provn-orbital25\\backend\\prisma\\src\\prisma\\generated",
       "fromEnvVar": null
     },
     "config": {
@@ -149,12 +149,12 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\joelt\\Documents\\Codespace\\provn-orbital25\\backend\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\yyulu\\Coding Projects\\provn-orbital25\\backend\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": "../../../../.env",
-    "schemaEnvPath": "../../../../.env"
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../../..",
   "clientVersion": "6.7.0",

@@ -1,18 +1,8 @@
-import express, { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-import dotenv from "dotenv";
-
-// Load environment variables
-dotenv.config();
-
-const prisma = new PrismaClient();
-const app = express();
-const port = 3000;
-
-app.use(express.json());
+import { app } from "./app";
+import { prisma } from "./prisma/client";
 
 // Example: API route to fetch articles
-app.get("/articles", async (req: Request, res: Response) => {
+app.get("/api/articles", async (req, res) => {
   try {
     const articles = await prisma.article.findMany({
       include: { market: true } // Include market info for each article
@@ -24,7 +14,7 @@ app.get("/articles", async (req: Request, res: Response) => {
 });
 
 // Example: API route to create a new article
-app.post("/articles", async (req: Request, res: Response) => {
+app.post("/api/articles", async (req, res) => {
   try {
     const { title, content } = req.body;
     const newArticle = await prisma.article.create({
@@ -39,7 +29,5 @@ app.post("/articles", async (req: Request, res: Response) => {
   }
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+// Export the configured app
+export default app;
