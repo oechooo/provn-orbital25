@@ -10,7 +10,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@prisma/client": "^5.7.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
@@ -18,14 +17,16 @@
     "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "@prisma/client": "^6.7.0",
     "@types/cors": "^2.8.17",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.1",
     "@types/jest": "^29.5.0",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/supertest": "^2.0.12",
+    "axios": "^1.9.0",
     "jest": "^29.5.0",
-    "prisma": "^5.7.0",
+    "prisma": "^6.7.0",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",

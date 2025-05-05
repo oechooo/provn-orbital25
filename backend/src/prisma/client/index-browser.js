@@ -1,4 +1,3 @@
-
 Object.defineProperty(exports, "__esModule", { value: true });
 
 const {
@@ -17,12 +16,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 5.22.0
- * Query Engine version: 605197351a3c8bdd595af2d2a9bc3025bca48ea2
+ * Prisma Client JS version: 6.7.0
+ * Query Engine version: 3cff47a7f5d65c3ea74883f1d736e41d68ce91ed
  */
 Prisma.prismaVersion = {
-  client: "5.22.0",
-  engine: "605197351a3c8bdd595af2d2a9bc3025bca48ea2"
+  client: "6.7.0",
+  engine: "3cff47a7f5d65c3ea74883f1d736e41d68ce91ed"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {

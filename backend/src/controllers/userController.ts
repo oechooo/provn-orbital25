@@ -5,6 +5,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
   try {
+    // Using select to ensure we get the fields needed by the test
     const users = await prisma.user.findMany({
       select: { 
         id: true, 
@@ -14,6 +15,13 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
         updatedAt: true 
       } // Exclude password from response
     });
+    
+    if (users.length === 0) {
+      // Return an empty array, not an error
+      res.json([]);
+      return;
+    }
+    
     res.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -77,15 +85,14 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       } // Exclude password from response
     });
     res.status(201).json(user);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating user:', error);
     
     // Handle unique constraint violations
-    if (error instanceof PrismaClientKnownRequestError) {
-      if (error.code === 'P2002') {
-        res.status(409).json({ message: "Username or email already exists" });
-        return;
-      }
+    if (error instanceof PrismaClientKnownRequestError || 
+        (error.name === 'PrismaClientKnownRequestError' && error.code === 'P2002')) {
+      res.status(409).json({ message: "Username or email already exists" });
+      return;
     }
     
     res.status(500).json({ message: "Error creating user" });
@@ -123,15 +130,20 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
       } // Exclude password from response
     });
     res.json(user);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating user:', error);
     
     // Handle unique constraint violations
-    if (error instanceof PrismaClientKnownRequestError) {
-      if (error.code === 'P2002') {
-        res.status(409).json({ message: "Username or email already exists" });
-        return;
-      }
+    if (error instanceof PrismaClientKnownRequestError || 
+        (error.name === 'PrismaClientKnownRequestError' && error.code === 'P2002')) {
+      res.status(409).json({ message: "Username or email already exists" });
+      return;
+    }
+    
+    // Handle not found errors (this should be caught by the check above, but just in case)
+    if (error.message && error.message.includes('Record to update not found')) {
+      res.status(404).json({ message: "User not found" });
+      return;
     }
     
     res.status(500).json({ message: "Error updating user" });
