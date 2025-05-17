@@ -7,7 +7,7 @@ export class UserService {
     constructor(private readonly prisma: PrismaClient) {}
 
     // Create a new user
-    async createUser(data: CreateUserInput): Promise<Omit<User, 'password'>> {
+    protected async createUser(data: CreateUserInput): Promise<Omit<User, 'password'>> {
         const user = await this.prisma.user.create({
             data: {
                 ...data,
@@ -25,24 +25,8 @@ export class UserService {
         return user;
     }
 
-    // Get a user's basic details
-    async getUser(id: number): Promise<Omit<User, 'password'> | null> {
-        const user = await this.prisma.user.findUnique({
-            where: { id },
-            select: {
-                id: true,
-                username: true,
-                email: true,
-                provePoints: true,
-                createdAt: true,
-                updatedAt: true
-            }
-        });
-        return user;
-    }
-
-    // Get a user's details, including stakes
-    async getUserWithStakes(id: number): Promise<(Omit<User, 'password'> & { stakes: Stake[] }) | null> {
+    // Get a user's full details, including stakes
+    protected async getUser(id: number): Promise<(Omit<User, 'password'> & { stakes: Stake[] }) | null> {
         const user = await this.prisma.user.findUnique({
             where: { id },
             select: {
@@ -66,11 +50,10 @@ export class UserService {
         return user;
     }
 
-    // Update user details
-    async updateUser(id: number, data: UpdateUserInput): Promise<Omit<User, 'password'>> {
-        const user = await this.prisma.user.update({
+    // Get a user's basic details, without stakes
+    protected async getUserWithoutStakes(id: number): Promise<Omit<User, 'password'> | null> {
+        const user = await this.prisma.user.findUnique({
             where: { id },
-            data,
             select: {
                 id: true,
                 username: true,
@@ -84,34 +67,29 @@ export class UserService {
     }
 
     // Delete a user
-    async deleteUser(id: number): Promise<void> {
+    protected async deleteUser(id: number): Promise<void> {
         await this.prisma.user.delete({
             where: { id }
         });
     }
 
-    // Get a user by their email
-    async getUserByEmail(email: string): Promise<Omit<User, 'password'> | null> {
-        const user = await this.prisma.user.findUnique({
-            where: { email },
-            select: {
-                id: true,
-                username: true,
-                email: true,
-                provePoints: true,
-                createdAt: true,
-                updatedAt: true
+    // Update the provePoints of a user
+    public async updateProvePoints(id: number, amount: number): Promise<void> {
+        await this.prisma.user.update({
+            where: { id },
+            data: {
+                provePoints: {
+                    increment: amount
+                }
             }
         });
-        return user;
     }
 
     // Get statistics about a user's stakes
-    async getUserStakeStats(id: number): Promise<{
+    protected async getUserStakeStats(id: number): Promise<{
         totalStakes: number;
         totalAmountStaked: number;
         winningStakes: number;
-        totalWinnings: number;
     }> {
         const stakes = await this.prisma.stake.findMany({
             where: { 
@@ -129,31 +107,29 @@ export class UserService {
         const totalAmountStaked = stakes.reduce((sum, stake) => sum + stake.stakeAmount, 0);
         const winningStakes = stakes.filter(stake => stake.prediction === stake.market.outcome).length;
         
-        // Calculate total winnings (this is simplified - actual winnings calculation should match StakeService)
-        const totalWinnings = stakes.reduce((sum, stake) => {
-            if (stake.prediction === stake.market.outcome) {
-                return sum + (stake.stakeAmount * 2); // Simplified winning calculation
-            }
-            return sum;
-        }, 0);
+        // TODO: Calculate total winnings to match StakeService
 
         return {
             totalStakes,
             totalAmountStaked,
-            winningStakes,
-            totalWinnings
+            winningStakes
         };
     }
 
-    // Update the provePoints of a user
-    async updateProvePoints(id: number, amount: number): Promise<void> {
-        await this.prisma.user.update({
+    // Update user details
+    private async updateUser(id: number, data: UpdateUserInput): Promise<Omit<User, 'password'>> {
+        const user = await this.prisma.user.update({
             where: { id },
-            data: {
-                provePoints: {
-                    increment: amount
-                }
+            data,
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                provePoints: true,
+                createdAt: true,
+                updatedAt: true
             }
         });
+        return user;
     }
 }
