@@ -12,10 +12,11 @@ async function fetchAndStoreArticles() {
   const API_KEY = process.env.NEWS_API_KEY;
   const CATEGORIES = ["business", "entertainment", "health", "science", "sports", "technology"];
   const QUERIES = 5;
+  const fromDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(); // 24H ago
 
   try {
     for (const category of CATEGORIES) {
-      const url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}&category=${category}&pageSize=${QUERIES}&page=1`;
+      const url = `https://newsapi.org/v2/top-headlines?apiKey=${API_KEY}&category=${category}&from=${fromDate}&pageSize=${QUERIES}&page=1`;
       const response = await axios.get(url);
       const articles = response.data.articles;
 
