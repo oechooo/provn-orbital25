@@ -12,10 +12,20 @@ export interface CreateArticleInput {
     category?: string;
 }
 
+type ArticleTimeRange = '24h' | '1m' | '5m';
+
+interface ArticleFilterOptions {
+  category?: string;
+  range?: ArticleTimeRange;
+  query?: string;
+  limit?: number;
+}
+
 export class ArticleService {
     constructor(private readonly prisma: PrismaClient) {}
     
-    async createArticle(data: CreateArticleInput): Promise<Article> {
+    // Create a new article
+    protected async createArticle(data: CreateArticleInput): Promise<Article> {
         return this.prisma.article.create({
             data,
             include: {
@@ -24,7 +34,15 @@ export class ArticleService {
         });
     }
 
-    async getArticleById(id: number): Promise<(Article & { market: Market | null }) | null> {
+    // Delete an article by ID
+    protected async deleteArticle(id: number): Promise<void> {
+        await this.prisma.article.delete({
+            where: { id }
+        });
+    }
+
+    // Get an article by ID
+    protected async getArticleById(id: number): Promise<(Article & { market: Market | null }) | null> {
         return this.prisma.article.findUnique({
             where: { id },
             include: {
@@ -33,95 +51,87 @@ export class ArticleService {
         });
     }
 
-    async getArticleByUrl(url: string): Promise<(Article & { market: Market | null }) | null> {
-        return this.prisma.article.findUnique({
-            where: { url },
-            include: {
-                market: true
-            }
-        });
-    }
+    // Filter articles by category, date range, and/or queries
+    public async getFilteredArticles(options: ArticleFilterOptions): Promise<(Article & { market: Market | null })[]> {
+        const { category, range, query, limit = 10 } = options;
 
-    async listArticles(options: {
-        includeMarket?: boolean;
-        category?: string;
-        resolved?: boolean;
-        take?: number;
-        skip?: number;
-    } = {}): Promise<(Article & { market: Market | null })[]> {
-        const { includeMarket = true, category, resolved, take, skip } = options;
+        const dateFilter = this.buildDateFilter(range);
+        const queryFilter = this.buildQueryFilter(query);
 
         return this.prisma.article.findMany({
             where: {
-                ...(category && { category }),
-                ...(resolved !== undefined && {
-                    market: {
-                        resolved
-                    }
-                })
+            ...(category && { category }),
+            ...dateFilter,
+            ...queryFilter,
             },
-            include: {
-                market: includeMarket
-            },
+            take: limit,
             orderBy: {
-                publishedAt: 'desc'
-            },
-            take,
-            skip
-        });
-    }
-
-    async getArticleWithActiveMarket(id: number): Promise<(Article & { market: Market | null }) | null> {
-        return this.prisma.article.findFirst({
-            where: {
-                id,
-                market: {
-                    resolved: false
-                }
+            publishedAt: 'desc',
             },
             include: {
-                market: true
-            }
+            market: true,
+            },
         });
     }
 
-    async getArticlesWithoutMarkets(): Promise<Article[]> {
+    // Build date filter for articles
+    private buildDateFilter(range?: ArticleTimeRange) {
+        if (!range) return {};
+
+        const now = new Date();
+        let gte: Date | undefined;
+        let lt: Date | undefined;
+
+        switch (range) {
+            case '24h':
+                gte = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+                lt = now;
+                break;
+            case '1m':
+                lt = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+                gte = new Date();
+                gte.setMonth(gte.getMonth() - 1);
+                break;
+            case '5m':
+                lt = new Date();
+                lt.setMonth(lt.getMonth() - 1);
+                gte = new Date();
+                gte.setMonth(gte.getMonth() - 5);
+                break;
+            default:
+                throw new Error("Invalid range. Use '24h', '1m', or '5m'.");
+        }
+
+        return {
+            publishedAt: {
+            ...(gte && { gte }),
+            ...(lt && { lt }),
+            }
+        };
+    }
+
+    // Filter articles by query
+    // TODO: Implement a more advanced search algorithm like semantic search
+    private buildQueryFilter(query?: string) {
+        if (!query) return {};
+
+        return {
+            OR: [
+            { title: { contains: query, mode: 'insensitive' } },
+            { description: { contains: query, mode: 'insensitive' } },
+            { content: { contains: query, mode: 'insensitive' } },
+            ]
+        };
+    }
+
+    
+    // Get articles that do not have any associated markets (should be empty)
+    // TODO: Write test for this
+    private async getArticlesWithoutMarkets(): Promise<Article[]> {
         return this.prisma.article.findMany({
             where: {
                 market: null
             }
-        });
-    }
-
-    async getArticlesByCategory(category: string): Promise<(Article & { market: Market | null })[]> {
-        return this.prisma.article.findMany({
-            where: {
-                category
-            },
-            include: {
-                market: true
-            },
-            orderBy: {
-                publishedAt: 'desc'
-            }
-        });
-    }
-
-    async getRecentArticles(limit: number = 10): Promise<(Article & { market: Market | null })[]> {
-        return this.prisma.article.findMany({
-            take: limit,
-            orderBy: {
-                publishedAt: 'desc'
-            },
-            include: {
-                market: true
-            }
-        });
-    }
-
-    async deleteArticle(id: number): Promise<void> {
-        await this.prisma.article.delete({
-            where: { id }
         });
     }
 }

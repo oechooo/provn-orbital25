@@ -3,7 +3,7 @@ import { PrismaClient, Market, Stake } from '@prisma/client';
 export class MarketService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async createMarket(articleId: number): Promise<Market> {
+  protected async createMarket(articleId: number): Promise<Market> {
     // Verify article exists and doesn't already have a market
     const article = await this.prisma.article.findFirst({
       where: {

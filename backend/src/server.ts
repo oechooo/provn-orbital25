@@ -16,11 +16,28 @@ app.get("/api/articles", async (req, res) => {
 // Example: API route to create a new article
 app.post("/api/articles", async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const {
+      sourceName,
+      author,
+      title,
+      description,
+      url,
+      urlToImage,
+      publishedAt,
+      content,
+      category,
+    } = req.body;
     const newArticle = await prisma.article.create({
       data: {
+        sourceName,
+        author,
         title,
-        content
+        description,
+        url,
+        urlToImage,
+        publishedAt: new Date(publishedAt),
+        content,
+        category,
       }
     });
     res.json(newArticle);
