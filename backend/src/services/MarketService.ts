@@ -3,7 +3,47 @@ import { PrismaClient, Market, Stake } from '@prisma/client';
 export class MarketService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  protected async createMarket(articleId: number): Promise<Market> {
+  async getAllMarkets(): Promise<Market[]> {
+    return this.prisma.market.findMany({
+      include: {
+        article: true,
+        stakes: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        id: 'desc',
+      },
+    });
+  }
+
+  async getMarketById(id: number): Promise<Market | null> {
+    return this.prisma.market.findUnique({
+      where: { id },
+      include: {
+        article: true,
+        stakes: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async createMarket(articleId: number): Promise<Market> {
     // Verify article exists and doesn't already have a market
     const article = await this.prisma.article.findFirst({
       where: {

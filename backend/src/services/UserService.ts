@@ -1,13 +1,22 @@
 // services/userService.ts
 
-import { PrismaClient, User, Stake } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { CreateUserInput, UpdateUserInput } from '../models/User';
 
-export class UserService {
-    constructor(private readonly prisma: PrismaClient) {}
+type UserWithoutPassword = {
+    id: number;
+    username: string;
+    email: string;
+    provePoints: number;
+    resetToken: string | null;
+    resetTokenExpiry: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+};
 
-    // Create a new user
-    protected async createUser(data: CreateUserInput): Promise<Omit<User, 'password'>> {
+export class UserService {
+    constructor(private readonly prisma: PrismaClient) {}    // Create a new user
+    protected async createUser(data: CreateUserInput): Promise<UserWithoutPassword> {
         const user = await this.prisma.user.create({
             data: {
                 ...data,
@@ -18,15 +27,15 @@ export class UserService {
                 username: true,
                 email: true,
                 provePoints: true,
+                resetToken: true,
+                resetTokenExpiry: true,
                 createdAt: true,
                 updatedAt: true
             }
         });
         return user;
-    }
-
-    // Get a user's full details, including stakes
-    protected async getUser(id: number): Promise<(Omit<User, 'password'> & { stakes: Stake[] }) | null> {
+    }    // Get a user's full details, including stakes
+    protected async getUser(id: number): Promise<UserWithoutPassword & { stakes: any[] } | null> {
         const user = await this.prisma.user.findUnique({
             where: { id },
             select: {
@@ -34,6 +43,8 @@ export class UserService {
                 username: true,
                 email: true,
                 provePoints: true,
+                resetToken: true,
+                resetTokenExpiry: true,
                 createdAt: true,
                 updatedAt: true,
                 stakes: {
@@ -51,7 +62,7 @@ export class UserService {
     }
 
     // Get a user's basic details, without stakes
-    protected async getUserWithoutStakes(id: number): Promise<Omit<User, 'password'> | null> {
+    protected async getUserWithoutStakes(id: number): Promise<UserWithoutPassword | null> {
         const user = await this.prisma.user.findUnique({
             where: { id },
             select: {
@@ -59,6 +70,8 @@ export class UserService {
                 username: true,
                 email: true,
                 provePoints: true,
+                resetToken: true,
+                resetTokenExpiry: true,
                 createdAt: true,
                 updatedAt: true
             }
@@ -103,9 +116,8 @@ export class UserService {
             }
         });
 
-        const totalStakes = stakes.length;
-        const totalAmountStaked = stakes.reduce((sum, stake) => sum + stake.stakeAmount, 0);
-        const winningStakes = stakes.filter(stake => stake.prediction === stake.market.outcome).length;
+        const totalStakes = stakes.length;        const totalAmountStaked = stakes.reduce((sum: number, stake: any) => sum + stake.stakeAmount, 0);
+        const winningStakes = stakes.filter((stake: any) => stake.prediction === stake.market.outcome).length;
         
         // TODO: Calculate total winnings to match StakeService
 
@@ -114,10 +126,8 @@ export class UserService {
             totalAmountStaked,
             winningStakes
         };
-    }
-
-    // Update user details
-    private async updateUser(id: number, data: UpdateUserInput): Promise<Omit<User, 'password'>> {
+    }    // Update user details
+    private async updateUser(id: number, data: UpdateUserInput): Promise<UserWithoutPassword> {
         const user = await this.prisma.user.update({
             where: { id },
             data,
@@ -126,6 +136,8 @@ export class UserService {
                 username: true,
                 email: true,
                 provePoints: true,
+                resetToken: true,
+                resetTokenExpiry: true,
                 createdAt: true,
                 updatedAt: true
             }

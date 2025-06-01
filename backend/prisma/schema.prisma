@@ -49,6 +49,8 @@ model User {
   email    String   @unique
   password String
   provePoints Float   @default(100)
+  resetToken String?
+  resetTokenExpiry DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   stakes   Stake[]

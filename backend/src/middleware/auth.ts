@@ -1,13 +1,6 @@
 // src/middleware/auth.ts
 import { Request, Response, NextFunction } from 'express';
-// Use try-catch for optional imports since we've added it to package.json 
-// but it might not be installed yet
-let jwt: any;
-try {
-  jwt = require('jsonwebtoken');
-} catch (e) {
-  console.warn('jsonwebtoken package not found, authentication will not work');
-}
+import * as jwt from 'jsonwebtoken';
 
 // Define a proper type for the JWT payload
 interface JwtPayload {
@@ -23,11 +16,6 @@ export interface AuthRequest extends Request {
 
 export const auth = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    if (!jwt) {
-      res.status(500).json({ message: 'Authentication system is not properly configured' });
-      return;
-    }
-
     const token = req.header('Authorization')?.replace('Bearer ', '');
     
     if (!token) {

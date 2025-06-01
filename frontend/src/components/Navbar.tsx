@@ -1,13 +1,20 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Navbar as BootstrapNavbar, Container, Nav, Button } from 'react-bootstrap';
+import { Navbar as BootstrapNavbar, Container, Nav, Button, Dropdown } from 'react-bootstrap';
+import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
   const [expanded, setExpanded] = useState(false);
   const location = useLocation();
+  const { user, logout } = useAuth();
   
   const isActive = (path: string) => {
     return location.pathname === path;
+  };
+
+  const handleLogout = () => {
+    logout();
+    setExpanded(false);
   };
 
   return (
@@ -18,8 +25,7 @@ const Navbar = () => {
           aria-controls="basic-navbar-nav" 
           onClick={() => setExpanded(expanded ? false : true)}
         />
-        <BootstrapNavbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
+        <BootstrapNavbar.Collapse id="basic-navbar-nav">          <Nav className="me-auto">
             <Nav.Link 
               as={Link} 
               to="/" 
@@ -30,22 +36,57 @@ const Navbar = () => {
             </Nav.Link>
             <Nav.Link 
               as={Link} 
-              to="/sources" 
-              active={isActive('/sources')}
+              to="/dashboard" 
+              active={isActive('/dashboard')}
               onClick={() => setExpanded(false)}
             >
-              Sources
-            </Nav.Link>
-            <Nav.Link 
-              as={Link} 
-              to="/leaderboard" 
-              active={isActive('/leaderboard')}
-              onClick={() => setExpanded(false)}
-            >
-              Leaderboard
+              Markets
             </Nav.Link>
           </Nav>
-          <Button variant="primary">Sign In</Button>
+          <div className="d-flex align-items-center gap-2">
+            {user ? (
+              <>
+                <span className="text-muted small me-2">
+                  {user.provePoints} Points
+                </span>
+                <Dropdown>
+                  <Dropdown.Toggle variant="outline-primary" size="sm">
+                    {user.username}
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item as={Link} to="/profile">
+                      Profile
+                    </Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item onClick={handleLogout}>
+                      Logout
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </>
+            ) : (
+              <>
+                <Button 
+                  variant="outline-primary" 
+                  size="sm" 
+                  as={Link} 
+                  to="/login"
+                  onClick={() => setExpanded(false)}
+                >
+                  Sign In
+                </Button>
+                <Button 
+                  variant="primary" 
+                  size="sm" 
+                  as={Link} 
+                  to="/register"
+                  onClick={() => setExpanded(false)}
+                >
+                  Sign Up
+                </Button>
+              </>
+            )}
+          </div>
         </BootstrapNavbar.Collapse>
       </Container>
     </BootstrapNavbar>

@@ -12,6 +12,18 @@ try {
 import './config/env';
 import userRoutes from './routes/userRoutes';
 
+console.log('Loading auth routes...');
+import authRoutes from './routes/authRoutes';
+console.log('Auth routes loaded successfully');
+
+console.log('Loading stake routes...');
+import stakeRoutes from './routes/stakeRoutes';
+console.log('Stake routes loaded successfully');
+
+console.log('Loading market routes...');
+import marketRoutes from './routes/marketRoutes';
+console.log('Market routes loaded successfully');
+
 // Create Express app
 export const app: Express = express();
 
@@ -24,7 +36,15 @@ if (cors) {
 }
 
 // Routes
+console.log('Setting up routes...');
 app.use('/api/users', userRoutes);
+console.log('User routes registered');
+app.use('/api/auth', authRoutes);
+console.log('Auth routes registered');
+app.use('/api/stakes', stakeRoutes);
+console.log('Stake routes registered');
+app.use('/api/markets', marketRoutes);
+console.log('Market routes registered');
 
 // Simple health check route
 app.get('/health', (req: Request, res: Response) => {
