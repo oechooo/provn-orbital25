@@ -1,7 +1,5 @@
 // src/app.ts
 import express, { Express, Request, Response, NextFunction } from 'express';
-// Use try-catch for optional imports since we've added it to package.json 
-// but it might not be installed yet
 let cors: any;
 try {
   cors = require('cors');
@@ -11,56 +9,28 @@ try {
 
 import './config/env';
 import userRoutes from './routes/userRoutes';
-
-console.log('Loading auth routes...');
 import authRoutes from './routes/authRoutes';
-console.log('Auth routes loaded successfully');
 
-console.log('Loading stake routes...');
-import stakeRoutes from './routes/stakeRoutes';
-console.log('Stake routes loaded successfully');
-
-console.log('Loading market routes...');
-import marketRoutes from './routes/marketRoutes';
-console.log('Market routes loaded successfully');
-
-// Create Express app
 export const app: Express = express();
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// Apply CORS if available
 if (cors) {
   app.use(cors());
 }
 
-// Routes
-console.log('Setting up routes...');
 app.use('/api/users', userRoutes);
-console.log('User routes registered');
 app.use('/api/auth', authRoutes);
-console.log('Auth routes registered');
-app.use('/api/stakes', stakeRoutes);
-console.log('Stake routes registered');
-app.use('/api/markets', marketRoutes);
-console.log('Market routes registered');
 
-// Simple health check route
-app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'OK', message: 'Server is running' });
-});
-
-// Global error handler
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error('Unhandled error:', err);
+// Error handling middleware
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
   res.status(500).json({
-    message: 'An unexpected error occurred',
+    message: 'Internal server error',
     error: process.env.NODE_ENV === 'production' ? undefined : err.message
   });
 });
 
-// Handle 404 errors for undefined routes - fixed pattern
 app.use((req: Request, res: Response) => {
   res.status(404).json({ message: 'Route not found' });
 });

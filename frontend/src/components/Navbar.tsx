@@ -25,7 +25,8 @@ const Navbar = () => {
           aria-controls="basic-navbar-nav" 
           onClick={() => setExpanded(expanded ? false : true)}
         />
-        <BootstrapNavbar.Collapse id="basic-navbar-nav">          <Nav className="me-auto">
+        <BootstrapNavbar.Collapse id="basic-navbar-nav">          
+          <Nav className="me-auto">
             <Nav.Link 
               as={Link} 
               to="/" 
@@ -64,26 +65,25 @@ const Navbar = () => {
                   </Dropdown.Menu>
                 </Dropdown>
               </>
-            ) : (
-              <>
-                <Button 
-                  variant="outline-primary" 
-                  size="sm" 
-                  as={Link} 
-                  to="/login"
-                  onClick={() => setExpanded(false)}
-                >
-                  Sign In
-                </Button>
-                <Button 
-                  variant="primary" 
-                  size="sm" 
-                  as={Link} 
-                  to="/register"
-                  onClick={() => setExpanded(false)}
-                >
-                  Sign Up
-                </Button>
+            ) : (              <>
+                <Link to="/login">
+                  <Button 
+                    variant="outline-primary" 
+                    size="sm" 
+                    onClick={() => setExpanded(false)}
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button 
+                    variant="primary" 
+                    size="sm" 
+                    onClick={() => setExpanded(false)}
+                  >
+                    Sign Up
+                  </Button>
+                </Link>
               </>
             )}
           </div>

@@ -18,7 +18,7 @@ const LoginPage: React.FC = () => {
     const result = await login(username, password);
     
     if (result.success) {
-      navigate('/'); // Redirect to home page on successful login
+      navigate('/'); 
     } else {
       setError(result.message);
     }

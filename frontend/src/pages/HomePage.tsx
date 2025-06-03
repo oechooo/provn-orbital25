@@ -4,9 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const HomePage: React.FC = () => {
   const { user } = useAuth();
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-10 via-blue-10 to-indigo-10">
-      {/* Hero Section */}
+  return (    <div className="min-h-screen bg-gradient-to-br from-blue-10 via-blue-10 to-indigo-10">
       <div className="relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
@@ -54,10 +52,7 @@ const HomePage: React.FC = () => {
             )}
           </div>
         </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="py-20 bg-blue-600">
+      </div>      <div className="py-20 bg-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             Ready to Help Verify the News?

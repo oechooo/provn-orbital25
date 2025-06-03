@@ -1,15 +1,11 @@
-// src/middleware/auth.ts
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 
-// Define a proper type for the JWT payload
 interface JwtPayload {
   userId: number;
   username: string;
-  // Add other fields that would be in your JWT token
 }
 
-// Extend the Request interface to include the typed user
 export interface AuthRequest extends Request {
   user?: JwtPayload;
 }

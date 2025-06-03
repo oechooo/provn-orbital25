@@ -37,8 +37,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Load saved authentication data on app start
   useEffect(() => {
     const savedToken = localStorage.getItem('authToken');
     const savedUser = localStorage.getItem('authUser');
@@ -56,8 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+        },        body: JSON.stringify({ username, password }),
       });
 
       const data = await response.json();
@@ -66,7 +63,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setToken(data.token);
         setUser(data.user);
         
-        // Save to localStorage
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('authUser', JSON.stringify(data.user));
         
@@ -75,7 +71,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { success: false, message: data.message };
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Authentication failed:', error);
       return { success: false, message: 'Network error. Please try again.' };
     }
   };
@@ -86,8 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password }),
+        },        body: JSON.stringify({ username, email, password }),
       });
 
       const data = await response.json();
@@ -96,7 +91,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setToken(data.token);
         setUser(data.user);
         
-        // Save to localStorage
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('authUser', JSON.stringify(data.user));
         
@@ -105,7 +99,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { success: false, message: data.message };
       }
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('User registration failed:', error);
       return { success: false, message: 'Network error. Please try again.' };
     }
   };
