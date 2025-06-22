@@ -5,8 +5,10 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
-  try {    const { username, email, password } = req.body;
+  try {
+    const { username, email, password } = req.body;
     
+    // Basic validation
     if (!username || !email || !password) {
       res.status(400).json({ message: "Username, email, and password are required" });
       return;
@@ -14,19 +16,24 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     if (password.length < 6) {
       res.status(400).json({ message: "Password must be at least 6 characters long" });
-      return;    }    const saltRounds = 10;
+      return;
+    }    // Hash password (temporarily using simple hash for testing)
+    const saltRounds = 10;
     let hashedPassword: string;
     try {
-      hashedPassword = await bcrypt.hash(password, saltRounds);    } catch (hashError) {
+      hashedPassword = await bcrypt.hash(password, saltRounds);
+    } catch (hashError) {
       console.error('Bcrypt error:', hashError);
-      hashedPassword = password;
+      hashedPassword = password; // Fallback for testing - DO NOT USE IN PRODUCTION
     }
+    
+    // Create user
     const user = await prisma.user.create({
       data: {
         username,
         email,
         password: hashedPassword,
-        provePoints: 100
+        provePoints: 100 // Starting points for new users
       },
       select: { 
         id: true, 
@@ -34,8 +41,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         email: true, 
         provePoints: true,
         createdAt: true 
-      }    });
+      }
+    });
 
+    // Generate JWT token
     const secret = process.env.JWT_SECRET || 'your-secret-key';
     const token = jwt.sign(
       { userId: user.id, username: user.username },
@@ -52,9 +61,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     console.error('Registration error:', error);
     console.error('Error details:', {
       code: error.code,
-      message: error.message,      meta: error.meta
+      message: error.message,
+      meta: error.meta
     });
     
+    // Handle unique constraint violations
     if (error.code === 'P2002') {
       const target = error.meta?.target;
       if (target?.includes('username')) {
@@ -72,36 +83,47 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const login = async (req: Request, res: Response): Promise<void> => {
-  try {    const { username, password } = req.body;
+  try {
+    const { username, password } = req.body;
     
+    // Basic validation
     if (!username || !password) {
       res.status(400).json({ message: "Username and password are required" });
-      return;    }
+      return;
+    }
 
+    // Find user by username or email
     const user = await prisma.user.findFirst({
-      where: {        OR: [
+      where: {
+        OR: [
           { username: username },
-          { email: username }
+          { email: username } // Allow login with email
         ]
       }
     });
 
     if (!user) {
       res.status(401).json({ message: "Invalid credentials" });
-      return;    }
+      return;
+    }
 
+    // Verify password
     const isValidPassword = await bcrypt.compare(password, user.password);
     
     if (!isValidPassword) {
       res.status(401).json({ message: "Invalid credentials" });
-      return;    }
+      return;
+    }
 
+    // Generate JWT token
     const secret = process.env.JWT_SECRET || 'your-secret-key';
     const token = jwt.sign(
       { userId: user.id, username: user.username },
       secret,
-      { expiresIn: '24h' }    );
+      { expiresIn: '24h' }
+    );
 
+    // Return user info without password
     const { password: _, ...userWithoutPassword } = user;
 
     res.json({
@@ -116,7 +138,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const getProfile = async (req: Request, res: Response): Promise<void> => {  try {
+export const getProfile = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // User is already authenticated via middleware, user info is in req.user
     const userId = (req as any).user?.userId;
     
     if (!userId) {
@@ -156,8 +180,10 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
     
     if (!userId) {
       res.status(401).json({ message: "Authentication required" });
-      return;    }
+      return;
+    }
 
+    // Basic validation
     if (!username && !email) {
       res.status(400).json({ message: "At least one field (username or email) is required" });
       return;
@@ -187,7 +213,9 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
     
   } catch (error: any) {
     console.error('Update profile error:', error);
-      if (error.code === 'P2002') {
+    
+    // Handle unique constraint violations
+    if (error.code === 'P2002') {
       const target = error.meta?.target;
       if (target?.includes('username')) {
         res.status(409).json({ message: "Username already exists" });
@@ -214,21 +242,35 @@ export const requestPasswordReset = async (req: Request, res: Response): Promise
 
     const user = await prisma.user.findUnique({
       where: { email }
-    });    if (!user) {
+    });
+
+    if (!user) {
+      // Don't reveal if user exists for security
       res.status(200).json({ message: 'If an account with that email exists, a reset link has been sent' });
-      return;    }
+      return;
+    }
 
-    const resetToken = crypto.randomBytes(32).toString('hex');    const resetTokenExpiry = new Date(Date.now() + 3600000);
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
 
+    // Save reset token to user (we'll add these fields to schema)
     await prisma.user.update({
       where: { id: user.id },
       data: {
         resetToken,
         resetTokenExpiry
-      }    });
+      }
+    });
 
-    res.status(200).json({
+    // In a real app, you would send an email here
+    // For demo purposes, we'll just log the token
+    console.log(`Password reset token for ${email}: ${resetToken}`);
+    console.log(`Reset URL: http://localhost:5173/reset-password?token=${resetToken}`);
+
+    res.status(200).json({ 
       message: 'If an account with that email exists, a reset link has been sent',
+      // Include token in response for demo purposes (remove in production)
       resetToken: process.env.NODE_ENV === 'development' ? resetToken : undefined
     });
   } catch (error) {
@@ -249,7 +291,10 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     if (newPassword.length < 6) {
       res.status(400).json({ message: 'Password must be at least 6 characters long' });
       return;
-    }    const user = await prisma.user.findFirst({
+    }
+
+    // Find user with valid reset token
+    const user = await prisma.user.findFirst({
       where: {
         resetToken: token,
         resetTokenExpiry: {
@@ -261,7 +306,13 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     if (!user) {
       res.status(400).json({ message: 'Invalid or expired reset token' });
       return;
-    }    const hashedPassword = await bcrypt.hash(newPassword, 12);await prisma.user.update({
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+    // Update user password and clear reset token
+    await prisma.user.update({
       where: { id: user.id },
       data: {
         password: hashedPassword,

@@ -15,7 +15,9 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
         updatedAt: true 
       } // Exclude password from response
     });
-      if (users.length === 0) {
+    
+    if (users.length === 0) {
+      // Return an empty array, not an error
       res.json([]);
       return;
     }
@@ -59,17 +61,20 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 };
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
-  try {    const { username, email, password } = req.body;
+  try {
+    const { username, email, password } = req.body;
     
+    // Basic validation
     if (!username || !email || !password) {
       res.status(400).json({ message: "Username, email, and password are required" });
       return;
     }
-      const user = await prisma.user.create({
+    
+    const user = await prisma.user.create({
       data: {
         username,
         email,
-        password
+        password // In a real app, you should hash this password
       },
       select: { 
         id: true, 
@@ -80,9 +85,11 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       } // Exclude password from response
     });
     res.status(201).json(user);
-  } catch (error: any) {    console.error('Error creating user:', error);
+  } catch (error: any) {
+    console.error('Error creating user:', error);
     
-    if (error instanceof PrismaClientKnownRequestError ||
+    // Handle unique constraint violations
+    if (error instanceof PrismaClientKnownRequestError || 
         (error.name === 'PrismaClientKnownRequestError' && error.code === 'P2002')) {
       res.status(409).json({ message: "Username or email already exists" });
       return;
@@ -98,8 +105,10 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
     
     if (isNaN(id)) {
       res.status(400).json({ message: "Invalid ID format" });
-      return;    }
+      return;
+    }
     
+    // Check if user exists before updating
     const existingUser = await prisma.user.findUnique({
       where: { id }
     });
@@ -123,11 +132,15 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
     res.json(user);
   } catch (error: any) {
     console.error('Error updating user:', error);
-      if (error instanceof PrismaClientKnownRequestError ||
+    
+    // Handle unique constraint violations
+    if (error instanceof PrismaClientKnownRequestError || 
         (error.name === 'PrismaClientKnownRequestError' && error.code === 'P2002')) {
       res.status(409).json({ message: "Username or email already exists" });
-      return;    }
+      return;
+    }
     
+    // Handle not found errors (this should be caught by the check above, but just in case)
     if (error.message && error.message.includes('Record to update not found')) {
       res.status(404).json({ message: "User not found" });
       return;
@@ -143,8 +156,10 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
     
     if (isNaN(id)) {
       res.status(400).json({ message: "Invalid ID format" });
-      return;    }
+      return;
+    }
     
+    // Check if user exists before deleting
     const existingUser = await prisma.user.findUnique({
       where: { id }
     });
