@@ -17,3 +17,14 @@ export interface UpdateUserInput {
   email?: string;
   password?: string;
 }
+
+export type UserWithoutPassword = {
+    id: number;
+    username: string;
+    email: string;
+    provePoints: number;
+    resetToken: String | null;
+    resetTokenExpiry: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+};

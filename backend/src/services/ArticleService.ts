@@ -1,4 +1,5 @@
 import { PrismaClient, Article, Market } from '@prisma/client';
+import { ArticleWithMarket } from '../models/Article';
 
 export interface CreateArticleInput {
     sourceName: string;
@@ -25,7 +26,7 @@ export class ArticleService {
     constructor(private readonly prisma: PrismaClient) {}
     
     // Create a new article
-    protected async createArticle(data: CreateArticleInput): Promise<Article> {
+    public async createArticle(data: CreateArticleInput): Promise<Article> {
         return this.prisma.article.create({
             data,
             include: {
@@ -35,14 +36,14 @@ export class ArticleService {
     }
 
     // Delete an article by ID
-    protected async deleteArticle(id: number): Promise<void> {
+    public async deleteArticle(id: number): Promise<void> {
         await this.prisma.article.delete({
             where: { id }
         });
     }
 
     // Get an article by ID
-    protected async getArticleById(id: number): Promise<(Article & { market: Market | null }) | null> {
+    public async getArticleById(id: number): Promise<ArticleWithMarket | null> {
         return this.prisma.article.findUnique({
             where: { id },
             include: {
@@ -52,7 +53,7 @@ export class ArticleService {
     }
 
     // Filter articles by category, date range, and/or queries
-    public async getFilteredArticles(options: ArticleFilterOptions): Promise<(Article & { market: Market | null })[]> {
+    public async getFilteredArticles(options: ArticleFilterOptions): Promise<ArticleWithMarket[]> {
         const { category, range, query, limit = 10 } = options;
 
         const dateFilter = this.buildDateFilter(range);
@@ -66,10 +67,10 @@ export class ArticleService {
             },
             take: limit,
             orderBy: {
-            publishedAt: 'desc',
+                publishedAt: 'desc',
             },
             include: {
-            market: true,
+                market: true,
             },
         });
     }
@@ -127,7 +128,7 @@ export class ArticleService {
     
     // Get articles that do not have any associated markets (should be empty)
     // TODO: Write test for this
-    private async getArticlesWithoutMarkets(): Promise<Article[]> {
+    public async getArticlesWithoutMarkets(): Promise<Article[]> {
         return this.prisma.article.findMany({
             where: {
                 market: null

@@ -1,9 +1,11 @@
 import { PrismaClient, Market, Stake } from '@prisma/client';
+import { MarketWithRelations } from '../models/Market';
+
 
 export class MarketService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async getAllMarkets(): Promise<Market[]> {
+  async getAllMarkets(): Promise<MarketWithRelations[]> {
     return this.prisma.market.findMany({
       include: {
         article: true,
@@ -24,7 +26,7 @@ export class MarketService {
     });
   }
 
-  async getMarketById(id: number): Promise<Market | null> {
+  async getMarketById(id: number): Promise<MarketWithRelations | null> {
     return this.prisma.market.findUnique({
       where: { id },
       include: {
@@ -88,7 +90,7 @@ export class MarketService {
     });
   }
 
-  async getMarketByArticle(articleId: number): Promise<(Market & { stakes: Stake[] }) | null> {
+  async getMarketByArticle(articleId: number): Promise<MarketWithRelations | null> {
     return this.prisma.market.findUnique({
       where: { articleId },
       include: {
@@ -112,7 +114,7 @@ export class MarketService {
     category?: string;
     take?: number;
     skip?: number;
-  } = {}): Promise<(Market & { stakes: Stake[] })[]> {
+  } = {}): Promise<MarketWithRelations[]> {
     const { includeResolved = false, category, take, skip } = options;
 
     return this.prisma.market.findMany({
