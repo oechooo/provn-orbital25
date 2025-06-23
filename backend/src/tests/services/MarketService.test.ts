@@ -25,7 +25,6 @@ describe('MarketService', () => {
   });
 
   it('should create a market', async () => {
-    // Mock article lookup to simulate an existing article without a market
     mockPrisma.article.findFirst.mockResolvedValue({ id: 1, market: null });
     mockPrisma.market.create.mockResolvedValue({ id: 1, resolved: false });
     const market = await marketService.createMarket(1);
@@ -51,7 +50,6 @@ describe('MarketService', () => {
     };
 
     mockPrisma.market.findUnique.mockResolvedValue(initialMarket);
-    // Simulate adding a new stake (you may have a StakeService for this in reality)
     const newStake = { id: 2, userId: 2, stakeAmount: 20, prediction: false };
     initialMarket.stakes.push(newStake);
     mockPrisma.market.findUnique.mockResolvedValueOnce(initialMarket);
@@ -62,5 +60,52 @@ describe('MarketService', () => {
     expect(Array.isArray(market!.stakes)).toBe(true);
     expect(market!.stakes.length).toBe(2);
     expect(market!.stakes[1]).toMatchObject(newStake);
+  });
+
+  it('should calculate correct implied probabilities for 50/50 market', async () => {
+    // Mock getMarketById to return a market with no shares
+    marketService.getMarketById = jest.fn().mockResolvedValue({
+      id: 1,
+      sharesTrue: 0,
+      sharesFalse: 0,
+      stakes: []
+    });
+    const { probTrue, probFalse } = await marketService.getImpliedProbability(1);
+    expect(probTrue).toBeCloseTo(0.5, 2);
+    expect(probFalse).toBeCloseTo(0.5, 2);
+  });
+
+  it('should update odds after a stake', async () => {
+    // Mock getImpliedProbability to return new odds
+    marketService.getImpliedProbability = jest.fn().mockResolvedValue({ probTrue: 0.7, probFalse: 0.3 });
+    await marketService.updateOdds(1, true, 10);
+    expect(mockPrisma.market.update).toHaveBeenCalledWith({
+      where: { id: 1 },
+      data: { probTrue: 0.7, probFalse: 0.3 },
+    });
+  });
+
+  it('should calculate correct staking parameters for true prediction', async () => {
+    marketService.getMarketById = jest.fn().mockResolvedValue({
+      id: 1,
+      sharesTrue: 0,
+      sharesFalse: 0,
+      stakes: []
+    });
+    const params = await marketService.getStakingParameters(1, true, 100);
+    expect(params.upside).toBeCloseTo(1.9090, 3);
+    expect(params.sharesBought).toBeCloseTo(190.90, 2);
+  });
+
+  it('should calculate correct staking parameters for false prediction', async () => {
+    marketService.getMarketById = jest.fn().mockResolvedValue({
+      id: 1,
+      sharesTrue: 0,
+      sharesFalse: 0,
+      stakes: []
+    });
+    const params = await marketService.getStakingParameters(1, false, 100);
+    expect(params.upside).toBeCloseTo(1.9090, 3);
+    expect(params.sharesBought).toBeCloseTo(190.90, 2);
   });
 });

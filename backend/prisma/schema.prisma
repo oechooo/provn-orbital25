@@ -29,6 +29,10 @@ model Market {
   outcome        Boolean? // true/false if resolved, null otherwise
   createdAt      DateTime @default(now())
   stakes         Stake[]
+  sharesTrue     Float
+  sharesFalse    Float
+  probTrue       Float
+  probFalse      Float
   article        Article  @relation(fields: [articleId], references: [id])
 }
 
@@ -38,6 +42,7 @@ model Stake {
   marketId       Int
   prediction     Boolean
   stakeAmount    Float
+  upside         Float
   createdAt      DateTime @default(now())
   user           User     @relation(fields: [userId], references: [id])
   market         Market   @relation(fields: [marketId], references: [id])

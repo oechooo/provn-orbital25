@@ -1,4 +1,5 @@
 import { PrismaClient, Stake } from '@prisma/client';
+import { MarketService } from './MarketService';
 
 export class StakeService {
   constructor(private readonly prisma: PrismaClient) {}
@@ -8,16 +9,21 @@ export class StakeService {
     const user = await this.prisma.user.findUnique({
       where: { id: userId }
     });
+    if (!user) { throw new Error('User not found');}
+    if (user.provePoints < stakeAmount) { throw new Error('Insufficient prove points'); }
+  
+    const market = await this.prisma.market.findUnique({
+      where: { id: marketId },
+      select: { probTrue: true, probFalse: true }
+    });
+    if (!market) throw new Error('Market not found');
 
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    if (user.provePoints < stakeAmount) {
-      throw new Error('Insufficient prove points');
-    }
+    const marketService = new MarketService(this.prisma);
+    const { upside, sharesBought } = await marketService.getStakingParameters(marketId, prediction, stakeAmount);
+    await marketService.updateOdds(marketId, prediction, sharesBought);
 
     // Create stake and update user's prove points atomically
+    // TODO: encapsulate user logic in UserService
     return this.prisma.$transaction(async (tx) => {
       const stake = await tx.stake.create({
         data: {
@@ -25,6 +31,7 @@ export class StakeService {
           marketId,
           prediction,
           stakeAmount,
+          upside,
         }
       });
 
