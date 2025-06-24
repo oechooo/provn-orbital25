@@ -33,19 +33,65 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+// Helper function for safe localStorage access
+const safeLocalStorage = {
+  getItem: (key: string): string | null => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return localStorage.getItem(key);
+      }
+    } catch (error) {
+      console.error(`Error getting localStorage item ${key}:`, error);
+    }
+    return null;
+  },
+  setItem: (key: string, value: string): void => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem(key, value);
+      }
+    } catch (error) {
+      console.error(`Error setting localStorage item ${key}:`, error);
+    }
+  },
+  removeItem: (key: string): void => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.removeItem(key);
+      }
+    } catch (error) {
+      console.error(`Error removing localStorage item ${key}:`, error);
+    }
+  }
+};
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Load saved authentication data on app start
   useEffect(() => {
-    const savedToken = localStorage.getItem('authToken');
-    const savedUser = localStorage.getItem('authUser');
-    
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
-    }
-    setIsLoading(false);
+    const loadAuthData = () => {      try {
+        // Check if we're in a browser environment
+        const savedToken = safeLocalStorage.getItem('authToken');
+        const savedUser = safeLocalStorage.getItem('authUser');
+        
+        if (savedToken && savedUser) {
+          setToken(savedToken);
+          setUser(JSON.parse(savedUser));
+        }
+      } catch (error) {
+        console.error('Error loading auth data:', error);
+        // Clear corrupted data safely
+        safeLocalStorage.removeItem('authToken');
+        safeLocalStorage.removeItem('authUser');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadAuthData();
   }, []);
 
   const login = async (username: string, password: string): Promise<{ success: boolean; message: string }> => {
@@ -54,7 +100,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        },        body: JSON.stringify({ username, password }),
+        },
+        body: JSON.stringify({ username, password }),
       });
 
       const data = await response.json();
@@ -63,6 +110,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setToken(data.token);
         setUser(data.user);
         
+        // Save to localStorage
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('authUser', JSON.stringify(data.user));
         
@@ -71,7 +119,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { success: false, message: data.message };
       }
     } catch (error) {
-      console.error('Authentication failed:', error);
+      console.error('Login error:', error);
       return { success: false, message: 'Network error. Please try again.' };
     }
   };
@@ -82,7 +130,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        },        body: JSON.stringify({ username, email, password }),
+        },
+        body: JSON.stringify({ username, email, password }),
       });
 
       const data = await response.json();
@@ -91,6 +140,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setToken(data.token);
         setUser(data.user);
         
+        // Save to localStorage
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('authUser', JSON.stringify(data.user));
         
@@ -99,7 +149,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { success: false, message: data.message };
       }
     } catch (error) {
-      console.error('User registration failed:', error);
+      console.error('Registration error:', error);
       return { success: false, message: 'Network error. Please try again.' };
     }
   };

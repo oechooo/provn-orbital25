@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/SimpleAuthContext';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 const ProfilePage: React.FC = () => {
@@ -10,7 +10,9 @@ const ProfilePage: React.FC = () => {
     email: user?.email || '',
   });
 
-  if (!user) return null;  const handleSave = async () => {
+  if (!user) return null;
+  const handleSave = async () => {
+    console.log('Saving profile:', formData);
     setIsEditing(false);
   };
 
@@ -27,7 +29,10 @@ const ProfilePage: React.FC = () => {
               >
                 {isEditing ? 'Cancel' : 'Edit'}
               </button>
-            </div>            <div className="space-y-6">
+            </div>
+
+            <div className="space-y-6">
+              {/* User Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-blue-50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-blue-600">
@@ -42,8 +47,10 @@ const ProfilePage: React.FC = () => {
                 <div className="bg-purple-50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-purple-600">0</div>
                   <div className="text-sm text-gray-600">Total Stakes</div>
-                </div>              </div>
+                </div>
+              </div>
 
+              {/* Profile Information */}
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -107,8 +114,10 @@ const ProfilePage: React.FC = () => {
                   </button>
                 </div>
               )}
-            </div>          </div>
+            </div>
+          </div>
 
+          {/* Recent Activity */}
           <div className="bg-white rounded-lg shadow p-6 mt-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
             <div className="text-center text-gray-500 py-8">

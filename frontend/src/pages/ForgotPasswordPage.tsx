@@ -80,12 +80,13 @@ const ForgotPasswordPage: React.FC = () => {
 
             {message && (
               <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md">
-                <p>{message}</p>                {resetToken && (
-                  <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
-                    <p className="text-sm text-blue-800 font-medium">
-                      Reset token generated
+                <p>{message}</p>
+                {resetToken && (
+                  <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                    <p className="text-sm text-yellow-800 font-medium">
+                      Demo Mode: Use this reset token
                     </p>
-                    <code className="text-xs break-all bg-blue-100 px-2 py-1 rounded mt-1 block">
+                    <code className="text-xs break-all bg-yellow-100 px-2 py-1 rounded mt-1 block">
                       {resetToken}
                     </code>
                     <Link 
