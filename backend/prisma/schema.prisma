@@ -25,9 +25,12 @@ model Article {
 model Market {
   id             Int      @id @default(autoincrement())
   articleId      Int      @unique
-  resolved       Boolean  @default(false)
+  closed         Boolean @default(false)
+  resolveCount   Int  @default(0)
   outcome        Boolean? // true/false if resolved, null otherwise
   createdAt      DateTime @default(now())
+  lastResolve    DateTime @default(now())
+  nextResolve    DateTime
   stakes         Stake[]
   sharesTrue     Float
   sharesFalse    Float
