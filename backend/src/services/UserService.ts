@@ -23,7 +23,9 @@ export class UserService {
             }
         });
         return user;
-    }    // Get a user's full details, including stakes
+    }
+    
+    // Get a user's full details, including stakes
     public async getUser(id: number): Promise<(UserWithoutPassword & { stakes: any[] }) | null> {
         const user = await this.prisma.user.findUnique({
             where: { id },

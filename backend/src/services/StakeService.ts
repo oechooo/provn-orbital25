@@ -29,6 +29,7 @@ export class StakeService {
         data: {
           userId,
           marketId,
+          resolved: false,
           prediction,
           stakeAmount,
           upside,
@@ -48,6 +49,34 @@ export class StakeService {
     });
   }
 
+  async resolveStake(stakeId: number, finalOutcome: boolean): Promise<void> {
+    // Fetch the stake with user info
+    const stake = await this.prisma.stake.findUnique({
+      where: { id: stakeId },
+      include: { user: true }
+    });
+    if (!stake) throw new Error('Stake not found');
+
+    // Mark the stake as resolved
+    await this.prisma.stake.update({
+      where: { id: stakeId },
+      data: { resolved: true }
+    });
+
+    // Credit user if prediction was correct
+    if (stake.prediction === finalOutcome) {
+      const winnings = stake.stakeAmount * stake.upside;
+      await this.prisma.user.update({
+        where: { id: stake.userId },
+        data: {
+          provePoints: {
+            increment: winnings
+          }
+        }
+      });
+    }
+  }
+  
   async getUserStakes(userId: number): Promise<Stake[]> {
     return this.prisma.stake.findMany({
       where: { userId },

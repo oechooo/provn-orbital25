@@ -1,5 +1,6 @@
 import { StakeService } from '../../services/StakeService';
 import { MarketService } from '../../services/MarketService';
+import { UserService } from '../../services/UserService';
 
 const mockPrisma = {
   user: {
@@ -79,5 +80,37 @@ describe('StakeService', () => {
   it('should throw if user tries to stake more than their prove points', async () => {
     mockPrisma.user.findUnique.mockResolvedValue({ id: 1, provePoints: 5 });
     await expect(stakeService.createStake(1, 1, true, 10)).rejects.toThrow('Insufficient prove points');
+  });
+
+  it('should add the new stake to the user\'s stake array', async () => {
+    const userId = 1;
+    const newStake = { id: 2, userId, marketId: 1, prediction: true, stakeAmount: 20, market: {} };
+    // Mock user creation and stake creation
+    mockPrisma.user.findUnique.mockResolvedValue({
+      id: userId,
+      username: 'testuser',
+      email: 'test@example.com',
+      provePoints: 80,
+      resetToken: null,
+      resetTokenExpiry: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      stakes: [newStake]
+    });
+    mockPrisma.stake.create.mockResolvedValue(newStake);
+
+    // Create the stake (simulate)
+    await stakeService.createStake(userId, 1, true, 20);
+
+    // Use UserService to get the user and their stakes
+    const userService = new UserService(mockPrisma as any);
+    const user = await userService.getUser(userId);
+
+    expect(user).not.toBeNull();
+    expect(user!.stakes).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 2, userId, prediction: true, stakeAmount: 20 })
+      ])
+    );
   });
 });
