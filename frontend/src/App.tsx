@@ -16,10 +16,9 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <BrowserRouter>        <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
           <Navbar />
-          <main className="flex-grow">
+          <main className="flex-grow pt-20"> {/* Added pt-20 to account for fixed navbar */}
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/news" element={<NewsPage />} />
