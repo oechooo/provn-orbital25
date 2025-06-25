@@ -97,10 +97,7 @@ export class UserService {
     }> {
         const stakes = await this.prisma.stake.findMany({
             where: { 
-                userId: id,
-                market: {
-                    resolved: true
-                }
+                userId: id
             },
             include: {
                 market: true

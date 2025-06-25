@@ -82,7 +82,7 @@ export const resolveMarket = async (req: AuthRequest, res: Response): Promise<vo
       return;
     }
 
-    const market = await marketService.resolveMarket(parseInt(id), outcome);
+    const market = await marketService.resolveMarket(parseInt(id));
     
     res.json({
       message: 'Market resolved successfully',

@@ -120,10 +120,7 @@ export const getUserStats = async (req: AuthRequest, res: Response): Promise<voi
     // Calculate user statistics
     const stakes = await prisma.stake.findMany({
       where: { 
-        userId: parseInt(userId),
-        market: {
-          resolved: true
-        }
+        userId: parseInt(userId)
       },
       include: {
         market: true
