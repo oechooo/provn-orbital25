@@ -2,29 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { articleAPI } from '../services/api';
 import { useAuth } from '../contexts/SimpleAuthContext';
 import ArticleCard from '../components/ArticleCard';
-
-interface Article {
-  id: number;
-  title: string;
-  summary: string | null;
-  author: string | null;
-  url: string;
-  imageUrl: string | null;
-  category: string | null;
-  publishedAt: string;
-  market?: {
-    id: number;
-    totalStake: number;
-    yesStake: number;
-    noStake: number;
-    isResolved: boolean;
-    outcome: boolean | null;
-  };
-}
+import type { ArticleWithMarket } from '../../../shared/types';
 
 const NewsPage: React.FC = () => {
   const { user } = useAuth();
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<ArticleWithMarket[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,11 +26,13 @@ const NewsPage: React.FC = () => {
     try {
       setLoading(true);
       const response = await articleAPI.getArticles(filters);
+      console.log('API response:', response);
       setArticles(response.articles);
       setError(null);
     } catch (err) {
       setError('Failed to fetch articles');
       console.error('Fetch articles error:', err);
+      alert(JSON.stringify(err));
     } finally {
       setLoading(false);
     }
@@ -89,9 +73,9 @@ const NewsPage: React.FC = () => {
     });
   };
 
-  const calculateMarketConfidence = (market: Article['market']) => {
-    if (!market || market.totalStake === 0) return 50;
-    return Math.round((market.yesStake / market.totalStake) * 100);
+  const calculateMarketConfidence = (market: ArticleWithMarket['market']) => {
+    // TODO: Implement logic to calculate market confidence based on market data
+    return market ? 2 : 0;
   };
 
   if (loading) {
@@ -116,29 +100,7 @@ const NewsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Header */}
       <div className="relative z-10">
-        <div className="glass-card mx-4 mt-4 sm:mx-6 lg:mx-8">
-          <div className="max-w-7xl mx-auto px-6 py-8">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 animate-gradient-text">
-                  News & Markets
-                </h1>
-                <p className="mt-2 text-slate-300 text-lg">Latest news with prediction markets</p>
-              </div>
-              {user && (
-                <button
-                  onClick={handleRefresh}
-                  className="mt-6 sm:mt-0 px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold rounded-xl hover:from-cyan-400 hover:to-purple-400 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-lg hover:shadow-cyan-500/25"
-                >
-                  Refresh Articles
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* Filters */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="glass-card p-6 mb-8">
@@ -200,24 +162,18 @@ const NewsPage: React.FC = () => {
             </div>
           )}
 
-          {/* Articles Grid */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {articles.map((article) => {
-              const confidence = calculateMarketConfidence(article.market);
-              
-              return (
+          {/* Articles Feed - Reddit-like UI */}
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col gap-4 w-full">
+              {articles.map((article) => (
                 <ArticleCard
                   key={article.id}
-                  id={article.id}
-                  title={article.title}
-                  source={article.author || 'Unknown Source'}
-                  excerpt={article.summary || 'No summary available'}
-                  confidence={confidence}
-                  date={formatDate(article.publishedAt)}
-                  imageUrl={article.imageUrl || undefined}
+                  article={article}
+                  confidence={calculateMarketConfidence(article.market)}
+                  formatDate={formatDate}
                 />
-              );
-            })}
+              ))}
+            </div>
           </div>
 
           {articles.length === 0 && !loading && (

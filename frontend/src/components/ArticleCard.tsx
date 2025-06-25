@@ -1,59 +1,84 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
+import type { ArticleWithMarket } from '../../../shared/types';
 
-type ArticleCardProps = {
-  id: number;
-  title: string;
-  source: string;
-  excerpt: string;
+interface ArticleCardProps {
+  article: ArticleWithMarket;
   confidence: number;
-  date: string;
-  imageUrl?: string;
-};
+  formatDate: (dateString: string) => string;
+  defaultImage?: string;
+}
 
-const ArticleCard = ({ id, title, source, excerpt, confidence, date, imageUrl }: ArticleCardProps) => {
-  // Function to determine confidence level and appropriate styling
-  const getConfidenceDisplay = () => {
-    if (confidence >= 80) {
-      return <span className="px-3 py-1 bg-gradient-to-r from-emerald-500/20 to-green-500/20 text-emerald-300 text-xs font-semibold rounded-full border border-emerald-500/30 backdrop-blur-sm">High Confidence</span>;
-    } else if (confidence >= 50) {
-      return <span className="px-3 py-1 bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 text-xs font-semibold rounded-full border border-amber-500/30 backdrop-blur-sm">Medium Confidence</span>;
-    } else {
-      return <span className="px-3 py-1 bg-gradient-to-r from-red-500/20 to-rose-500/20 text-red-300 text-xs font-semibold rounded-full border border-red-500/30 backdrop-blur-sm">Low Confidence</span>;
-    }
-  };
+const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultImage = '/default-news.png' }) => {
+  const imageUrl = article.urlToImage || defaultImage;
+
+  // Get dynamic probability from article.market.probTrue
+  const prob =
+    article.market && typeof article.market.probTrue === 'number' && !isNaN(article.market.probTrue)
+      ? Math.round(article.market.probTrue * 100)
+      : 44;
 
   return (
-    <div className="glass-card group h-full flex flex-col hover:scale-[1.02] transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/10">      {imageUrl && (
-        <div className="overflow-hidden h-40 rounded-t-2xl relative">
-          <img 
-            src={imageUrl} 
-            alt={title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+    <div
+      className="w-full relative flex flex-col bg-slate-900/80 border border-slate-700 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-200 overflow-hidden group"
+      style={{ maxWidth: '100%' }}
+    >
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col md:flex-row gap-4 p-4">
+        {/* Thumbnail */}
+        <div className="flex-shrink-0 w-28 h-28 rounded-xl overflow-hidden bg-slate-800 border border-slate-700">
+          <img
+            src={imageUrl}
+            alt={article.title}
+            className="object-cover w-full h-full"
+            onError={e => {
+              const target = e.target as HTMLImageElement;
+              if (target.src !== window.location.origin + defaultImage) {
+                target.src = defaultImage;
+              }
+            }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </div>
-      )}
-      
-      <div className="p-6 flex flex-col flex-grow">
-        <div className="flex justify-between items-start mb-3">
-          <span className="text-purple-300 text-sm font-semibold bg-purple-500/10 px-2 py-1 rounded-md border border-purple-500/20">{source}</span>
-          <span className="text-slate-400 text-xs">{date}</span>
+        {/* Article Info */}
+        <div className="flex-1 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs text-cyan-400 font-semibold uppercase tracking-wide">
+                {article.category || 'News'}
+              </span>
+              <span className="text-xs text-slate-500">•</span>
+              <span className="text-xs text-slate-400">{formatDate(article.publishedAt)}</span>
+            </div>
+            <Link
+              to={`/article/${article.id}`}
+              className="block text-lg md:text-xl font-bold text-slate-100 hover:text-pink-400 transition-colors leading-snug mb-1"
+            >
+              {article.title}
+            </Link>
+            <p className="text-slate-300 text-sm md:text-base mb-2 line-clamp-3">
+              {article.description || 'No summary available'}
+            </p>
+          </div>
+          <div className="flex items-center gap-3 mt-2">
+            <span className="text-xs text-slate-400">by {article.author || 'Unknown Source'}</span>
+          </div>
         </div>
-        
-        <h3 className="text-xl font-bold text-white mb-3 flex-grow line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:to-purple-400 transition-all duration-300">{title}</h3>
-        
-        <p className="text-slate-300 text-sm mb-4 line-clamp-3 leading-relaxed">
-          {excerpt}
-        </p>
-        
-        <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/10">
-          {getConfidenceDisplay()}
-          <Link 
-            to={`/article/${id}`} 
-            className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white text-sm font-semibold rounded-lg hover:from-cyan-400 hover:to-purple-400 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-lg hover:shadow-cyan-500/25"
-          >
-            View Details
-          </Link>
+      </div>
+      {/* Split Bar for True/False Probability - full width horizontal at bottom, always below main content */}
+      <div className="w-full flex flex-col items-start px-6 pb-4">
+        <span className="text-xs text-slate-400 mb-1">User Confidence</span>
+        <div className="w-full max-w-2xl flex items-center">
+          <div className="flex-1 h-8 flex rounded overflow-hidden border border-slate-700 relative">
+            <div
+              className={`h-full ${prob >= 80 ? 'bg-emerald-400/80' : prob >= 50 ? 'bg-amber-400/80' : 'bg-red-400/80'}`}
+              style={{ width: `${prob}%` }}
+            >
+              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-lg font-extrabold text-slate-900 drop-shadow-sm">
+                {prob}%
+              </span>
+            </div>
+            <div className="h-full bg-slate-700/60 flex-1" />
+          </div>
         </div>
       </div>
     </div>
