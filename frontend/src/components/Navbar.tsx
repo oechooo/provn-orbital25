@@ -45,8 +45,7 @@ const Navbar = () => {
                 }`}
               >
                 News
-              </Link>
-              <Link 
+              </Link>              <Link 
                 to="/dashboard" 
                 className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
                   isActive('/dashboard') 
@@ -54,7 +53,7 @@ const Navbar = () => {
                     : 'text-white/70 hover:text-white hover:bg-white/10'
                 }`}
               >
-                Markets
+                Dashboard
               </Link>
             </div>
           </div>
@@ -143,8 +142,7 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               News
-            </Link>
-            <Link 
+            </Link>            <Link 
               to="/dashboard" 
               className={`block mx-4 px-4 py-3 rounded-xl text-base font-bold transition-all duration-300 ${
                 isActive('/dashboard') 
@@ -153,7 +151,7 @@ const Navbar = () => {
               }`}
               onClick={() => setIsMenuOpen(false)}
             >
-              Markets
+              Dashboard
             </Link>
           </div>
           <div className="pt-4 pb-3 border-t border-white/20">

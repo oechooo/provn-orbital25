@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real News Articles - API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e293b, #3730a3);
+            color: white;
+            min-height: 100vh;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .article {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #00ff88;
+        }
+        .article-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #00ff88;
+        }
+        .article-meta {
+            font-size: 0.9em;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+        }
+        .article-description {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .article-url {
+            word-break: break-all;
+            color: #60a5fa;
+        }
+        .loading {
+            text-align: center;
+            color: #fbbf24;
+        }
+        .error {
+            color: #ef4444;
+            text-align: center;
+        }
+        .stats {
+            background: rgba(0, 255, 136, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌟 Real News Articles from API</h1>
+        <p>Live news articles fetched from News API</p>
+    </div>
+    
+    <div id="stats" class="stats">
+        <p>📊 Loading statistics...</p>
+    </div>
+    
+    <div id="loading" class="loading">
+        <p>🔄 Loading real news articles...</p>
+    </div>
+    
+    <div id="error" class="error" style="display: none;">
+        <p>❌ Failed to load articles</p>
+    </div>
+    
+    <div id="articles"></div>
+
+    <script>
+        async function fetchArticles() {
+            try {
+                const response = await fetch('http://localhost:3000/api/articles');
+                const data = await response.json();
+                
+                // Update stats
+                document.getElementById('stats').innerHTML = `
+                    <h3>📈 Live Statistics</h3>
+                    <p>📰 Total Articles: ${data.total || data.articles.length}</p>
+                    <p>🔄 Last Updated: ${new Date().toLocaleString()}</p>
+                `;
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+                // Show articles
+                const articlesContainer = document.getElementById('articles');
+                articlesContainer.innerHTML = data.articles.map(article => `
+                    <div class="article">
+                        <div class="article-title">${article.title}</div>
+                        <div class="article-meta">
+                            📰 <strong>${article.sourceName}</strong> | 
+                            📂 ${article.category} | 
+                            📅 ${new Date(article.publishedAt).toLocaleDateString()}
+                            ${article.author ? ` | ✍️ ${article.author}` : ''}
+                        </div>
+                        <div class="article-description">${article.description || 'No description available'}</div>
+                        <div class="article-url">🔗 <a href="${article.url}" target="_blank" style="color: #60a5fa;">${article.url}</a></div>
+                        ${article.market ? `
+                            <div style="margin-top: 10px; font-size: 0.9em; color: #fbbf24;">
+                                📊 Market: ${(article.market.probTrue * 100).toFixed(1)}% confidence
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').innerHTML = `
+                    <p>❌ Error: ${error.message}</p>
+                    <p>Make sure your backend is running at http://localhost:3000</p>
+                `;
+            }
+        }
+        
+        // Load articles when page loads
+        fetchArticles();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(fetchArticles, 30000);
+    </script>
+</body>
+</html>
