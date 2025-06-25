@@ -24,10 +24,6 @@ console.log('Loading market routes...');
 import marketRoutes from './routes/marketRoutes';
 console.log('Market routes loaded successfully');
 
-console.log('Loading article routes...');
-import articleRoutes from './routes/articleRoutes';
-console.log('Article routes loaded successfully');
-
 // Create Express app
 export const app: Express = express();
 
@@ -49,8 +45,6 @@ app.use('/api/stakes', stakeRoutes);
 console.log('Stake routes registered');
 app.use('/api/markets', marketRoutes);
 console.log('Market routes registered');
-app.use('/api/articles', articleRoutes);
-console.log('Article routes registered');
 
 // Simple health check route
 app.get('/health', (req: Request, res: Response) => {

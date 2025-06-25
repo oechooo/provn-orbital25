@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface User {
   id: number;
@@ -38,95 +38,55 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Check for stored token on app load
-  useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      setToken(storedToken);
-      // Fetch user data with stored token
-      fetchUserProfile(storedToken);
-    }
-  }, []);
-
-  const fetchUserProfile = async (authToken: string) => {
-    try {
-      const response = await fetch('http://localhost:3000/api/auth/profile', {
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-        },
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData.user);
-      } else {
-        // Token invalid, clear it
-        localStorage.removeItem('token');
-        setToken(null);
-      }
-    } catch (error) {
-      console.error('Failed to fetch user profile:', error);
-      localStorage.removeItem('token');
-      setToken(null);
-    }
-  };const login = async (email: string, _password: string): Promise<{ success: boolean; message: string }> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password: _password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setUser(data.user);
-        setToken(data.token);
-        localStorage.setItem('token', data.token);
-        return { success: true, message: 'Login successful' };
-      } else {
-        return { success: false, message: data.message || 'Login failed' };
-      }
+      // Simulate login - replace with actual API call
+      const mockUser: User = {
+        id: 1,
+        username: 'demo',
+        email: email,
+        provePoints: 1000,
+        createdAt: new Date().toISOString()
+      };
+      
+      setUser(mockUser);
+      setToken('mock-jwt-token');
+      
+      return { success: true, message: 'Login successful' };
     } catch (error) {
-      return { success: false, message: 'Network error. Please try again.' };
+      return { success: false, message: 'Login failed' };
     } finally {
       setIsLoading(false);
     }
   };
-  const register = async (username: string, email: string, _password: string): Promise<{ success: boolean; message: string }> => {
+
+  const register = async (username: string, email: string, password: string): Promise<{ success: boolean; message: string }> => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password: _password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setUser(data.user);
-        setToken(data.token);
-        localStorage.setItem('token', data.token);
-        return { success: true, message: 'Registration successful' };
-      } else {
-        return { success: false, message: data.message || 'Registration failed' };
-      }
+      // Simulate registration - replace with actual API call
+      const mockUser: User = {
+        id: 1,
+        username: username,
+        email: email,
+        provePoints: 100,
+        createdAt: new Date().toISOString()
+      };
+      
+      setUser(mockUser);
+      setToken('mock-jwt-token');
+      
+      return { success: true, message: 'Registration successful' };
     } catch (error) {
-      return { success: false, message: 'Network error. Please try again.' };
+      return { success: false, message: 'Registration failed' };
     } finally {
       setIsLoading(false);
     }
   };
+
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('token');
   };
 
   const updateUserPoints = (newPoints: number) => {

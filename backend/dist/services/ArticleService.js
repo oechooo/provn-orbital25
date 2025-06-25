@@ -14,18 +14,22 @@ class ArticleService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    // Create a new article
-    createArticle(data) {
+    getAllArticles() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.prisma.article.create({
-                data,
-                include: {
-                    market: true
+            return this.prisma.article.findMany({
+                orderBy: {
+                    publishedAt: 'desc',
                 }
             });
         });
     }
-    // Delete an article by ID
+    createArticle(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.prisma.article.create({
+                data
+            });
+        });
+    }
     deleteArticle(id) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.prisma.article.delete({
@@ -33,18 +37,13 @@ class ArticleService {
             });
         });
     }
-    // Get an article by ID
     getArticleById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.prisma.article.findUnique({
-                where: { id },
-                include: {
-                    market: true
-                }
+                where: { id }
             });
         });
     }
-    // Filter articles by category, date range, and/or queries
     getFilteredArticles(options) {
         return __awaiter(this, void 0, void 0, function* () {
             const { category, range, query, limit = 10 } = options;
@@ -55,14 +54,10 @@ class ArticleService {
                 take: limit,
                 orderBy: {
                     publishedAt: 'desc',
-                },
-                include: {
-                    market: true,
-                },
+                }
             });
         });
     }
-    // Build date filter for articles
     buildDateFilter(range) {
         if (!range)
             return {};
@@ -92,8 +87,6 @@ class ArticleService {
             publishedAt: Object.assign(Object.assign({}, (gte && { gte })), (lt && { lt }))
         };
     }
-    // Filter articles by query
-    // TODO: Implement a more advanced search algorithm like semantic search
     buildQueryFilter(query) {
         if (!query)
             return {};
@@ -104,17 +97,6 @@ class ArticleService {
                 { content: { contains: query, mode: 'insensitive' } },
             ]
         };
-    }
-    // Get articles that do not have any associated markets (should be empty)
-    // TODO: Write test for this
-    getArticlesWithoutMarkets() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.prisma.article.findMany({
-                where: {
-                    market: null
-                }
-            });
-        });
     }
 }
 exports.ArticleService = ArticleService;

@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 interface UserStats {
   totalBets: number;
   winRate: number;
+  totalEarnings: number;
   reputation: number;
 }
 
@@ -23,9 +24,11 @@ interface Market {
 }
 
 export default function DashboardPage() {
-  const { user } = useAuth();  const [stats, setStats] = useState<UserStats>({
+  const { user } = useAuth();
+  const [stats, setStats] = useState<UserStats>({
     totalBets: 0,
     winRate: 0,
+    totalEarnings: 0,
     reputation: 0,
   });
   const [markets, setMarkets] = useState<Market[]>([]);
@@ -96,8 +99,10 @@ export default function DashboardPage() {
           <p className="text-slate-300">
             Here's your trading dashboard. Monitor your performance and place new bets.
           </p>
-        </div>        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="glass-card p-6 hover:scale-105 transform transition-all duration-200">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20">
@@ -106,7 +111,7 @@ export default function DashboardPage() {
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-slate-400">Total Staked</p>
+                <p className="text-sm font-medium text-slate-400">Total Bets</p>
                 <p className="text-2xl font-bold text-white">{stats.totalBets}</p>
               </div>
             </div>
@@ -120,10 +125,25 @@ export default function DashboardPage() {
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-slate-400">Accuracy</p>
+                <p className="text-sm font-medium text-slate-400">Win Rate</p>
                 <p className="text-2xl font-bold text-white">{stats.winRate.toFixed(1)}%</p>
               </div>
-            </div>          </div>
+            </div>
+          </div>
+
+          <div className="glass-card p-6 hover:scale-105 transform transition-all duration-200">
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20">
+                <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-slate-400">Total Earnings</p>
+                <p className="text-2xl font-bold text-white">${stats.totalEarnings.toFixed(2)}</p>
+              </div>
+            </div>
+          </div>
 
           <div className="glass-card p-6 hover:scale-105 transform transition-all duration-200">
             <div className="flex items-center">

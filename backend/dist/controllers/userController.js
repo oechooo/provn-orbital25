@@ -25,7 +25,6 @@ const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             } // Exclude password from response
         });
         if (users.length === 0) {
-            // Return an empty array, not an error
             res.json([]);
             return;
         }
@@ -69,7 +68,6 @@ exports.getUserById = getUserById;
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, email, password } = req.body;
-        // Basic validation
         if (!username || !email || !password) {
             res.status(400).json({ message: "Username, email, and password are required" });
             return;
@@ -78,7 +76,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             data: {
                 username,
                 email,
-                password // In a real app, you should hash this password
+                password
             },
             select: {
                 id: true,
@@ -92,7 +90,6 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
     catch (error) {
         console.error('Error creating user:', error);
-        // Handle unique constraint violations
         if (error instanceof library_1.PrismaClientKnownRequestError ||
             (error.name === 'PrismaClientKnownRequestError' && error.code === 'P2002')) {
             res.status(409).json({ message: "Username or email already exists" });
@@ -109,7 +106,6 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.status(400).json({ message: "Invalid ID format" });
             return;
         }
-        // Check if user exists before updating
         const existingUser = yield client_1.prisma.user.findUnique({
             where: { id }
         });
@@ -132,13 +128,11 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
     catch (error) {
         console.error('Error updating user:', error);
-        // Handle unique constraint violations
         if (error instanceof library_1.PrismaClientKnownRequestError ||
             (error.name === 'PrismaClientKnownRequestError' && error.code === 'P2002')) {
             res.status(409).json({ message: "Username or email already exists" });
             return;
         }
-        // Handle not found errors (this should be caught by the check above, but just in case)
         if (error.message && error.message.includes('Record to update not found')) {
             res.status(404).json({ message: "User not found" });
             return;
@@ -154,7 +148,6 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.status(400).json({ message: "Invalid ID format" });
             return;
         }
-        // Check if user exists before deleting
         const existingUser = yield client_1.prisma.user.findUnique({
             where: { id }
         });
