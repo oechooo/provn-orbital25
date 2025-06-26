@@ -36,6 +36,19 @@ Provn.io is a prediction markets platform for news verification that harnesses t
 
 ### Usage
 
+#### Quick Start (Recommended)
+Run both frontend and backend with a single command from the root directory:
+```bash
+npm install
+npm run dev
+```
+
+This will start:
+- Backend server at `http://localhost:3000`
+- Frontend development server at `http://localhost:5173`
+
+#### Individual Setup
+
 1. **Backend Setup**
    ```bash
    cd backend
