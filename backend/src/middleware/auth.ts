@@ -16,19 +16,50 @@ export interface AuthRequest extends Request {
 
 export const auth = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    const authHeader = req.header('Authorization');
     
-    if (!token) {
+    if (!authHeader) {
       res.status(401).json({ message: 'Authentication required' });
       return;
     }
+
+    if (!authHeader.startsWith('Bearer ')) {
+      res.status(401).json({ message: 'Invalid authentication format' });
+      return;
+    }
+
+    const token = authHeader.replace('Bearer ', '');
     
-    const secret = process.env.JWT_SECRET || 'your-secret-key';
+    if (!token || token.trim().length === 0) {
+      res.status(401).json({ message: 'Authentication token required' });
+      return;
+    }
+    
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.error('JWT_SECRET not configured');
+      res.status(500).json({ message: 'Authentication service unavailable' });
+      return;
+    }
+
     const decoded = jwt.verify(token, secret) as JwtPayload;
-    req.user = decoded;
     
+    // Validate decoded token structure
+    if (!decoded.userId || !decoded.username) {
+      res.status(401).json({ message: 'Invalid authentication token' });
+      return;
+    }
+
+    req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Authentication invalid' });
+    if (error instanceof jwt.TokenExpiredError) {
+      res.status(401).json({ message: 'Authentication token expired' });
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      res.status(401).json({ message: 'Invalid authentication token' });
+    } else {
+      console.error('Authentication error:', error);
+      res.status(401).json({ message: 'Authentication failed' });
+    }
   }
 };

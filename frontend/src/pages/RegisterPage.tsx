@@ -15,6 +15,17 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validation
+    if (!username.trim() || !email.trim() || !password || !confirmPassword) {
+      toast.error('All fields are required');
+      return;
+    }
+
+    if (username.trim().length < 3) {
+      toast.error('Username must be at least 3 characters long');
+      return;
+    }
+
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
       return;
@@ -25,15 +36,27 @@ export default function RegisterPage() {
       return;
     }
 
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      await register(email, password, username);
-      toast.success('Registration successful! Welcome to Provn.io!');
-      navigate('/dashboard');
+      const result = await register(username.trim(), email.trim(), password);
+      
+      if (result.success) {
+        toast.success('Registration successful! Welcome to Provn.io!');
+        navigate('/dashboard');
+      } else {
+        toast.error(result.message || 'Registration failed. Please try again.');
+      }
     } catch (error) {
-      toast.error('Registration failed. Please try again.');
       console.error('Registration error:', error);
+      toast.error('Network error. Please try again.');
     } finally {
       setIsLoading(false);
     }

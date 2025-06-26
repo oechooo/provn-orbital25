@@ -8,30 +8,57 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, email, password } = req.body;
     
-    // Basic validation
+    // Enhanced validation
     if (!username || !email || !password) {
       res.status(400).json({ message: "Username, email, and password are required" });
+      return;
+    }
+
+    if (typeof username !== 'string' || typeof email !== 'string' || typeof password !== 'string') {
+      res.status(400).json({ message: "Invalid input format" });
+      return;
+    }
+
+    // Trim and validate inputs
+    const trimmedUsername = username.trim();
+    const trimmedEmail = email.trim();
+
+    if (trimmedUsername.length < 3) {
+      res.status(400).json({ message: "Username must be at least 3 characters long" });
+      return;
+    }
+
+    if (trimmedUsername.length > 30) {
+      res.status(400).json({ message: "Username must be less than 30 characters" });
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      res.status(400).json({ message: "Please enter a valid email address" });
       return;
     }
 
     if (password.length < 6) {
       res.status(400).json({ message: "Password must be at least 6 characters long" });
       return;
-    }    // Hash password (temporarily using simple hash for testing)
-    const saltRounds = 10;
-    let hashedPassword: string;
-    try {
-      hashedPassword = await bcrypt.hash(password, saltRounds);
-    } catch (hashError) {
-      console.error('Bcrypt error:', hashError);
-      hashedPassword = password; // Fallback for testing - DO NOT USE IN PRODUCTION
     }
+
+    if (password.length > 128) {
+      res.status(400).json({ message: "Password must be less than 128 characters" });
+      return;
+    }
+
+    // Hash password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     
     // Create user
     const user = await prisma.user.create({
       data: {
-        username,
-        email,
+        username: trimmedUsername,
+        email: trimmedEmail,
         password: hashedPassword,
         provePoints: 100 // Starting points for new users
       },
@@ -45,7 +72,13 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     });
 
     // Generate JWT token
-    const secret = process.env.JWT_SECRET || 'your-secret-key';
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.error('JWT_SECRET not configured');
+      res.status(500).json({ message: "Authentication service unavailable" });
+      return;
+    }
+
     const token = jwt.sign(
       { userId: user.id, username: user.username },
       secret,
@@ -86,9 +119,19 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, password } = req.body;
     
-    // Basic validation
+    // Enhanced validation
     if (!username || !password) {
       res.status(400).json({ message: "Username and password are required" });
+      return;
+    }
+
+    if (typeof username !== 'string' || typeof password !== 'string') {
+      res.status(400).json({ message: "Invalid input format" });
+      return;
+    }
+
+    if (username.trim().length === 0 || password.trim().length === 0) {
+      res.status(400).json({ message: "Username and password cannot be empty" });
       return;
     }
 
@@ -96,8 +139,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const user = await prisma.user.findFirst({
       where: {
         OR: [
-          { username: username },
-          { email: username } // Allow login with email
+          { username: username.trim() },
+          { email: username.trim() } // Allow login with email
         ]
       }
     });
@@ -108,7 +151,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    let isValidPassword = false;
+    try {
+      isValidPassword = await bcrypt.compare(password, user.password);
+    } catch (bcryptError) {
+      console.error('Bcrypt comparison error:', bcryptError);
+      res.status(500).json({ message: "Authentication error" });
+      return;
+    }
     
     if (!isValidPassword) {
       res.status(401).json({ message: "Invalid credentials" });
@@ -116,7 +166,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     // Generate JWT token
-    const secret = process.env.JWT_SECRET || 'your-secret-key';
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.error('JWT_SECRET not configured');
+      res.status(500).json({ message: "Authentication service unavailable" });
+      return;
+    }
+
     const token = jwt.sign(
       { userId: user.id, username: user.username },
       secret,
@@ -134,7 +190,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: "Error during login" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

@@ -4,8 +4,9 @@ Provn.io is a prediction markets platform for news verification that harnesses t
 
 ## Features
 
-- **Login Feature**: Working signup feature that stores user data for logins
-- **User Authentication**: Secure JWT-based authentication with password reset
+- **Secure Authentication**: JWT-based authentication with proper password hashing, input validation, and protection against common attacks
+- **User Registration**: Robust signup with email validation, password strength requirements, and duplicate prevention
+- **Login System**: Secure login supporting both username and email with comprehensive error handling
 
 ## Planned Features
 
@@ -55,11 +56,12 @@ This will start:
    npm install
    ```
    
-   Create a `.env` file in the backend directory:
+   Create a `.env` file in the backend directory with a secure JWT secret:
    ```env
    DATABASE_URL="file:./dev.db"
-   JWT_SECRET="your-jwt-secret-key"
+   JWT_SECRET="your-secure-random-jwt-secret-key-here"
    PORT=3000
+   NEWS_API_KEY="your-news-api-key-from-newsapi.org"
    ```
    
    ```bash

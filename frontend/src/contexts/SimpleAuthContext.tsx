@@ -69,7 +69,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       localStorage.removeItem('token');
       setToken(null);
     }
-  };const login = async (email: string, _password: string): Promise<{ success: boolean; message: string }> => {
+  };  const login = async (username: string, password: string): Promise<{ success: boolean; message: string }> => {
     setIsLoading(true);
     try {
       const response = await fetch('http://localhost:3000/api/auth/login', {
@@ -77,7 +77,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password: _password }),
+        body: JSON.stringify({ username, password }),
       });
 
       const data = await response.json();
@@ -91,12 +91,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return { success: false, message: data.message || 'Login failed' };
       }
     } catch (error) {
+      console.error('Login error:', error);
       return { success: false, message: 'Network error. Please try again.' };
     } finally {
       setIsLoading(false);
     }
   };
-  const register = async (username: string, email: string, _password: string): Promise<{ success: boolean; message: string }> => {
+  const register = async (username: string, email: string, password: string): Promise<{ success: boolean; message: string }> => {
     setIsLoading(true);
     try {
       const response = await fetch('http://localhost:3000/api/auth/register', {
@@ -104,7 +105,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email, password: _password }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       const data = await response.json();
@@ -118,6 +119,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return { success: false, message: data.message || 'Registration failed' };
       }
     } catch (error) {
+      console.error('Registration error:', error);
       return { success: false, message: 'Network error. Please try again.' };
     } finally {
       setIsLoading(false);

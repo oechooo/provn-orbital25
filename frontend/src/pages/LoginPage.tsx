@@ -12,15 +12,26 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email.trim() || !password) {
+      toast.error('Please enter both email/username and password');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      await login(email, password);
-      toast.success('Login successful!');
-      navigate('/dashboard');
+      const result = await login(email.trim(), password);
+      
+      if (result.success) {
+        toast.success('Login successful!');
+        navigate('/dashboard');
+      } else {
+        toast.error(result.message || 'Login failed. Please check your credentials.');
+      }
     } catch (error) {
-      toast.error('Login failed. Please check your credentials.');
       console.error('Login error:', error);
+      toast.error('Network error. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -46,15 +57,15 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-200 mb-2">
-              Email Address
+              Username or Email
             </label>
             <input
               id="email"
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200"
-              placeholder="Enter your email"
+              placeholder="Enter your username or email"
               required
             />
           </div>
