@@ -135,4 +135,24 @@ export class ArticleService {
             }
         });
     }
+
+    // Get unique categories from articles
+    public async getCategories(): Promise<string[]> {
+        const result = await this.prisma.article.findMany({
+            select: {
+                category: true,
+            },
+            distinct: ['category'],
+            where: {
+                category: {
+                    not: null,
+                },
+            },
+        });
+        
+        return result
+            .map(item => item.category)
+            .filter((category): category is string => category !== null)
+            .sort();
+    }
 }

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { articleAPI } from '../services/api';
-import { useAuth } from '../contexts/SimpleAuthContext';
 import ArticleCard from '../components/ArticleCard';
 import type { ArticleWithMarket } from '../../../shared/types';
 
 const NewsPage: React.FC = () => {
-  const { user } = useAuth();
   const [articles, setArticles] = useState<ArticleWithMarket[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,6 +14,14 @@ const NewsPage: React.FC = () => {
     sortBy: 'publishedAt',
     sortOrder: 'desc' as 'asc' | 'desc',
   });
+
+  // Helper function to capitalize first letter of each word
+  const capitalizeCategory = (category: string): string => {
+    return category
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
 
   useEffect(() => {
     fetchArticles();
@@ -47,22 +53,6 @@ const NewsPage: React.FC = () => {
     }
   };
 
-  const handleRefresh = async () => {
-    if (!user) {
-      alert('Please log in to refresh articles');
-      return;
-    }
-    
-    try {
-      await articleAPI.refreshArticles();
-      alert('Article refresh initiated. New articles will appear shortly.');
-      setTimeout(() => fetchArticles(), 3000);
-    } catch (err) {
-      alert('Failed to refresh articles');
-      console.error('Refresh error:', err);
-    }
-  };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -71,11 +61,6 @@ const NewsPage: React.FC = () => {
       hour: '2-digit',
       minute: '2-digit',
     });
-  };
-
-  const calculateMarketConfidence = (market: ArticleWithMarket['market']) => {
-    // TODO: Implement logic to calculate market confidence based on market data
-    return market ? 2 : 0;
   };
 
   if (loading) {
@@ -129,7 +114,7 @@ const NewsPage: React.FC = () => {
                   <option value="" className="bg-slate-800">All Categories</option>
                   {categories.map((category) => (
                     <option key={category} value={category} className="bg-slate-800">
-                      {category}
+                      {capitalizeCategory(category)}
                     </option>
                   ))}
                 </select>
@@ -169,7 +154,6 @@ const NewsPage: React.FC = () => {
                 <ArticleCard
                   key={article.id}
                   article={article}
-                  confidence={calculateMarketConfidence(article.market)}
                   formatDate={formatDate}
                 />
               ))}

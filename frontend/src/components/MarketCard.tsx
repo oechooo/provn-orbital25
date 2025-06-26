@@ -39,6 +39,14 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, onStakeSuccess }) => {
   const [selectedPrediction, setSelectedPrediction] = useState<boolean | null>(null);
   const [showStakeModal, setShowStakeModal] = useState(false);
 
+  // Helper function to capitalize first letter of each word
+  const capitalizeCategory = (category: string): string => {
+    return category
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   const handleStake = async (prediction: boolean) => {
     if (!user) {
       toast.error('Please log in to stake on markets');
@@ -121,7 +129,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, onStakeSuccess }) => {
 
           {market.article.category && (
             <span className="inline-block px-2 py-1 bg-purple-600/30 text-purple-300 text-xs rounded-full">
-              {market.article.category}
+              {capitalizeCategory(market.article.category)}
             </span>
           )}
         </div>

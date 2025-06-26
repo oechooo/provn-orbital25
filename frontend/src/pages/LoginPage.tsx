@@ -25,7 +25,7 @@ export default function LoginPage() {
       
       if (result.success) {
         toast.success('Login successful!');
-        navigate('/dashboard');
+        navigate('/news');
       } else {
         toast.error(result.message || 'Login failed. Please check your credentials.');
       }

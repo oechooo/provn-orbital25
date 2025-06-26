@@ -118,6 +118,11 @@ export const marketAPI = {
       body: JSON.stringify({ outcome }),
     });
   },
+
+  // Get staking parameters (upside calculation)
+  getStakingParameters: (marketId: number, prediction: boolean, stakeAmount: number) => {
+    return apiRequest(`/markets/${marketId}/staking-parameters?prediction=${prediction}&stakeAmount=${stakeAmount}`);
+  },
 };
 
 // Stake API functions

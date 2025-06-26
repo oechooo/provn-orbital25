@@ -100,3 +100,40 @@ export const resolveMarket = async (req: AuthRequest, res: Response): Promise<vo
     }
   }
 };
+
+export const getStakingParameters = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { prediction, stakeAmount } = req.query;
+
+    if (!prediction || !stakeAmount) {
+      res.status(400).json({ message: 'Prediction and stakeAmount are required' });
+      return;
+    }
+
+    const marketId = parseInt(id);
+    const predictedOutcome = prediction === 'true';
+    const ppCount = parseInt(stakeAmount as string);
+
+    if (isNaN(marketId) || isNaN(ppCount) || ppCount <= 0) {
+      res.status(400).json({ message: 'Invalid parameters' });
+      return;
+    }
+
+    const parameters = await marketService.getStakingParameters(marketId, predictedOutcome, ppCount);
+    
+    res.json({
+      upside: parameters.upside,
+      sharesBought: parameters.sharesBought,
+      potentialWinnings: ppCount * parameters.upside
+    });
+  } catch (error: any) {
+    console.error('Get staking parameters error:', error);
+    
+    if (error.message === 'Market not found') {
+      res.status(404).json({ message: 'Market not found' });
+    } else {
+      res.status(500).json({ message: 'Error calculating staking parameters' });
+    }
+  }
+};

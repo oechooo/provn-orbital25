@@ -59,16 +59,6 @@ const Navbar = () => {
               >
                 News
               </Link>
-              <Link 
-                to="/dashboard" 
-                className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
-                  isActive('/dashboard') 
-                    ? 'bg-white/20 text-white shadow-lg' 
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                Dashboard
-              </Link>
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
@@ -155,17 +145,6 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               News
-            </Link>
-            <Link 
-              to="/dashboard" 
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-all duration-300 ${
-                isActive('/dashboard') 
-                  ? 'bg-white/20 text-white' 
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Dashboard
             </Link>
             {user ? (
               <Link 

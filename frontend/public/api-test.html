@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>Testing Staking Parameters API</h1>
+    <button onclick="testAPI()">Test API</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testAPI() {
+            try {
+                const response = await fetch('http://localhost:3000/api/markets/44/staking-parameters?prediction=true&stakeAmount=50');
+                const data = await response.json();
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+                console.log('API Test Result:', data);
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+                console.error('API Test Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

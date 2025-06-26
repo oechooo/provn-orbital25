@@ -125,3 +125,13 @@ export const refreshArticles = async (req: Request, res: Response): Promise<void
     res.status(500).json({ message: 'Error refreshing articles' });
   }
 };
+
+export const getCategories = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const categories = await articleService.getCategories();
+    res.json({ categories });
+  } catch (error) {
+    console.error('Get categories error:', error);
+    res.status(500).json({ message: 'Error fetching categories' });
+  }
+};

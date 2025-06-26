@@ -1,10 +1,13 @@
 import { Router } from 'express';
-import { getArticles, getArticleById, refreshArticles } from '../controllers/articleController';
+import { getArticles, getArticleById, refreshArticles, getCategories } from '../controllers/articleController';
 
 const router = Router();
 
 // Get all articles with optional filtering
 router.get('/', getArticles);
+
+// Get article categories
+router.get('/categories', getCategories);
 
 // Get single article by ID
 router.get('/:id', getArticleById);
