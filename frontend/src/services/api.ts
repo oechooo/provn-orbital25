@@ -142,6 +142,11 @@ export const stakeAPI = {
 
 // User API functions
 export const userAPI = {
+  // Get current user profile
+  getCurrentUser: () => {
+    return apiRequest('/users/me');
+  },
+
   // Get user profile
   getProfile: () => {
     return apiRequest('/users/profile');
@@ -155,6 +160,21 @@ export const userAPI = {
     return apiRequest('/users/profile', {
       method: 'PUT',
       body: JSON.stringify(userData),
+    });
+  },
+
+  // Update user avatar
+  updateAvatar: (userId: number, avatarData: {
+    avatarSkinColor: string;
+    avatarHairColor: string;
+    avatarHair: string;
+    avatarEyes: string;
+    avatarMouth: string;
+    avatarAccessories: string;
+  }) => {
+    return apiRequest(`/users/${userId}/avatar`, {
+      method: 'PUT',
+      body: JSON.stringify(avatarData),
     });
   },
 

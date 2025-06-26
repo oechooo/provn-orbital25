@@ -79,6 +79,39 @@ This will start:
    ```
    Frontend runs on `http://localhost:5173`
 
+## Test User Account
+
+For testing and development purposes, you can use the following test user credentials:
+
+### Test User Credentials
+- **Username:** `testuser`
+- **Email:** `test@example.com`
+- **Password:** `password123`
+
+This test user account comes pre-configured with some initial ProvePoints and example stakes to demonstrate the platform's functionality. You can use this account to:
+- Test the authentication system
+- Explore the profile page and avatar customization
+- View sample prediction stakes
+- Test market functionality
+
+**Note:** This is a development-only account for testing purposes.
+
+## Avatar System
+
+Provn.io features a comprehensive avatar customization system powered by DiceBear's "big-smile" style:
+
+### Avatar Features
+- **Customizable Options**: Skin color, hair color, hair style, eyes, mouth, and accessories
+- **Real-time Preview**: See changes instantly in the avatar editor
+- **Persistent Storage**: Avatar configurations are saved to your profile
+- **Global Display**: Avatars appear in the navbar, profile page, and throughout the app
+
+### How to Customize Your Avatar
+1. Navigate to your Profile page
+2. Click on your current avatar image
+3. Use the avatar editor to customize your appearance
+4. Save your changes to update your profile
+
 ## LMSR Logic in Our Prediction Markets
 
 Our platform uses the **Logarithmic Market Scoring Rule (LMSR)** as the automated market maker for all prediction markets. LMSR is a popular mechanism for prediction markets because it provides continuous liquidity and automatically adjusts prices (probabilities) based on the stakes placed by users. This ensures that users can easily place stakes at any time, while also allowing the platform to detect shifts in sentiment—**serving as an early warning system for potential misinformation.**

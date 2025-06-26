@@ -1,4 +1,3 @@
-import { auth } from '../backend/src/middleware/auth';
 // Shared types for both frontend and backend
 
 export type ArticleWithMarket = {

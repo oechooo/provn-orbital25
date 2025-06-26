@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import { prisma } from '../prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { AuthRequest } from '../middleware/auth';
 
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -176,5 +177,89 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
   } catch (error) {
     console.error('Error deleting user:', error);
     res.status(500).json({ message: "Error deleting user" });
+  }
+};
+
+export const updateUserAvatar = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.userId;
+    
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+    
+    const { 
+      avatarSkinColor, 
+      avatarHairColor, 
+      avatarHair, 
+      avatarEyes, 
+      avatarMouth, 
+      avatarAccessories 
+    } = req.body;
+    
+    // Basic validation for avatar config
+    if (!avatarSkinColor || !avatarHairColor || !avatarHair || !avatarEyes || !avatarMouth) {
+      res.status(400).json({ message: "All avatar fields except accessories are required" });
+      return;
+    }
+    
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        avatarSkinColor,
+        avatarHairColor,
+        avatarHair,
+        avatarEyes,
+        avatarMouth,
+        avatarAccessories: avatarAccessories || 'none'
+      } as any, // Temporary type assertion until Prisma client is fully updated
+      select: { 
+        id: true, 
+        username: true, 
+        email: true, 
+        provePoints: true,
+        createdAt: true, 
+        updatedAt: true
+      }
+    });
+    
+    res.json({ message: "Avatar updated successfully", user });
+  } catch (error) {
+    console.error('Error updating avatar:', error);
+    res.status(500).json({ message: "Error updating avatar" });
+  }
+};
+
+export const getCurrentUser = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.userId;
+    
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { 
+        id: true, 
+        username: true, 
+        email: true, 
+        provePoints: true,
+        createdAt: true, 
+        updatedAt: true
+      }
+    });
+    
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching current user:', error);
+    res.status(500).json({ message: "Error fetching user" });
   }
 };

@@ -7,7 +7,7 @@ async function createTestUser() {
   try {
     // Check if test user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email: 'test@provn.io' }
+      where: { email: 'test@example.com' }
     });
 
     if (existingUser) {
@@ -18,13 +18,19 @@ async function createTestUser() {
     // Hash password
     const hashedPassword = await bcrypt.hash('password123', 10);
 
-    // Create test user
+    // Create test user with avatar configuration
     const testUser = await prisma.user.create({
       data: {
         username: 'testuser',
-        email: 'test@provn.io',
+        email: 'test@example.com',
         password: hashedPassword,
         provePoints: 1000, // Give test user 1000 starting points
+        avatarSkinColor: 'efcc9f',
+        avatarHairColor: '71472d',
+        avatarHair: 'shortHair',
+        avatarEyes: 'normal',
+        avatarMouth: 'teethSmile',
+        avatarAccessories: 'glasses'
       }
     });
 

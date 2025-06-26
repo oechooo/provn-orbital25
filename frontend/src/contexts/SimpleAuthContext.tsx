@@ -7,6 +7,12 @@ interface User {
   provePoints: number;
   createdAt: string;
   updatedAt?: string;
+  avatarSkinColor?: string;
+  avatarHairColor?: string;
+  avatarHair?: string;
+  avatarEyes?: string;
+  avatarMouth?: string;
+  avatarAccessories?: string;
 }
 
 interface AuthContextType {
@@ -17,6 +23,8 @@ interface AuthContextType {
   logout: () => void;
   isLoading: boolean;
   updateUserPoints: (newPoints: number) => void;
+  updateUser: (userData: Partial<User>) => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -137,6 +145,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const updateUser = (userData: Partial<User>) => {
+    if (user) {
+      setUser({ ...user, ...userData });
+    }
+  };
+
+  const refreshUser = async () => {
+    if (token) {
+      await fetchUserProfile(token);
+    }
+  };
+
   const value: AuthContextType = {
     user,
     token,
@@ -145,6 +165,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     logout,
     isLoading,
     updateUserPoints,
+    updateUser,
+    refreshUser,
   };
 
   return (

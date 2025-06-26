@@ -63,4 +63,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   stakes   Stake[]
+  
+  // Avatar configuration for DiceBear big-smile style
+  avatarSkinColor    String @default("fdbcb4")
+  avatarHairColor    String @default("724133")
+  avatarHair         String @default("short01")
+  avatarEyes         String @default("variant01")
+  avatarMouth        String @default("variant01")
+  avatarAccessories  String @default("none")
 }
