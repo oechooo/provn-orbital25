@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { articleAPI } from '../services/api';
 import ArticleCard from '../components/ArticleCard';
 import type { ArticleWithMarket } from '../../../shared/types';
 
 const NewsPage: React.FC = () => {
   const [articles, setArticles] = useState<ArticleWithMarket[]>([]);
+  const [allArticles, setAllArticles] = useState<ArticleWithMarket[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     category: '',
     search: '',
-    sortBy: 'publishedAt',
+    sortBy: 'new',
     sortOrder: 'desc' as 'asc' | 'desc',
   });
 
@@ -23,16 +24,112 @@ const NewsPage: React.FC = () => {
       .join(' ');
   };
 
+  // Semantic search function
+  const keywordSearch = (articles: ArticleWithMarket[], searchTerm: string): ArticleWithMarket[] => {
+    if (!searchTerm.trim()) return articles;
+    
+    const searchWords = searchTerm.toLowerCase().split(' ').filter(word => word.length > 0);
+    
+    return articles.filter(article => {
+      const searchableText = [
+        article.title,
+        article.description || '',
+        article.category || '',
+        article.sourceName || '',
+        article.author || ''
+      ].join(' ').toLowerCase();
+      
+      // Check if all search words are found in the article
+      return searchWords.every(word => searchableText.includes(word));
+    });
+  };
+
+  // Filter and sort articles locally
+  const getFilteredArticles = (): ArticleWithMarket[] => {
+    let filtered = [...allArticles];
+
+    // Apply category filter
+    if (filters.category) {
+      filtered = filtered.filter(article => article.category === filters.category);
+    }
+
+    // Apply semantic search
+    if (filters.search) {
+      filtered = keywordSearch(filtered, filters.search);
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (filters.sortBy) {
+        case 'new':
+          aValue = new Date(a.publishedAt).getTime();
+          bValue = new Date(b.publishedAt).getTime();
+          return bValue - aValue; // Newest first
+        
+        case 'trending':
+          // Use probability volatility and recency as proxy for trending
+          const aRecency = (Date.now() - new Date(a.publishedAt).getTime()) / (1000 * 60 * 60); // Hours ago
+          const bRecency = (Date.now() - new Date(b.publishedAt).getTime()) / (1000 * 60 * 60);
+          const aVolatility = Math.abs((a.market?.probTrue || 0.5) - 0.5);
+          const bVolatility = Math.abs((b.market?.probTrue || 0.5) - 0.5);
+          
+          // Combine recency and volatility (more weight to recent + volatile markets)
+          aValue = (aVolatility * 100) / Math.max(1, aRecency / 24); // Boost recent articles
+          bValue = (bVolatility * 100) / Math.max(1, bRecency / 24);
+          return bValue - aValue; // Higher trending score first
+        
+        case 'trusted':
+          aValue = a.market?.probTrue || 0;
+          bValue = b.market?.probTrue || 0;
+          return bValue - aValue; // Highest probTrue first
+        
+        case 'contentious':
+          aValue = Math.abs((a.market?.probTrue || 0.5) - 0.5);
+          bValue = Math.abs((b.market?.probTrue || 0.5) - 0.5);
+          return aValue - bValue; // Closest to 0.5 first
+        
+        case 'title':
+          aValue = a.title.toLowerCase();
+          bValue = b.title.toLowerCase();
+          break;
+        case 'publishedAt':
+        default:
+          aValue = new Date(a.publishedAt).getTime();
+          bValue = new Date(b.publishedAt).getTime();
+          break;
+      }
+      
+      const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      return filters.sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+    return filtered;
+  };
+
   useEffect(() => {
     fetchArticles();
     fetchCategories();
-  }, [filters]);
+  }, []); // Only fetch once on mount
+
+  // Update filtered articles when filters change
+  const filteredArticles = useMemo(() => {
+    if (allArticles.length === 0) return [];
+    return getFilteredArticles();
+  }, [filters, allArticles]);
+
+  useEffect(() => {
+    setArticles(filteredArticles);
+  }, [filteredArticles]);
 
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      const response = await articleAPI.getArticles(filters);
+      // Fetch all articles without filters to enable client-side search
+      const response = await articleAPI.getArticles();
       console.log('API response:', response);
+      setAllArticles(response.articles);
       setArticles(response.articles);
       setError(null);
     } catch (err) {
@@ -124,17 +221,14 @@ const NewsPage: React.FC = () => {
                   Sort By
                 </label>
                 <select
-                  value={`${filters.sortBy}-${filters.sortOrder}`}
-                  onChange={(e) => {
-                    const [sortBy, sortOrder] = e.target.value.split('-');
-                    setFilters({ ...filters, sortBy, sortOrder: sortOrder as 'asc' | 'desc' });
-                  }}
+                  value={filters.sortBy}
+                  onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
                   className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600/50 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all duration-200 backdrop-blur-sm"
                 >
-                  <option value="publishedAt-desc" className="bg-slate-800">Newest First</option>
-                  <option value="publishedAt-asc" className="bg-slate-800">Oldest First</option>
-                  <option value="title-asc" className="bg-slate-800">Title A-Z</option>
-                  <option value="title-desc" className="bg-slate-800">Title Z-A</option>
+                  <option value="new" className="bg-slate-800">New</option>
+                  <option value="trending" className="bg-slate-800">Trending</option>
+                  <option value="trusted" className="bg-slate-800">Trusted</option>
+                  <option value="contentious" className="bg-slate-800">Contentious</option>
                 </select>
               </div>
             </div>

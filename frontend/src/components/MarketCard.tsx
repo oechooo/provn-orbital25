@@ -91,8 +91,8 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, onStakeSuccess }) => {
   };
 
   const totalStakes = market.stakes?.length || 0;
-  const truePercentage = Math.round(market.probTrue * 100);
-  const falsePercentage = Math.round(market.probFalse * 100);
+  const truePercentage = Math.round(market.probTrue * 1000) / 10;
+  const falsePercentage = Math.round(market.probFalse * 1000) / 10;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -147,11 +147,11 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, onStakeSuccess }) => {
               {/* Probability Display */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-green-600/20 border border-green-500/30 rounded-lg p-3 text-center">
-                  <div className="text-green-400 font-bold text-lg">{truePercentage}%</div>
+                  <div className="text-green-400 font-bold text-lg">{truePercentage.toFixed(1)}%</div>
                   <div className="text-green-300 text-sm">TRUE</div>
                 </div>
                 <div className="bg-red-600/20 border border-red-500/30 rounded-lg p-3 text-center">
-                  <div className="text-red-400 font-bold text-lg">{falsePercentage}%</div>
+                  <div className="text-red-400 font-bold text-lg">{falsePercentage.toFixed(1)}%</div>
                   <div className="text-red-300 text-sm">FALSE</div>
                 </div>
               </div>
@@ -210,7 +210,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, onStakeSuccess }) => {
             
             <div className="mb-4">
               <p className="text-slate-300 text-sm mb-2">
-                Current probability: {selectedPrediction ? truePercentage : falsePercentage}%
+                Current probability: {selectedPrediction ? truePercentage.toFixed(1) : falsePercentage.toFixed(1)}%
               </p>
               <p className="text-slate-400 text-xs">
                 Your balance: {user?.provePoints || 0} PP

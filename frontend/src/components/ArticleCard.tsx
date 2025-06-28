@@ -30,8 +30,8 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
     : 0.5;
 
   // Convert to percentages for display
-  const truePercent = Math.round(probTrue * 100);
-  const falsePercent = Math.round(probFalse * 100);
+  const truePercent = Math.round(probTrue * 1000) / 10;
+  const falsePercent = Math.round(probFalse * 1000) / 10;
 
   // Auto-refresh article data every second
   const refreshArticleData = async () => {
@@ -138,7 +138,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
                 >
                   {truePercent > 20 && (
                     <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-900 drop-shadow-sm">
-                      TRUE {truePercent}%
+                      TRUE {truePercent.toFixed(1)}%
                     </span>
                   )}
                 </div>
@@ -149,7 +149,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
                 >
                   {falsePercent > 20 && (
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-900 drop-shadow-sm">
-                      FALSE {falsePercent}%
+                      FALSE {falsePercent.toFixed(1)}%
                     </span>
                   )}
                 </div>
