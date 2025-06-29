@@ -11,7 +11,7 @@ import ProfilePage from './pages/ProfilePage';
 import DashboardPage from './pages/DashboardPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
-import AvatarEditorPage from './pages/AvatarEditorPage';
+import AvatarEditorPage from './pages/AvatarEditorPage_clean';
 
 
 function App() {
