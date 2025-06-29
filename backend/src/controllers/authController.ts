@@ -66,7 +66,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         id: true, 
         username: true, 
         email: true, 
-        isAdmin: true,
         provePoints: true,
         createdAt: true 
       }

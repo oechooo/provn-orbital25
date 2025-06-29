@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/SimpleAuthContext';
+<<<<<<< HEAD
 import { userAPI } from '../services/api';
 import Avatar from '../components/Avatar';
 import { AvatarConfig, DEFAULT_AVATAR_CONFIG, AVATAR_OPTIONS, AVATAR_REQUIREMENTS } from '../utils/avatar';
+=======
+import Avatar from '../components/Avatar';
+import { AvatarConfig, DEFAULT_AVATAR_CONFIG, AVATAR_OPTIONS } from '../utils/avatar';
+>>>>>>> 082367f (Article readibility improvement)
 import toast from 'react-hot-toast';
 
 const AvatarEditorPage: React.FC = () => {
@@ -37,6 +42,7 @@ const AvatarEditorPage: React.FC = () => {
   const handleSaveAvatar = async () => {
     if (!user) return;
 
+<<<<<<< HEAD
     // Check if user meets the PP requirements for premium features
     if (totalRequirement > 0 && !canAfford) {
       toast.error(`You need ${totalRequirement} ProvePoints to unlock these premium features. You have ${user.provePoints.toFixed(2)} PP.`);
@@ -66,6 +72,35 @@ const AvatarEditorPage: React.FC = () => {
       
       toast.success('Avatar updated successfully!');
       // Stay in the shop instead of navigating away
+=======
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:3000/api/auth/update-avatar', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({
+          avatarSkinColor: avatarConfig.skinColor,
+          avatarHairColor: avatarConfig.hairColor,
+          avatarHair: avatarConfig.hair,
+          avatarEyes: avatarConfig.eyes,
+          avatarMouth: avatarConfig.mouth,
+          avatarAccessories: avatarConfig.accessories,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update avatar');
+      }
+
+      const updatedUser = await response.json();
+      updateUser(updatedUser);
+      toast.success('Avatar updated successfully!');
+      navigate('/profile');
+>>>>>>> 082367f (Article readibility improvement)
     } catch (error) {
       console.error('Error updating avatar:', error);
       toast.error('Failed to update avatar');
@@ -78,6 +113,7 @@ const AvatarEditorPage: React.FC = () => {
     setAvatarConfig(prev => ({ ...prev, [key]: value }));
   };
 
+<<<<<<< HEAD
   // Check if user has premium features
   const hasPremiumHair = user?.avatarHair && user.avatarHair !== 'shortHair'; // shortHair is default
   const hasPremiumEyes = user?.avatarEyes && user.avatarEyes !== 'normal'; // normal is default
@@ -146,6 +182,8 @@ const AvatarEditorPage: React.FC = () => {
     }
   };
 
+=======
+>>>>>>> 082367f (Article readibility improvement)
   if (!user) {
     return null;
   }
@@ -294,6 +332,7 @@ const AvatarEditorPage: React.FC = () => {
                   <div>
                     <label className="block text-white font-medium mb-3">Hair Style</label>
                     <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+<<<<<<< HEAD
                       {AVATAR_OPTIONS.hair.map((option) => {
                         const isPremium = isPremiumOption('hair', option.value);
                         const isOwned = ownsOption('hair', option.value);
@@ -321,6 +360,21 @@ const AvatarEditorPage: React.FC = () => {
                           </button>
                         );
                       })}
+=======
+                      {AVATAR_OPTIONS.hair.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => updateAvatarConfig('hair', option.value)}
+                          className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                            avatarConfig.hair === option.value
+                              ? 'bg-purple-600 text-white shadow-lg'
+                              : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+>>>>>>> 082367f (Article readibility improvement)
                     </div>
                   </div>
                 </div>
@@ -332,6 +386,7 @@ const AvatarEditorPage: React.FC = () => {
                   <div>
                     <label className="block text-white font-medium mb-3">Eyes</label>
                     <div className="grid grid-cols-2 gap-2">
+<<<<<<< HEAD
                       {AVATAR_OPTIONS.eyes.map((option) => {
                         const isPremium = isPremiumOption('eyes', option.value);
                         const isOwned = ownsOption('eyes', option.value);
@@ -359,6 +414,21 @@ const AvatarEditorPage: React.FC = () => {
                           </button>
                         );
                       })}
+=======
+                      {AVATAR_OPTIONS.eyes.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => updateAvatarConfig('eyes', option.value)}
+                          className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                            avatarConfig.eyes === option.value
+                              ? 'bg-purple-600 text-white shadow-lg'
+                              : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+>>>>>>> 082367f (Article readibility improvement)
                     </div>
                   </div>
                 </div>
@@ -370,6 +440,7 @@ const AvatarEditorPage: React.FC = () => {
                   <div>
                     <label className="block text-white font-medium mb-3">Mouth</label>
                     <div className="grid grid-cols-2 gap-2">
+<<<<<<< HEAD
                       {AVATAR_OPTIONS.mouth.map((option) => {
                         const isPremium = isPremiumOption('mouth', option.value);
                         const isOwned = ownsOption('mouth', option.value);
@@ -397,6 +468,21 @@ const AvatarEditorPage: React.FC = () => {
                           </button>
                         );
                       })}
+=======
+                      {AVATAR_OPTIONS.mouth.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => updateAvatarConfig('mouth', option.value)}
+                          className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                            avatarConfig.mouth === option.value
+                              ? 'bg-purple-600 text-white shadow-lg'
+                              : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+>>>>>>> 082367f (Article readibility improvement)
                     </div>
                   </div>
                 </div>
@@ -408,6 +494,7 @@ const AvatarEditorPage: React.FC = () => {
                   <div>
                     <label className="block text-white font-medium mb-3">Accessories</label>
                     <div className="grid grid-cols-2 gap-2">
+<<<<<<< HEAD
                       {AVATAR_OPTIONS.accessories.map((option) => {
                         const isPremium = isPremiumOption('accessories', option.value);
                         const isOwned = ownsOption('accessories', option.value);
@@ -435,6 +522,21 @@ const AvatarEditorPage: React.FC = () => {
                           </button>
                         );
                       })}
+=======
+                      {AVATAR_OPTIONS.accessories.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => updateAvatarConfig('accessories', option.value)}
+                          className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                            avatarConfig.accessories === option.value
+                              ? 'bg-purple-600 text-white shadow-lg'
+                              : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+>>>>>>> 082367f (Article readibility improvement)
                     </div>
                   </div>
                 </div>
@@ -444,6 +546,7 @@ const AvatarEditorPage: React.FC = () => {
         </div>
 
         {/* Action Buttons */}
+<<<<<<< HEAD
         <div className="text-center mt-8">
           <div className="flex gap-4 justify-center">
             <button
@@ -464,6 +567,22 @@ const AvatarEditorPage: React.FC = () => {
               {isLoading ? 'Saving...' : totalRequirement > 0 ? `Save Avatar (Requires ${totalRequirement} PP)` : 'Save Avatar'}
             </button>
           </div>
+=======
+        <div className="flex gap-4 justify-center mt-4">
+          <button
+            onClick={() => navigate('/profile')}
+            className="px-6 py-2 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSaveAvatar}
+            disabled={isLoading}
+            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-medium rounded-lg transition-all disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Saving...' : 'Save Avatar'}
+          </button>
+>>>>>>> 082367f (Article readibility improvement)
         </div>
       </div>
     </div>
