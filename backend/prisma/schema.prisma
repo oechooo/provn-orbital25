@@ -1,75 +1,73 @@
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL") // Reads the DATABASE_URL from the .env file
+generator client {
+  provider = "prisma-client-js"
 }
 
-generator client {
-  provider = "prisma-client-js" // Use Prisma Client for interacting with the DB
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model Article {
-  id           Int      @id @default(autoincrement())
-  sourceName   String
-  author       String?
-  title        String
-  description  String?
-  url          String   @unique
-  urlToImage   String?
-  publishedAt  DateTime
-  content      String?
-  createdAt    DateTime @default(now())
-  category     String?
-  market    Market?
+  id          Int      @id @default(autoincrement())
+  sourceName  String
+  author      String?
+  title       String
+  description String?
+  url         String   @unique
+  urlToImage  String?
+  publishedAt DateTime
+  content     String?
+  createdAt   DateTime @default(now())
+  category    String?
+  market      Market?
 }
 
 model Market {
-  id             Int      @id @default(autoincrement())
-  articleId      Int      @unique
-  closed         Boolean @default(false)
-  resolveCount   Int  @default(0)
-  outcome        Boolean? // true/false if resolved, null otherwise
-  createdAt      DateTime @default(now())
-  lastResolve    DateTime @default(now())
-  nextResolve    DateTime
-  stakes         Stake[]
-  sharesTrue     Float
-  sharesFalse    Float
-  probTrue       Float
-  probFalse      Float
-  article        Article  @relation(fields: [articleId], references: [id])
+  id           Int      @id @default(autoincrement())
+  articleId    Int      @unique
+  closed       Boolean  @default(false)
+  resolveCount Int      @default(0)
+  outcome      Boolean?
+  createdAt    DateTime @default(now())
+  lastResolve  DateTime @default(now())
+  nextResolve  DateTime
+  sharesTrue   Float
+  sharesFalse  Float
+  probTrue     Float
+  probFalse    Float
+  article      Article  @relation(fields: [articleId], references: [id])
+  stakes       Stake[]
 }
 
 model Stake {
-  id             Int      @id @default(autoincrement())
-  userId         Int
-  marketId       Int
-  resolved       Boolean
-  prediction     Boolean
-  stakeAmount    Float
-  upside         Float
-  createdAt      DateTime @default(now())
-  user           User     @relation(fields: [userId], references: [id])
-  market         Market   @relation(fields: [marketId], references: [id])
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  marketId    Int
+  resolved    Boolean
+  prediction  Boolean
+  stakeAmount Float
+  upside      Float
+  createdAt   DateTime @default(now())
+  market      Market   @relation(fields: [marketId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  username String   @unique
-  email    String   @unique
-  password String
-  isAdmin Boolean @default(false)
-  provePoints Float   @default(100)
-  resetToken String?
-  resetTokenExpiry DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  stakes   Stake[]
-  
-  // Avatar configuration for DiceBear big-smile style
-  avatarSkinColor    String @default("fdbcb4")
-  avatarHairColor    String @default("724133")
-  avatarHair         String @default("short01")
-  avatarEyes         String @default("variant01")
-  avatarMouth        String @default("variant01")
-  avatarAccessories  String @default("none")
+  id                Int       @id @default(autoincrement())
+  username          String    @unique
+  email             String    @unique
+  password          String
+  isAdmin           Boolean   @default(false)
+  provePoints       Float     @default(100)
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  avatarSkinColor   String    @default("fdbcb4")
+  avatarHairColor   String    @default("724133")
+  avatarHair        String    @default("short01")
+  avatarEyes        String    @default("variant01")
+  avatarMouth       String    @default("variant01")
+  avatarAccessories String    @default("none")
+  stakes            Stake[]
 }
