@@ -9,6 +9,7 @@ try {
 }
 
 import { register, login, getProfile, updateProfile, requestPasswordReset, resetPassword } from '../controllers/authController';
+import { updateUserAvatar } from '../controllers/userController';
 import { auth } from '../middleware/auth';
 
 const router: Router = express.Router();
@@ -34,5 +35,6 @@ console.log('Auth routes setup complete');
 // Protected routes (require authentication)
 router.get('/profile', auth, getProfile);
 router.put('/profile', auth, updateProfile);
+router.put('/update-avatar', auth, updateUserAvatar);
 
 export default router;

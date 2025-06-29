@@ -195,7 +195,7 @@ export const updateUserAvatar = async (req: AuthRequest, res: Response): Promise
       avatarHair, 
       avatarEyes, 
       avatarMouth, 
-      avatarAccessories 
+      avatarAccessories
     } = req.body;
     
     // Basic validation for avatar config
@@ -220,11 +220,20 @@ export const updateUserAvatar = async (req: AuthRequest, res: Response): Promise
         email: true, 
         provePoints: true,
         createdAt: true, 
-        updatedAt: true
+        updatedAt: true,
+        avatarSkinColor: true,
+        avatarHairColor: true,
+        avatarHair: true,
+        avatarEyes: true,
+        avatarMouth: true,
+        avatarAccessories: true
       }
     });
     
-    res.json({ message: "Avatar updated successfully", user });
+    res.json({ 
+      message: "Avatar updated successfully!", 
+      ...user 
+    });
   } catch (error) {
     console.error('Error updating avatar:', error);
     res.status(500).json({ message: "Error updating avatar" });
