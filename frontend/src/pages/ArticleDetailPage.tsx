@@ -29,6 +29,30 @@ interface Market {
   stakes: any[];
 }
 
+interface ForumReply {
+  id: number;
+  content: string;
+  author: string;
+  authorId: number;
+  createdAt: string;
+  likes: number;
+  dislikes: number;
+  userVote?: 'like' | 'dislike' | null;
+}
+
+interface ForumPost {
+  id: number;
+  content: string;
+  author: string;
+  authorId: number;
+  stakeAmount: number;
+  createdAt: string;
+  likes: number;
+  dislikes: number;
+  userVote?: 'like' | 'dislike' | null;
+  replies: ForumReply[];
+}
+
 const ArticleDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
@@ -37,6 +61,85 @@ const ArticleDetailPage: React.FC = () => {
   const [stakeAmount, setStakeAmount] = useState<number>(10);
   const [prediction, setPrediction] = useState<boolean>(true);
   const [placing, setPlacing] = useState(false);
+  const [forumPosts, setForumPosts] = useState<ForumPost[]>([]);
+  const [newPost, setNewPost] = useState('');
+  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [newReply, setNewReply] = useState('');
+
+  // Placeholder forum data
+  useEffect(() => {
+    const placeholderPosts: ForumPost[] = [
+      {
+        id: 1,
+        content: "test post",
+        author: "placeholder1",
+        authorId: 1,
+        stakeAmount: 25.00,
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+        likes: 12,
+        dislikes: 3,
+        userVote: null,
+        replies: [
+          {
+            id: 1,
+            content: "test reply",
+            author: "placeholder2",
+            authorId: 2,
+            createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
+            likes: 5,
+            dislikes: 0,
+            userVote: null
+          },
+          {
+            id: 2,
+            content: "test reply",
+            author: "placeholder3",
+            authorId: 3,
+            createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
+            likes: 3,
+            dislikes: 1,
+            userVote: null
+          }
+        ]
+      },
+      {
+        id: 2,
+        content: "test post",
+        author: "placeholder4",
+        authorId: 4,
+        stakeAmount: 15.00,
+        createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
+        likes: 8,
+        dislikes: 7,
+        userVote: null,
+        replies: [
+          {
+            id: 3,
+            content: "test reply",
+            author: "placeholder5",
+            authorId: 5,
+            createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), // 3 hours ago
+            likes: 6,
+            dislikes: 1,
+            userVote: null
+          }
+        ]
+      },
+      {
+        id: 3,
+        content: "test post",
+        author: "placeholder6",
+        authorId: 6,
+        stakeAmount: 9.00,
+        createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
+        likes: 4,
+        dislikes: 2,
+        userVote: null,
+        replies: []
+      }
+    ];
+    setForumPosts(placeholderPosts);
+  }, []);
 
   useEffect(() => {
     if (id) {
@@ -164,6 +267,126 @@ const ArticleDetailPage: React.FC = () => {
     } else {
       return 'Less than an hour ago';
     }
+  };
+
+  const handleVote = (postId: number, voteType: 'like' | 'dislike', isReply: boolean = false, replyId?: number) => {
+    if (!user) {
+      toast.error('Please sign in to vote');
+      return;
+    }
+
+    setForumPosts(prev => prev.map(post => {
+      if (post.id === postId && !isReply) {
+        const currentVote = post.userVote;
+        const newVote = currentVote === voteType ? null : voteType;
+        
+        let newLikes = post.likes;
+        let newDislikes = post.dislikes;
+        
+        // Remove previous vote
+        if (currentVote === 'like') newLikes--;
+        if (currentVote === 'dislike') newDislikes--;
+        
+        // Add new vote
+        if (newVote === 'like') newLikes++;
+        if (newVote === 'dislike') newDislikes++;
+        
+        return { ...post, likes: newLikes, dislikes: newDislikes, userVote: newVote };
+      }
+      
+      if (isReply && replyId) {
+        return {
+          ...post,
+          replies: post.replies.map(reply => {
+            if (reply.id === replyId) {
+              const currentVote = reply.userVote;
+              const newVote = currentVote === voteType ? null : voteType;
+              
+              let newLikes = reply.likes;
+              let newDislikes = reply.dislikes;
+              
+              // Remove previous vote
+              if (currentVote === 'like') newLikes--;
+              if (currentVote === 'dislike') newDislikes--;
+              
+              // Add new vote
+              if (newVote === 'like') newLikes++;
+              if (newVote === 'dislike') newDislikes++;
+              
+              return { ...reply, likes: newLikes, dislikes: newDislikes, userVote: newVote };
+            }
+            return reply;
+          })
+        };
+      }
+      
+      return post;
+    }));
+  };
+
+  const handleSubmitPost = () => {
+    if (!user) {
+      toast.error('Please sign in to post');
+      return;
+    }
+    
+    if (!newPost.trim()) {
+      toast.error('Please enter a message');
+      return;
+    }
+
+    const userStake = market?.stakes.find(stake => stake.userId === user.id);
+    const stakeAmount = userStake ? userStake.amount : 0;
+
+    const newForumPost: ForumPost = {
+      id: Date.now(),
+      content: newPost.trim(),
+      author: user.username,
+      authorId: user.id,
+      stakeAmount: stakeAmount,
+      createdAt: new Date().toISOString(),
+      likes: 0,
+      dislikes: 0,
+      userVote: null,
+      replies: []
+    };
+
+    setForumPosts(prev => [newForumPost, ...prev]);
+    setNewPost('');
+    toast.success('Post added successfully!');
+  };
+
+  const handleSubmitReply = (postId: number) => {
+    if (!user) {
+      toast.error('Please sign in to reply');
+      return;
+    }
+    
+    if (!newReply.trim()) {
+      toast.error('Please enter a reply');
+      return;
+    }
+
+    const newForumReply: ForumReply = {
+      id: Date.now(),
+      content: newReply.trim(),
+      author: user.username,
+      authorId: user.id,
+      createdAt: new Date().toISOString(),
+      likes: 0,
+      dislikes: 0,
+      userVote: null
+    };
+
+    setForumPosts(prev => prev.map(post => 
+      post.id === postId 
+        ? { ...post, replies: [...post.replies, newForumReply] }
+        : post
+    ));
+    
+    setNewReply('');
+    setReplyingTo(null);
+    toast.success('Reply added successfully!');
   };
 
   if (loading) {
@@ -440,6 +663,204 @@ const ArticleDetailPage: React.FC = () => {
                       </span>
                     </p>
                   )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Forum Section */}
+        <div className="mt-8">
+          <div className="glass-card p-6">
+            <h3 className="text-2xl font-bold text-white mb-6">Discussion Forum</h3>
+            
+            {/* New Post Form */}
+            {user && (
+              <div className="mb-8 bg-slate-800/50 rounded-lg p-4">
+                <h4 className="text-lg font-semibold text-white mb-3">Share your thoughts</h4>
+                <textarea
+                  value={newPost}
+                  onChange={(e) => setNewPost(e.target.value)}
+                  placeholder="What do you think about this article? Share your analysis..."
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 resize-none"
+                  rows={3}
+                />
+                <div className="flex justify-between items-center mt-3">
+                  <div className="text-sm text-slate-400">
+                    {user.provePoints > 0 && market?.stakes.find(stake => stake.userId === user.id) && (
+                      <span>Your stake: {market.stakes.find(stake => stake.userId === user.id)?.amount.toFixed(2)} PP</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleSubmitPost}
+                    disabled={!newPost.trim()}
+                    className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors disabled:cursor-not-allowed"
+                  >
+                    Post Comment
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {!user && (
+              <div className="mb-8 bg-slate-800/50 rounded-lg p-4 text-center">
+                <p className="text-slate-400 mb-3">Sign in to join the discussion</p>
+                <Link 
+                  to="/login" 
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+                >
+                  Sign In
+                </Link>
+              </div>
+            )}
+
+            {/* Forum Posts */}
+            <div className="space-y-6">
+              {forumPosts.map((post) => (
+                <div key={post.id} className="bg-slate-800/30 rounded-lg p-4 border border-slate-700">
+                  {/* Post Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-sm font-bold">{post.author[0].toUpperCase()}</span>
+                      </div>
+                      <div>
+                        <h5 className="text-white font-medium">{post.author}</h5>
+                        <div className="text-xs text-slate-400">
+                          <span>{getTimeSince(post.createdAt)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    {post.stakeAmount > 0 && (
+                      <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-lg px-3 py-1">
+                        <div className="text-xs text-purple-300 font-medium">Staked</div>
+                        <div className="text-sm text-purple-100 font-bold">{post.stakeAmount.toFixed(2)} PP</div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Post Content */}
+                  <p className="text-slate-200 mb-4 leading-relaxed">{post.content}</p>
+
+                  {/* Post Actions */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <button
+                        onClick={() => handleVote(post.id, 'like')}
+                        className={`flex items-center space-x-1 text-sm transition-colors ${
+                          post.userVote === 'like' 
+                            ? 'text-green-400' 
+                            : 'text-slate-400 hover:text-green-400'
+                        }`}
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/>
+                        </svg>
+                        <span>{post.likes}</span>
+                      </button>
+                      <button
+                        onClick={() => handleVote(post.id, 'dislike')}
+                        className={`flex items-center space-x-1 text-sm transition-colors ${
+                          post.userVote === 'dislike' 
+                            ? 'text-red-400' 
+                            : 'text-slate-400 hover:text-red-400'
+                        }`}
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M18 9.5a1.5 1.5 0 11-3 0v-6a1.5 1.5 0 013 0v6zM14 9.667v-5.43a2 2 0 00-1.106-1.79l-.05-.025A4 4 0 0011.057 2H5.64a2 2 0 00-1.962 1.608l-1.2 6A2 2 0 004.44 12H8v4a2 2 0 002 2 1 1 0 001-1v-.667a4 4 0 01.8-2.4l1.4-1.866a4 4 0 00.8-2.4z"/>
+                        </svg>
+                        <span>{post.dislikes}</span>
+                      </button>
+                      <button
+                        onClick={() => setReplyingTo(replyingTo === post.id ? null : post.id)}
+                        className="text-sm text-slate-400 hover:text-purple-400 transition-colors"
+                      >
+                        Reply ({post.replies.length})
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Reply Form */}
+                  {replyingTo === post.id && user && (
+                    <div className="mt-4 pl-8 border-l-2 border-purple-500">
+                      <textarea
+                        value={newReply}
+                        onChange={(e) => setNewReply(e.target.value)}
+                        placeholder="Write your reply..."
+                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 resize-none"
+                        rows={2}
+                      />
+                      <div className="flex justify-end space-x-2 mt-2">
+                        <button
+                          onClick={() => setReplyingTo(null)}
+                          className="text-sm text-slate-400 hover:text-slate-300 px-3 py-1"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handleSubmitReply(post.id)}
+                          disabled={!newReply.trim()}
+                          className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white text-sm px-3 py-1 rounded transition-colors disabled:cursor-not-allowed"
+                        >
+                          Reply
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Replies */}
+                  {post.replies.length > 0 && (
+                    <div className="mt-4 pl-8 border-l-2 border-slate-600 space-y-3">
+                      {post.replies.map((reply) => (
+                        <div key={reply.id} className="bg-slate-700/30 rounded-lg p-3">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <div className="w-6 h-6 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center">
+                              <span className="text-white text-xs font-bold">{reply.author[0].toUpperCase()}</span>
+                            </div>
+                            <div>
+                              <span className="text-white text-sm font-medium">{reply.author}</span>
+                              <span className="text-xs text-slate-400 ml-2">{getTimeSince(reply.createdAt)}</span>
+                            </div>
+                          </div>
+                          <p className="text-slate-200 text-sm mb-2">{reply.content}</p>
+                          <div className="flex items-center space-x-3">
+                            <button
+                              onClick={() => handleVote(post.id, 'like', true, reply.id)}
+                              className={`flex items-center space-x-1 text-xs transition-colors ${
+                                reply.userVote === 'like' 
+                                  ? 'text-green-400' 
+                                  : 'text-slate-400 hover:text-green-400'
+                              }`}
+                            >
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/>
+                              </svg>
+                              <span>{reply.likes}</span>
+                            </button>
+                            <button
+                              onClick={() => handleVote(post.id, 'dislike', true, reply.id)}
+                              className={`flex items-center space-x-1 text-xs transition-colors ${
+                                reply.userVote === 'dislike' 
+                                  ? 'text-red-400' 
+                                  : 'text-slate-400 hover:text-red-400'
+                              }`}
+                            >
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M18 9.5a1.5 1.5 0 11-3 0v-6a1.5 1.5 0 013 0v6zM14 9.667v-5.43a2 2 0 00-1.106-1.79l-.05-.025A4 4 0 0011.057 2H5.64a2 2 0 00-1.962 1.608l-1.2 6A2 2 0 004.44 12H8v4a2 2 0 002 2 1 1 0 001-1v-.667a4 4 0 01.8-2.4l1.4-1.866a4 4 0 00.8-2.4z"/>
+                              </svg>
+                              <span>{reply.dislikes}</span>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {forumPosts.length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-slate-400">No discussions yet. Be the first to share your thoughts!</p>
                 </div>
               )}
             </div>
