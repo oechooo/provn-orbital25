@@ -11,6 +11,7 @@ import ProfilePage from './pages/ProfilePage';
 import DashboardPage from './pages/DashboardPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import AvatarEditorPage from './pages/AvatarEditorPage';
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/shop" element={<AvatarEditorPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
             </Routes>
@@ -48,7 +50,7 @@ function App() {
           </footer>
         </div>
         <Toaster 
-          position="top-right"
+          position="bottom-right"
           toastOptions={{
             duration: 4000,
             style: {

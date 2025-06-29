@@ -127,7 +127,7 @@ export const marketAPI = {
   },
 
   // Admin functions
-  setMarketOutcome: (id: number, outcome: boolean) => {
+  setMarketOutcome: (id: number, outcome: boolean | null) => {
     return apiRequest(`/markets/${id}/set-outcome`, {
       method: 'PUT',
       body: JSON.stringify({ outcome }),

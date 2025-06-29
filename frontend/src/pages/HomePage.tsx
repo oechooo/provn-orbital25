@@ -121,12 +121,12 @@ const HomePage: React.FC = () => {
                   </span>
                 </div>
                 <Link
-                  to="/dashboard"
+                  to="/news"
                   className="group relative inline-flex items-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-purple-500/25"
                 >
                   <span className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 blur transition-opacity duration-300"></span>
                   <span className="relative flex items-center">
-                    View Markets
+                    View News
                     <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
@@ -155,13 +155,6 @@ const HomePage: React.FC = () => {
                 </Link>
               </div>
             )}
-            
-            {/* Scroll Indicator */}
-            <div className="mt-20 animate-bounce">
-              <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-                <div className="w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse"></div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -226,10 +219,10 @@ const HomePage: React.FC = () => {
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-2xl font-bold text-white">Featured Markets</h3>
             <Link
-              to="/dashboard"
+              to="/news"
               className="text-purple-400 hover:text-purple-300 font-medium transition-colors duration-200"
             >
-              View All Markets →
+              View All News →
             </Link>
           </div>
 

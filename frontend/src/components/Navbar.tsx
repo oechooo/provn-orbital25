@@ -1,17 +1,12 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/SimpleAuthContext';
 import Avatar from './Avatar';
 import { AvatarConfig, DEFAULT_AVATAR_CONFIG } from '../utils/avatar';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const location = useLocation();
   const { user } = useAuth();
-  
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
 
   // Get current avatar config from user or use default
   const getCurrentAvatarConfig = (): AvatarConfig => {
@@ -39,29 +34,20 @@ const Navbar = () => {
               </Link>
             </div>
             <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
-              <Link 
-                to="/" 
-                className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
-                  isActive('/') 
-                    ? 'bg-white/20 text-white shadow-lg' 
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                Home
-              </Link>
-              <Link 
-                to="/news" 
-                className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
-                  isActive('/news') 
-                    ? 'bg-white/20 text-white shadow-lg' 
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                News
-              </Link>
             </div>
           </div>
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
+          <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
+            {user && (
+              <Link
+                to="/shop"
+                className="p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300"
+                title="Shop"
+              >
+                <svg className="w-5 h-5 text-white/70 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </Link>
+            )}
             {user ? (
               <Link
                 to="/profile"
@@ -124,28 +110,6 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="sm:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 bg-white/10 backdrop-blur-lg border-t border-white/20">
-            <Link 
-              to="/" 
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-all duration-300 ${
-                isActive('/') 
-                  ? 'bg-white/20 text-white' 
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Home
-            </Link>
-            <Link 
-              to="/news" 
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-all duration-300 ${
-                isActive('/news') 
-                  ? 'bg-white/20 text-white' 
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              News
-            </Link>
             {user ? (
               <Link 
                 to="/profile" 

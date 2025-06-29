@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { stakeAPI } from '../services/api';
 import { useAuth } from '../contexts/SimpleAuthContext';
 import toast from 'react-hot-toast';
+import OrderWidget from './OrderWidget';
 
 interface Market {
   id: number;
@@ -34,10 +34,8 @@ interface MarketCardProps {
 
 const MarketCard: React.FC<MarketCardProps> = ({ market, onStakeSuccess }) => {
   const { user } = useAuth();
-  const [isStaking, setIsStaking] = useState(false);
-  const [stakeAmount, setStakeAmount] = useState<number>(100);
-  const [selectedPrediction, setSelectedPrediction] = useState<boolean | null>(null);
-  const [showStakeModal, setShowStakeModal] = useState(false);
+  const [showOrderWidget, setShowOrderWidget] = useState(false);
+  const [selectedPrediction, setSelectedPrediction] = useState<boolean>(true);
 
   // Helper function to capitalize first letter of each word
   const capitalizeCategory = (category: string): string => {
@@ -59,35 +57,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, onStakeSuccess }) => {
     }
 
     setSelectedPrediction(prediction);
-    setShowStakeModal(true);
-  };
-
-  const confirmStake = async () => {
-    if (!selectedPrediction !== null || !stakeAmount || stakeAmount <= 0) {
-      toast.error('Please enter a valid stake amount');
-      return;
-    }
-
-    if (stakeAmount > (user?.provePoints || 0)) {
-      toast.error('Insufficient Prove Points');
-      return;
-    }
-
-    setIsStaking(true);
-    try {
-      await stakeAPI.createStake(market.id, stakeAmount, selectedPrediction!);
-      toast.success(`Successfully staked ${stakeAmount} PP on ${selectedPrediction ? 'TRUE' : 'FALSE'}`);
-      setShowStakeModal(false);
-      setStakeAmount(100);
-      setSelectedPrediction(null);
-      if (onStakeSuccess) {
-        onStakeSuccess();
-      }
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to create stake');
-    } finally {
-      setIsStaking(false);
-    }
+    setShowOrderWidget(true);
   };
 
   const totalStakes = market.stakes?.length || 0;
@@ -191,64 +161,24 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, onStakeSuccess }) => {
           >
             Read Article
           </Link>
-          <Link
-            to={`/article/${market.id}`}
-            className="flex-1 bg-slate-600 hover:bg-slate-500 text-white text-center py-2 px-4 rounded-lg transition-colors duration-200"
-          >
-            Market Details
-          </Link>
         </div>
       </div>
 
-      {/* Stake Modal */}
-      {showStakeModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="glass-card p-6 w-full max-w-md mx-4">
-            <h3 className="text-xl font-bold text-white mb-4">
-              Stake on: {selectedPrediction ? 'TRUE' : 'FALSE'}
-            </h3>
-            
-            <div className="mb-4">
-              <p className="text-slate-300 text-sm mb-2">
-                Current probability: {selectedPrediction ? truePercentage.toFixed(1) : falsePercentage.toFixed(1)}%
-              </p>
-              <p className="text-slate-400 text-xs">
-                Your balance: {user?.provePoints || 0} PP
-              </p>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-white text-sm font-medium mb-2">
-                Stake Amount (PP)
-              </label>
-              <input
-                type="number"
-                min="1"
-                max={user?.provePoints || 0}
-                value={stakeAmount}
-                onChange={(e) => setStakeAmount(parseInt(e.target.value) || 0)}
-                className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-3 py-2 text-white focus:border-purple-500 focus:outline-none"
-                placeholder="Enter amount"
-              />
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowStakeModal(false)}
-                className="flex-1 bg-slate-600 hover:bg-slate-500 text-white py-2 px-4 rounded-lg transition-colors duration-200"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmStake}
-                disabled={isStaking || stakeAmount <= 0 || stakeAmount > (user?.provePoints || 0)}
-                className="flex-1 bg-purple-600 hover:bg-purple-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg transition-colors duration-200"
-              >
-                {isStaking ? 'Staking...' : 'Confirm Stake'}
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Order Widget */}
+      {showOrderWidget && (
+        <OrderWidget
+          marketId={market.id}
+          prediction={selectedPrediction}
+          currentProbTrue={market.probTrue}
+          currentProbFalse={market.probFalse}
+          onClose={() => setShowOrderWidget(false)}
+          onSuccess={() => {
+            setShowOrderWidget(false);
+            if (onStakeSuccess) {
+              onStakeSuccess();
+            }
+          }}
+        />
       )}
     </>
   );

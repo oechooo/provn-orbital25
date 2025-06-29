@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { ArticleWithMarket } from '../../../shared/types';
 import OrderWidget from './OrderWidget';
+import OutcomeWidget from './OutcomeWidget';
 import { articleAPI, marketAPI } from '../services/api';
 import { useAuth } from '../contexts/SimpleAuthContext';
+import toast from 'react-hot-toast';
 
 interface ArticleCardProps {
   article: ArticleWithMarket;
@@ -19,7 +21,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
   const [currentArticle, setCurrentArticle] = useState<ArticleWithMarket>(article);
   const [showAdminMenu, setShowAdminMenu] = useState(false);
   const [adminAction, setAdminAction] = useState<'setOutcome' | 'resolve' | null>(null);
-  const [outcomeChoice, setOutcomeChoice] = useState<boolean>(true);
+  const [showOutcomeWidget, setShowOutcomeWidget] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -62,9 +64,14 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
 
   // Close admin menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = () => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (showAdminMenu) {
-        setShowAdminMenu(false);
+        const target = event.target as Element;
+        // Check if the click is outside the admin menu container
+        const adminMenuContainer = target.closest('[data-admin-menu]');
+        if (!adminMenuContainer) {
+          setShowAdminMenu(false);
+        }
       }
     };
 
@@ -91,20 +98,6 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
   };
 
   // Admin action handlers
-  const handleSetOutcome = async (outcome: boolean) => {
-    if (!currentArticle.market?.id) return;
-    
-    try {
-      await marketAPI.setMarketOutcome(currentArticle.market.id, outcome);
-      await refreshArticleData();
-      setShowAdminMenu(false);
-      alert(`Market outcome set to ${outcome ? 'TRUE' : 'FALSE'}`);
-    } catch (error) {
-      console.error('Error setting market outcome:', error);
-      alert('Failed to set market outcome');
-    }
-  };
-
   const handleResolveMarket = async () => {
     if (!currentArticle.market?.id) return;
     
@@ -112,10 +105,10 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
       await marketAPI.adminResolveMarket(currentArticle.market.id);
       await refreshArticleData();
       setAdminAction(null);
-      alert('Market resolved successfully');
+      toast.success('Market resolved successfully');
     } catch (error) {
       console.error('Error resolving market:', error);
-      alert('Failed to resolve market');
+      toast.error('Failed to resolve market');
     }
   };
 
@@ -136,9 +129,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
       className="w-full relative flex flex-col bg-slate-900/80 border border-slate-700 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-200 overflow-hidden"
       style={{ maxWidth: '100%' }}
     >
-      {/* Admin Menu - Three Dots */}
+      {/* Admin Menu - Kebab */}
       {user?.isAdmin && (
-        <div className="absolute top-4 right-4 z-10">
+        <div className="absolute top-4 right-4 z-10" data-admin-menu>
           <div className="relative">
             <button
               onClick={() => setShowAdminMenu(!showAdminMenu)}
@@ -153,10 +146,13 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
             {showAdminMenu && (
               <div className="absolute right-0 top-full mt-1 bg-slate-800 border border-slate-600 rounded-lg shadow-lg py-1 min-w-48 z-20">
                 <button
-                  onClick={() => handleAdminAction('setOutcome')}
+                  onClick={() => {
+                    setShowOutcomeWidget(true);
+                    setShowAdminMenu(false);
+                  }}
                   className="w-full px-4 py-2 text-left text-slate-200 hover:bg-slate-700 transition-colors"
                 >
-                  Set Outcome
+                  Set Outcome ({currentArticle.market?.outcome === true ? 'TRUE' : currentArticle.market?.outcome === false ? 'FALSE' : 'NONE'})
                 </button>
                 <button
                   onClick={() => handleAdminAction('resolve')}
@@ -293,36 +289,19 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
         />
       )}
 
-      {/* Admin Action Modals */}
-      {adminAction === 'setOutcome' && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setAdminAction(null)}>
-          <div className="bg-slate-800 border border-slate-600 rounded-xl p-6 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
-            <h3 className="text-xl font-bold text-slate-100 mb-4">Set Market Outcome</h3>
-            <p className="text-slate-300 mb-6">Choose the outcome for this market:</p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => handleSetOutcome(true)}
-                className="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition-colors"
-              >
-                Set TRUE
-              </button>
-              <button
-                onClick={() => handleSetOutcome(false)}
-                className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-colors"
-              >
-                Set FALSE
-              </button>
-            </div>
-            <button
-              onClick={() => setAdminAction(null)}
-              className="w-full mt-3 px-4 py-2 text-slate-400 hover:text-slate-200 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
+      {/* Outcome Widget */}
+      {showOutcomeWidget && currentArticle.market && (
+        <OutcomeWidget
+          marketId={currentArticle.market.id}
+          currentOutcome={currentArticle.market.outcome}
+          onClose={() => setShowOutcomeWidget(false)}
+          onSuccess={async () => {
+            await refreshArticleData();
+          }}
+        />
       )}
 
+      {/* Admin Action Modals */}
       {adminAction === 'resolve' && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setAdminAction(null)}>
           <div className="bg-slate-800 border border-slate-600 rounded-xl p-6 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
