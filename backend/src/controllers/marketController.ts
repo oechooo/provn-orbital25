@@ -178,8 +178,8 @@ export const setMarketOutcome = async (req: AuthRequest, res: Response): Promise
       return;
     }
 
-    if (typeof outcome !== 'boolean') {
-      res.status(400).json({ message: 'Outcome must be true or false' });
+    if (outcome !== null && typeof outcome !== 'boolean') {
+      res.status(400).json({ message: 'Outcome must be true, false, or null' });
       return;
     }
 

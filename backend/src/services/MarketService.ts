@@ -329,7 +329,7 @@ export class MarketService {
   }
 
   // Admin functions
-  async setMarketOutcome(marketId: number, outcome: boolean): Promise<void> {
+  async setMarketOutcome(marketId: number, outcome: boolean | null): Promise<void> {
     const market = await this.getMarketById(marketId);
     if (!market) throw new Error('Market not found');
 
