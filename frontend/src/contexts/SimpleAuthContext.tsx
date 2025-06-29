@@ -4,6 +4,7 @@ interface User {
   id: number;
   username: string;
   email: string;
+  isAdmin?: boolean;
   provePoints: number;
   createdAt: string;
   updatedAt?: string;

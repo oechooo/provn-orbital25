@@ -57,6 +57,7 @@ model User {
   username String   @unique
   email    String   @unique
   password String
+  isAdmin Boolean @default(false)
   provePoints Float   @default(100)
   resetToken String?
   resetTokenExpiry DateTime?

@@ -125,6 +125,20 @@ export const marketAPI = {
   getStakingParameters: (marketId: number, prediction: boolean, stakeAmount: number) => {
     return apiRequest(`/markets/${marketId}/staking-parameters?prediction=${prediction}&stakeAmount=${stakeAmount}`);
   },
+
+  // Admin functions
+  setMarketOutcome: (id: number, outcome: boolean) => {
+    return apiRequest(`/markets/${id}/set-outcome`, {
+      method: 'PUT',
+      body: JSON.stringify({ outcome }),
+    });
+  },
+
+  adminResolveMarket: (id: number) => {
+    return apiRequest(`/markets/${id}/admin-resolve`, {
+      method: 'PUT',
+    });
+  },
 };
 
 // Stake API functions

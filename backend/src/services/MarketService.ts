@@ -327,4 +327,17 @@ export class MarketService {
       },
     });
   }
+
+  // Admin functions
+  async setMarketOutcome(marketId: number, outcome: boolean): Promise<void> {
+    const market = await this.getMarketById(marketId);
+    if (!market) throw new Error('Market not found');
+
+    await this.prisma.market.update({
+      where: { id: marketId },
+      data: {
+        outcome: outcome,
+      },
+    });
+  }
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { ArticleWithMarket } from '../../../shared/types';
 import OrderWidget from './OrderWidget';
-import { articleAPI } from '../services/api';
+import { articleAPI, marketAPI } from '../services/api';
 import { useAuth } from '../contexts/SimpleAuthContext';
 
 interface ArticleCardProps {
@@ -17,6 +17,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
   const [showOrderWidget, setShowOrderWidget] = useState(false);
   const [selectedPrediction, setSelectedPrediction] = useState<boolean>(true);
   const [currentArticle, setCurrentArticle] = useState<ArticleWithMarket>(article);
+  const [showAdminMenu, setShowAdminMenu] = useState(false);
+  const [adminAction, setAdminAction] = useState<'setOutcome' | 'resolve' | null>(null);
+  const [outcomeChoice, setOutcomeChoice] = useState<boolean>(true);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -57,6 +60,18 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
     return () => clearInterval(interval);
   }, [currentArticle.id, currentArticle.market?.id]);
 
+  // Close admin menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (showAdminMenu) {
+        setShowAdminMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showAdminMenu]);
+
   // Update currentArticle when article prop changes
   useEffect(() => {
     setCurrentArticle(article);
@@ -75,6 +90,40 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
     setShowOrderWidget(true);
   };
 
+  // Admin action handlers
+  const handleSetOutcome = async (outcome: boolean) => {
+    if (!currentArticle.market?.id) return;
+    
+    try {
+      await marketAPI.setMarketOutcome(currentArticle.market.id, outcome);
+      await refreshArticleData();
+      setShowAdminMenu(false);
+      alert(`Market outcome set to ${outcome ? 'TRUE' : 'FALSE'}`);
+    } catch (error) {
+      console.error('Error setting market outcome:', error);
+      alert('Failed to set market outcome');
+    }
+  };
+
+  const handleResolveMarket = async () => {
+    if (!currentArticle.market?.id) return;
+    
+    try {
+      await marketAPI.adminResolveMarket(currentArticle.market.id);
+      await refreshArticleData();
+      setAdminAction(null);
+      alert('Market resolved successfully');
+    } catch (error) {
+      console.error('Error resolving market:', error);
+      alert('Failed to resolve market');
+    }
+  };
+
+  const handleAdminAction = (action: 'setOutcome' | 'resolve') => {
+    setAdminAction(action);
+    setShowAdminMenu(false);
+  };
+
   const capitalizeCategory = (category: string): string => {
     return category
       .split(' ')
@@ -87,6 +136,40 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
       className="w-full relative flex flex-col bg-slate-900/80 border border-slate-700 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-200 overflow-hidden"
       style={{ maxWidth: '100%' }}
     >
+      {/* Admin Menu - Three Dots */}
+      {user?.isAdmin && (
+        <div className="absolute top-4 right-4 z-10">
+          <div className="relative">
+            <button
+              onClick={() => setShowAdminMenu(!showAdminMenu)}
+              className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-lg transition-colors"
+              title="Admin Actions"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+              </svg>
+            </button>
+            
+            {showAdminMenu && (
+              <div className="absolute right-0 top-full mt-1 bg-slate-800 border border-slate-600 rounded-lg shadow-lg py-1 min-w-48 z-20">
+                <button
+                  onClick={() => handleAdminAction('setOutcome')}
+                  className="w-full px-4 py-2 text-left text-slate-200 hover:bg-slate-700 transition-colors"
+                >
+                  Set Outcome
+                </button>
+                <button
+                  onClick={() => handleAdminAction('resolve')}
+                  className="w-full px-4 py-2 text-left text-slate-200 hover:bg-slate-700 transition-colors"
+                >
+                  Resolve Market
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="flex-1 flex flex-col md:flex-row gap-4 p-4">
         {/* Thumbnail */}
@@ -208,6 +291,63 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
             refreshArticleData(); // Immediate refresh after stake
           }}
         />
+      )}
+
+      {/* Admin Action Modals */}
+      {adminAction === 'setOutcome' && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setAdminAction(null)}>
+          <div className="bg-slate-800 border border-slate-600 rounded-xl p-6 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
+            <h3 className="text-xl font-bold text-slate-100 mb-4">Set Market Outcome</h3>
+            <p className="text-slate-300 mb-6">Choose the outcome for this market:</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleSetOutcome(true)}
+                className="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition-colors"
+              >
+                Set TRUE
+              </button>
+              <button
+                onClick={() => handleSetOutcome(false)}
+                className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-colors"
+              >
+                Set FALSE
+              </button>
+            </div>
+            <button
+              onClick={() => setAdminAction(null)}
+              className="w-full mt-3 px-4 py-2 text-slate-400 hover:text-slate-200 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {adminAction === 'resolve' && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setAdminAction(null)}>
+          <div className="bg-slate-800 border border-slate-600 rounded-xl p-6 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
+            <h3 className="text-xl font-bold text-slate-100 mb-4">Resolve Market</h3>
+            <p className="text-slate-300 mb-6">
+              This will resolve the market using the current market logic. 
+              If the market outcome is already set, it will use that outcome. 
+              Otherwise, it will resolve based on the current prediction probabilities.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleResolveMarket()}
+                className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg transition-colors"
+              >
+                Resolve Market
+              </button>
+              <button
+                onClick={() => setAdminAction(null)}
+                className="flex-1 px-4 py-3 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

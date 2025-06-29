@@ -66,6 +66,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         id: true, 
         username: true, 
         email: true, 
+        isAdmin: true,
         provePoints: true,
         createdAt: true 
       }
@@ -210,6 +211,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
         id: true, 
         username: true, 
         email: true, 
+        isAdmin: true,
         provePoints: true,
         createdAt: true,
         updatedAt: true
@@ -256,6 +258,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
         id: true, 
         username: true, 
         email: true, 
+        isAdmin: true,
         provePoints: true,
         createdAt: true,
         updatedAt: true

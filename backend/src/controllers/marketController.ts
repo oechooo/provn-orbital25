@@ -154,3 +154,69 @@ export const getSimpleStats = async (req: Request, res: Response): Promise<void>
     res.status(500).json({ message: 'Error fetching stats' });
   }
 };
+
+// Admin functions
+export const setMarketOutcome = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { outcome } = req.body;
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      res.status(401).json({ message: 'User not authenticated' });
+      return;
+    }
+
+    // Check if user is admin
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { isAdmin: true }
+    });
+
+    if (!user?.isAdmin) {
+      res.status(403).json({ message: 'Admin access required' });
+      return;
+    }
+
+    if (typeof outcome !== 'boolean') {
+      res.status(400).json({ message: 'Outcome must be true or false' });
+      return;
+    }
+
+    await marketService.setMarketOutcome(parseInt(id), outcome);
+    res.json({ message: 'Market outcome set successfully' });
+  } catch (error) {
+    console.error('Set market outcome error:', error);
+    res.status(500).json({ message: 'Error setting market outcome' });
+  }
+};
+
+export const adminResolveMarket = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      res.status(401).json({ message: 'User not authenticated' });
+      return;
+    }
+
+    // Check if user is admin
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { isAdmin: true }
+    });
+
+    if (!user?.isAdmin) {
+      res.status(403).json({ message: 'Admin access required' });
+      return;
+    }
+
+    // Use the existing resolveMarket function
+    await marketService.resolveMarket(parseInt(id));
+    res.json({ message: 'Market resolved successfully' });
+  } catch (error) {
+    console.error('Admin resolve market error:', error);
+    res.status(500).json({ message: 'Error resolving market' });
+  }
+};
