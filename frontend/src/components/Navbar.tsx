@@ -33,7 +33,13 @@ const Navbar = () => {
                 Provn.io
               </Link>
             </div>
-            <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
+            <div className="hidden sm:ml-8 sm:flex sm:items-center sm:space-x-8">
+              <Link 
+                to="/news" 
+                className="text-white/70 hover:text-white px-3 py-2 rounded-xl hover:bg-white/10 text-sm font-medium transition-all duration-300"
+              >
+                News
+              </Link>
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
@@ -110,6 +116,13 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="sm:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 bg-white/10 backdrop-blur-lg border-t border-white/20">
+            <Link 
+              to="/news" 
+              className="block px-3 py-2 rounded-md text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              News
+            </Link>
             {user ? (
               <Link 
                 to="/profile" 
