@@ -89,7 +89,7 @@ const ProfilePage: React.FC = () => {
     return {
       status: won ? 'won' : 'lost',
       color: won ? 'text-green-400' : 'text-red-400',
-      text: won ? `Won ${(stake.stakeAmount * stake.upside).toFixed(1)} PP` : `Lost ${stake.stakeAmount} PP`
+      text: won ? `Won ${(stake.stakeAmount * stake.upside).toFixed(2)} PP` : `Lost ${stake.stakeAmount.toFixed(2)} PP`
     };
   };
 
@@ -155,7 +155,7 @@ const ProfilePage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 backdrop-blur-sm border border-blue-500/20 rounded-xl p-6 text-center">
                 <div className="text-3xl font-bold text-blue-400 mb-2">
-                  {user.provePoints.toFixed(1)}
+                  {user.provePoints.toFixed(2)}
                 </div>
                 <div className="text-sm text-slate-300">Prove Points</div>
               </div>
@@ -255,7 +255,7 @@ const ProfilePage: React.FC = () => {
                           
                           <div className="text-center">
                             <div className="text-lg font-bold text-white">
-                              {stake.stakeAmount} PP
+                              {stake.stakeAmount.toFixed(2)} PP
                             </div>
                             <div className="text-xs text-slate-400">Staked</div>
                           </div>

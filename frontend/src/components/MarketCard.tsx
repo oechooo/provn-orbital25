@@ -117,11 +117,11 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, onStakeSuccess }) => {
               {/* Probability Display */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-green-600/20 border border-green-500/30 rounded-lg p-3 text-center">
-                  <div className="text-green-400 font-bold text-lg">{truePercentage.toFixed(1)}%</div>
+                  <div className="text-green-400 font-bold text-lg">{truePercentage.toFixed(2)}%</div>
                   <div className="text-green-300 text-sm">TRUE</div>
                 </div>
                 <div className="bg-red-600/20 border border-red-500/30 rounded-lg p-3 text-center">
-                  <div className="text-red-400 font-bold text-lg">{falsePercentage.toFixed(1)}%</div>
+                  <div className="text-red-400 font-bold text-lg">{falsePercentage.toFixed(2)}%</div>
                   <div className="text-red-300 text-sm">FALSE</div>
                 </div>
               </div>

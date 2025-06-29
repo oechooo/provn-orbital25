@@ -136,7 +136,7 @@ const OrderWidget: React.FC<OrderWidgetProps> = ({
             </label>
             {userPoints !== null && (
               <span className="text-xs text-slate-400">
-                Available: {userPoints} PP
+                Available: {userPoints.toFixed(2)} PP
               </span>
             )}
           </div>
@@ -175,7 +175,7 @@ const OrderWidget: React.FC<OrderWidgetProps> = ({
         <div className="mb-6 p-3 bg-slate-700/30 rounded-lg">
           <div className="flex justify-between text-sm mb-1">
             <span className="text-slate-300">Stake:</span>
-            <span className="text-slate-100">{stakeAmount} PP</span>
+            <span className="text-slate-100">{stakeAmount.toFixed(2)} PP</span>
           </div>
           <div className="flex justify-between text-sm mb-1">
             <span className="text-slate-300">Potential Upside:</span>
@@ -193,7 +193,7 @@ const OrderWidget: React.FC<OrderWidgetProps> = ({
               {isCalculating ? (
                 <span className="animate-pulse">...</span>
               ) : (
-                `${totalPayout.toFixed(1)} PP`
+                `${totalPayout.toFixed(2)} PP`
               )}
             </span>
           </div>

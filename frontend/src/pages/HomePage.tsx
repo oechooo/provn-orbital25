@@ -117,7 +117,7 @@ const HomePage: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
                 <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-6 py-3">
                   <span className="text-white font-medium">
-                    Balance: <span className="text-cyan-400 font-bold">{user.provePoints} PP</span>
+                    Balance: <span className="text-cyan-400 font-bold">{user.provePoints.toFixed(2)} PP</span>
                   </span>
                 </div>
                 <Link

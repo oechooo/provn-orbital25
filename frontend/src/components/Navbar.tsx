@@ -63,7 +63,7 @@ const Navbar = () => {
                     {user.username}
                   </span>
                   <span className="text-xs text-cyan-300">
-                    {user.provePoints} pts
+                    {user.provePoints.toFixed(2)} PP
                   </span>
                 </div>
               </Link>
@@ -121,7 +121,7 @@ const Navbar = () => {
                   size={24} 
                   className="flex-shrink-0"
                 />
-                <span>{user.username} ({user.provePoints} pts)</span>
+                <span>{user.username} ({user.provePoints.toFixed(2)} PP)</span>
               </Link>
             ) : (
               <div className="space-y-1">

@@ -355,7 +355,7 @@ const ArticleDetailPage: React.FC = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Volume:</span>
-                    <span className="text-white">{totalVolume} PP</span>
+                    <span className="text-white">{totalVolume.toFixed(2)} PP</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Created:</span>
@@ -399,7 +399,7 @@ const ArticleDetailPage: React.FC = () => {
                   {/* Stake Amount */}
                   <div>
                     <label className="block text-sm text-slate-300 mb-2">
-                      Stake Amount (Available: {user.provePoints} PP)
+                      Stake Amount (Available: {user.provePoints.toFixed(2)} PP)
                     </label>
                     <input
                       type="number"
@@ -417,7 +417,7 @@ const ArticleDetailPage: React.FC = () => {
                     disabled={placing || stakeAmount <= 0 || stakeAmount > user.provePoints}
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 text-white py-3 rounded-lg font-medium transition-all disabled:cursor-not-allowed"
                   >
-                    {placing ? 'Placing...' : `Stake ${stakeAmount} PP on ${prediction ? 'TRUE' : 'FALSE'}`}
+                    {placing ? 'Placing...' : `Stake ${stakeAmount.toFixed(2)} PP on ${prediction ? 'TRUE' : 'FALSE'}`}
                   </button>
                 </div>
               ) : !user ? (

@@ -217,7 +217,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
                 >
                   {truePercent > 20 && (
                     <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-900 drop-shadow-sm">
-                      TRUE {truePercent.toFixed(1)}%
+                      TRUE {truePercent.toFixed(2)}%
                     </span>
                   )}
                 </div>
@@ -228,7 +228,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
                 >
                   {falsePercent > 20 && (
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-900 drop-shadow-sm">
-                      FALSE {falsePercent.toFixed(1)}%
+                      FALSE {falsePercent.toFixed(2)}%
                     </span>
                   )}
                 </div>

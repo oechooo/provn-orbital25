@@ -298,7 +298,7 @@ const ArticleDetailPage: React.FC = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Total Volume:</span>
-                    <span className="text-white">{totalVolume} PP</span>
+                    <span className="text-white">{totalVolume.toFixed(2)} PP</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Market Created:</span>
@@ -353,7 +353,7 @@ const ArticleDetailPage: React.FC = () => {
                       className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-purple-500 focus:outline-none"
                     />
                     <div className="text-xs text-slate-400 mt-1">
-                      Available: {user.provePoints} PP
+                      Available: {user.provePoints.toFixed(2)} PP
                     </div>
                   </div>
 
@@ -362,7 +362,7 @@ const ArticleDetailPage: React.FC = () => {
                     disabled={placing || stakeAmount <= 0 || stakeAmount > user.provePoints}
                     className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-4 py-3 rounded-lg transition-colors font-semibold"
                   >
-                    {placing ? 'Placing Stake...' : `Stake ${stakeAmount} PP on ${prediction ? 'TRUE' : 'FALSE'}`}
+                    {placing ? 'Placing Stake...' : `Stake ${stakeAmount.toFixed(2)} PP on ${prediction ? 'TRUE' : 'FALSE'}`}
                   </button>
                 </div>
               ) : (
@@ -397,7 +397,7 @@ const ArticleDetailPage: React.FC = () => {
                           {stake.prediction ? 'TRUE' : 'FALSE'}
                         </span>
                       </div>
-                      <span className="text-white">{stake.stakeAmount} PP</span>
+                      <span className="text-white">{stake.stakeAmount.toFixed(2)} PP</span>
                     </div>
                   ))}
                 </div>

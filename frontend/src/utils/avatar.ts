@@ -18,6 +18,14 @@ export const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
   accessories: 'none'
 };
 
+// PP requirements for premium avatar features
+export const AVATAR_REQUIREMENTS = {
+  hairStyle: 50, // PP required to unlock premium hair styles
+  eyes: 30,      // PP required to unlock premium eye styles
+  mouth: 30,     // PP required to unlock premium mouth styles
+  accessories: 100 // PP required to unlock premium accessories
+};
+
 export const AVATAR_OPTIONS = {
   skinColor: [
     { value: 'ffe4c0', label: 'Light', color: '#ffe4c0' },
