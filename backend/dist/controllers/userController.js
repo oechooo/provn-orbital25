@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updateUser = exports.createUser = exports.getUserById = exports.getUsers = void 0;
+exports.getCurrentUser = exports.updateUserAvatar = exports.deleteUser = exports.updateUser = exports.createUser = exports.getUserById = exports.getUsers = void 0;
 const client_1 = require("../prisma/client");
 const library_1 = require("@prisma/client/runtime/library");
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -173,4 +173,76 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.deleteUser = deleteUser;
+const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+        if (!userId) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { avatarSkinColor, avatarHairColor, avatarHair, avatarEyes, avatarMouth, avatarAccessories } = req.body;
+        // Basic validation for avatar config
+        if (!avatarSkinColor || !avatarHairColor || !avatarHair || !avatarEyes || !avatarMouth) {
+            res.status(400).json({ message: "All avatar fields except accessories are required" });
+            return;
+        }
+        const user = yield client_1.prisma.user.update({
+            where: { id: userId },
+            data: {
+                avatarSkinColor,
+                avatarHairColor,
+                avatarHair,
+                avatarEyes,
+                avatarMouth,
+                avatarAccessories: avatarAccessories || 'none'
+            }, // Temporary type assertion until Prisma client is fully updated
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                provePoints: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
+        res.json({ message: "Avatar updated successfully", user });
+    }
+    catch (error) {
+        console.error('Error updating avatar:', error);
+        res.status(500).json({ message: "Error updating avatar" });
+    }
+});
+exports.updateUserAvatar = updateUserAvatar;
+const getCurrentUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+        if (!userId) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const user = yield client_1.prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                provePoints: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+        res.json(user);
+    }
+    catch (error) {
+        console.error('Error fetching current user:', error);
+        res.status(500).json({ message: "Error fetching user" });
+    }
+});
+exports.getCurrentUser = getCurrentUser;
 //# sourceMappingURL=userController.js.map

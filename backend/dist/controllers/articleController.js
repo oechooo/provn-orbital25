@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.refreshArticles = exports.getArticleById = exports.getArticles = void 0;
+exports.getCategories = exports.refreshArticles = exports.getArticleById = exports.getArticles = void 0;
 const client_1 = require("../prisma/client");
 const ArticleService_1 = require("../services/ArticleService");
 const MarketService_1 = require("../services/MarketService");
@@ -132,4 +132,15 @@ const refreshArticles = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.refreshArticles = refreshArticles;
+const getCategories = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const categories = yield articleService.getCategories();
+        res.json({ categories });
+    }
+    catch (error) {
+        console.error('Get categories error:', error);
+        res.status(500).json({ message: 'Error fetching categories' });
+    }
+});
+exports.getCategories = getCategories;
 //# sourceMappingURL=articleController.js.map

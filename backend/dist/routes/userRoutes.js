@@ -6,11 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // src/routes/userRoutes.ts
 const express_1 = __importDefault(require("express"));
 const userController_1 = require("../controllers/userController");
+const auth_1 = require("../middleware/auth");
 const router = express_1.default.Router();
 router.get('/', userController_1.getUsers);
+router.get('/me', auth_1.auth, userController_1.getCurrentUser); // Get current user's profile
 router.get('/:id', userController_1.getUserById);
 router.post('/', userController_1.createUser);
 router.put('/:id', userController_1.updateUser);
 router.delete('/:id', userController_1.deleteUser);
+router.put('/:id/avatar', auth_1.auth, userController_1.updateUserAvatar);
 exports.default = router;
 //# sourceMappingURL=userRoutes.js.map

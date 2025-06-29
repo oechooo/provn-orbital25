@@ -186,13 +186,13 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, onStakeSuccess }) => {
         {/* Actions */}
         <div className="flex gap-2">
           <Link
-            to={`/article/${market.article.id}`}
+            to={`/article/${market.id}`}
             className="flex-1 bg-purple-600 hover:bg-purple-500 text-white text-center py-2 px-4 rounded-lg transition-colors duration-200"
           >
             Read Article
           </Link>
           <Link
-            to={`/market/${market.id}`}
+            to={`/article/${market.id}`}
             className="flex-1 bg-slate-600 hover:bg-slate-500 text-white text-center py-2 px-4 rounded-lg transition-colors duration-200"
           >
             Market Details

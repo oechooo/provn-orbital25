@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveMarket = exports.createMarket = exports.getMarketById = exports.getAllMarkets = void 0;
+exports.getSimpleStats = exports.getStakingParameters = exports.resolveMarket = exports.createMarket = exports.getMarketById = exports.getAllMarkets = void 0;
 const client_1 = require("../prisma/client");
 const MarketService_1 = require("../services/MarketService");
 const marketService = new MarketService_1.MarketService(client_1.prisma);
@@ -87,7 +87,7 @@ const resolveMarket = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             res.status(400).json({ message: 'Outcome must be true or false' });
             return;
         }
-        const market = yield marketService.resolveMarket(parseInt(id), outcome);
+        const market = yield marketService.resolveMarket(parseInt(id));
         res.json({
             message: 'Market resolved successfully',
             market
@@ -107,4 +107,53 @@ const resolveMarket = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.resolveMarket = resolveMarket;
+const getStakingParameters = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const { prediction, stakeAmount } = req.query;
+        if (!prediction || !stakeAmount) {
+            res.status(400).json({ message: 'Prediction and stakeAmount are required' });
+            return;
+        }
+        const marketId = parseInt(id);
+        const predictedOutcome = prediction === 'true';
+        const ppCount = parseInt(stakeAmount);
+        if (isNaN(marketId) || isNaN(ppCount) || ppCount <= 0) {
+            res.status(400).json({ message: 'Invalid parameters' });
+            return;
+        }
+        const parameters = yield marketService.getStakingParameters(marketId, predictedOutcome, ppCount);
+        res.json({
+            upside: parameters.upside,
+            sharesBought: parameters.sharesBought,
+            potentialWinnings: ppCount * parameters.upside
+        });
+    }
+    catch (error) {
+        console.error('Get staking parameters error:', error);
+        if (error.message === 'Market not found') {
+            res.status(404).json({ message: 'Market not found' });
+        }
+        else {
+            res.status(500).json({ message: 'Error calculating staking parameters' });
+        }
+    }
+});
+exports.getStakingParameters = getStakingParameters;
+const getSimpleStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const usersWithStakes = yield client_1.prisma.user.count({
+            where: { stakes: { some: {} } }
+        });
+        const activeMarkets = yield client_1.prisma.market.count({
+            where: { outcome: null }
+        });
+        res.json({ users: usersWithStakes, stories: activeMarkets });
+    }
+    catch (error) {
+        console.error('Get simple stats error:', error);
+        res.status(500).json({ message: 'Error fetching stats' });
+    }
+});
+exports.getSimpleStats = getSimpleStats;
 //# sourceMappingURL=marketController.js.map

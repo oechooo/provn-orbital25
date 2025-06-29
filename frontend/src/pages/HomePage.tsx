@@ -9,6 +9,7 @@ const HomePage: React.FC = () => {
   const { user } = useAuth();
   const [markets, setMarkets] = useState<any[]>([]);
   const [marketStats, setMarketStats] = useState<any>(null);
+  const [simpleStats, setSimpleStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -20,6 +21,20 @@ const HomePage: React.FC = () => {
     try {
       setLoading(true);
       
+      // Fetch simple stats
+      try {
+        const statsResponse = await fetch('http://localhost:3000/api/markets/simple-stats');
+        if (statsResponse.ok) {
+          const stats = await statsResponse.json();
+          console.log('Simple stats:', stats); // Debug log
+          setSimpleStats(stats);
+        } else {
+          console.error('Stats API error:', statsResponse.status);
+        }
+      } catch (statsError) {
+        console.error('Error fetching simple stats:', statsError);
+      }
+      
       // Fetch all markets with their articles
       const marketsResponse = await marketAPI.getMarkets();
       const allMarkets = marketsResponse.markets || [];
@@ -28,12 +43,12 @@ const HomePage: React.FC = () => {
       setMarkets(allMarkets.slice(0, 6));
       
       // Calculate stats
-      const stats = {
+      const marketStatsData = {
         totalMarkets: allMarkets.length,
         activeMarkets: allMarkets.filter((m: any) => !m.resolved).length,
         totalStakes: allMarkets.reduce((sum: number, m: any) => sum + (m.stakes?.length || 0), 0),
       };
-      setMarketStats(stats);
+      setMarketStats(marketStatsData);
     } catch (error) {
       console.error('Error fetching home data:', error);
       toast.error('Failed to load market data');
@@ -80,13 +95,17 @@ const HomePage: React.FC = () => {
           <div className="text-center">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm font-medium mb-8">
               <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-              Prediction Markets for News Verification
+              {simpleStats ? `${simpleStats.users} users staking on ${simpleStats.stories} stories` : 'Loading statistics...'}
             </div>
             
             <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
-              Verify News with{' '}
+              Have a{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
-                Market Intelligence
+                Stake
+              </span>
+              {' '}in the{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
+                Truth
               </span>
             </h1>
             

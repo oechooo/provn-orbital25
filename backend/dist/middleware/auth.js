@@ -45,20 +45,47 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.auth = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
 const auth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     try {
-        const token = (_a = req.header('Authorization')) === null || _a === void 0 ? void 0 : _a.replace('Bearer ', '');
-        if (!token) {
+        const authHeader = req.header('Authorization');
+        if (!authHeader) {
             res.status(401).json({ message: 'Authentication required' });
             return;
         }
-        const secret = process.env.JWT_SECRET || 'your-secret-key';
+        if (!authHeader.startsWith('Bearer ')) {
+            res.status(401).json({ message: 'Invalid authentication format' });
+            return;
+        }
+        const token = authHeader.replace('Bearer ', '');
+        if (!token || token.trim().length === 0) {
+            res.status(401).json({ message: 'Authentication token required' });
+            return;
+        }
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+            console.error('JWT_SECRET not configured');
+            res.status(500).json({ message: 'Authentication service unavailable' });
+            return;
+        }
         const decoded = jwt.verify(token, secret);
+        // Validate decoded token structure
+        if (!decoded.userId || !decoded.username) {
+            res.status(401).json({ message: 'Invalid authentication token' });
+            return;
+        }
         req.user = decoded;
         next();
     }
     catch (error) {
-        res.status(401).json({ message: 'Authentication invalid' });
+        if (error instanceof jwt.TokenExpiredError) {
+            res.status(401).json({ message: 'Authentication token expired' });
+        }
+        else if (error instanceof jwt.JsonWebTokenError) {
+            res.status(401).json({ message: 'Invalid authentication token' });
+        }
+        else {
+            console.error('Authentication error:', error);
+            res.status(401).json({ message: 'Authentication failed' });
+        }
     }
 });
 exports.auth = auth;

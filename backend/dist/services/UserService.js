@@ -33,7 +33,8 @@ class UserService {
             });
             return user;
         });
-    } // Get a user's full details, including stakes
+    }
+    // Get a user's full details, including stakes
     getUser(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.prisma.user.findUnique({
@@ -106,10 +107,7 @@ class UserService {
         return __awaiter(this, void 0, void 0, function* () {
             const stakes = yield this.prisma.stake.findMany({
                 where: {
-                    userId: id,
-                    market: {
-                        resolved: true
-                    }
+                    userId: id
                 },
                 include: {
                     market: true

@@ -137,3 +137,20 @@ export const getStakingParameters = async (req: Request, res: Response): Promise
     }
   }
 };
+
+export const getSimpleStats = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const usersWithStakes = await prisma.user.count({
+      where: { stakes: { some: {} } }
+    });
+    
+    const activeMarkets = await prisma.market.count({
+      where: { outcome: null }
+    });
+    
+    res.json({ users: usersWithStakes, stories: activeMarkets });
+  } catch (error) {
+    console.error('Get simple stats error:', error);
+    res.status(500).json({ message: 'Error fetching stats' });
+  }
+};

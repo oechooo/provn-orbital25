@@ -28,7 +28,8 @@ function App() {
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/reset-password" element={<ResetPasswordPage />} />            </Routes>
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+            </Routes>
           </main>
           <footer className="glass-card mx-4 mb-4 sm:mx-6 lg:mx-8 py-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

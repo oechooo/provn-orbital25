@@ -116,6 +116,26 @@ class ArticleService {
             });
         });
     }
+    // Get unique categories from articles
+    getCategories() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield this.prisma.article.findMany({
+                select: {
+                    category: true,
+                },
+                distinct: ['category'],
+                where: {
+                    category: {
+                        not: null,
+                    },
+                },
+            });
+            return result
+                .map(item => item.category)
+                .filter((category) => category !== null)
+                .sort();
+        });
+    }
 }
 exports.ArticleService = ArticleService;
 //# sourceMappingURL=ArticleService.js.map

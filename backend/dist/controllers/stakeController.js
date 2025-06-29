@@ -120,10 +120,7 @@ const getUserStats = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         // Calculate user statistics
         const stakes = yield client_1.prisma.stake.findMany({
             where: {
-                userId: parseInt(userId),
-                market: {
-                    resolved: true
-                }
+                userId: parseInt(userId)
             },
             include: {
                 market: true

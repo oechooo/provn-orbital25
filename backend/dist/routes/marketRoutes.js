@@ -8,8 +8,10 @@ const marketController_1 = require("../controllers/marketController");
 const auth_1 = require("../middleware/auth");
 const router = express_1.default.Router();
 // Public routes
+router.get('/simple-stats', marketController_1.getSimpleStats);
 router.get('/', marketController_1.getAllMarkets);
 router.get('/:id', marketController_1.getMarketById);
+router.get('/:id/staking-parameters', marketController_1.getStakingParameters);
 // Protected routes (require authentication)
 router.post('/', auth_1.auth, marketController_1.createMarket);
 router.put('/:id/resolve', auth_1.auth, marketController_1.resolveMarket);

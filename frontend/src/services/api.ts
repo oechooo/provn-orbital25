@@ -11,7 +11,9 @@ const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
     },
   };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  const fullUrl = `${API_BASE_URL}${endpoint}`;
+
+  const response = await fetch(fullUrl, {
     ...defaultOptions,
     ...options,
     headers: {

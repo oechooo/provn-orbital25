@@ -43,6 +43,7 @@ class StakeService {
                     data: {
                         userId,
                         marketId,
+                        resolved: false,
                         prediction,
                         stakeAmount,
                         upside,
@@ -58,6 +59,34 @@ class StakeService {
                 });
                 return stake;
             }));
+        });
+    }
+    resolveStake(stakeId, finalOutcome) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Fetch the stake with user info
+            const stake = yield this.prisma.stake.findUnique({
+                where: { id: stakeId },
+                include: { user: true }
+            });
+            if (!stake)
+                throw new Error('Stake not found');
+            // Mark the stake as resolved
+            yield this.prisma.stake.update({
+                where: { id: stakeId },
+                data: { resolved: true }
+            });
+            // Credit user if prediction was correct
+            if (stake.prediction === finalOutcome) {
+                const winnings = stake.stakeAmount * stake.upside;
+                yield this.prisma.user.update({
+                    where: { id: stake.userId },
+                    data: {
+                        provePoints: {
+                            increment: winnings
+                        }
+                    }
+                });
+            }
         });
     }
     getUserStakes(userId) {
