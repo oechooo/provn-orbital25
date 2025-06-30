@@ -1,4 +1,4 @@
-import { PrismaClient, Article, Market } from '@prisma/client';
+import { PrismaClient, Article, Market } from '../prisma/client/index';
 import { ArticleWithMarket } from '../models/Article';
 
 export interface CreateArticleInput {

@@ -1,7 +1,7 @@
 // src/controllers/userController.ts
 import { Request, Response } from 'express';
 import { prisma } from '../prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaClientKnownRequestError } from '../prisma/client/runtime/library';
 import { AuthRequest } from '../middleware/auth';
 
 export const getUsers = async (req: Request, res: Response): Promise<void> => {

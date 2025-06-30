@@ -127,23 +127,34 @@ exports.Prisma.ArticleScalarFieldEnum = {
   urlToImage: 'urlToImage',
   publishedAt: 'publishedAt',
   content: 'content',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  category: 'category'
 };
 
 exports.Prisma.MarketScalarFieldEnum = {
   id: 'id',
   articleId: 'articleId',
-  totalTrue: 'totalTrue',
-  totalFalse: 'totalFalse',
-  createdAt: 'createdAt'
+  closed: 'closed',
+  resolveCount: 'resolveCount',
+  outcome: 'outcome',
+  createdAt: 'createdAt',
+  lastResolve: 'lastResolve',
+  nextResolve: 'nextResolve',
+  sharesTrue: 'sharesTrue',
+  sharesFalse: 'sharesFalse',
+  probTrue: 'probTrue',
+  probFalse: 'probFalse'
 };
 
-exports.Prisma.BetScalarFieldEnum = {
+exports.Prisma.StakeScalarFieldEnum = {
   id: 'id',
-  amount: 'amount',
-  choice: 'choice',
-  createdAt: 'createdAt',
-  marketId: 'marketId'
+  userId: 'userId',
+  marketId: 'marketId',
+  resolved: 'resolved',
+  prediction: 'prediction',
+  stakeAmount: 'stakeAmount',
+  upside: 'upside',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.UserScalarFieldEnum = {
@@ -151,8 +162,18 @@ exports.Prisma.UserScalarFieldEnum = {
   username: 'username',
   email: 'email',
   password: 'password',
+  isAdmin: 'isAdmin',
+  provePoints: 'provePoints',
+  resetToken: 'resetToken',
+  resetTokenExpiry: 'resetTokenExpiry',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  avatarSkinColor: 'avatarSkinColor',
+  avatarHairColor: 'avatarHairColor',
+  avatarHair: 'avatarHair',
+  avatarEyes: 'avatarEyes',
+  avatarMouth: 'avatarMouth',
+  avatarAccessories: 'avatarAccessories'
 };
 
 exports.Prisma.SortOrder = {
@@ -169,7 +190,7 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   Article: 'Article',
   Market: 'Market',
-  Bet: 'Bet',
+  Stake: 'Stake',
   User: 'User'
 };
 

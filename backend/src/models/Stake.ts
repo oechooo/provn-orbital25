@@ -1,4 +1,4 @@
-import { Stake, User } from '@prisma/client';
+import { Stake, User } from '../prisma/client/index';
 
 // Stake with only id and username from User
 export type StakeWithUser = Stake & {

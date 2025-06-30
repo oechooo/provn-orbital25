@@ -24,10 +24,10 @@ export type Article = $Result.DefaultSelection<Prisma.$ArticlePayload>
  */
 export type Market = $Result.DefaultSelection<Prisma.$MarketPayload>
 /**
- * Model Bet
+ * Model Stake
  * 
  */
-export type Bet = $Result.DefaultSelection<Prisma.$BetPayload>
+export type Stake = $Result.DefaultSelection<Prisma.$StakePayload>
 /**
  * Model User
  * 
@@ -180,14 +180,14 @@ export class PrismaClient<
   get market(): Prisma.MarketDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.bet`: Exposes CRUD operations for the **Bet** model.
+   * `prisma.stake`: Exposes CRUD operations for the **Stake** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more Bets
-    * const bets = await prisma.bet.findMany()
+    * // Fetch zero or more Stakes
+    * const stakes = await prisma.stake.findMany()
     * ```
     */
-  get bet(): Prisma.BetDelegate<ExtArgs, ClientOptions>;
+  get stake(): Prisma.StakeDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.user`: Exposes CRUD operations for the **User** model.
@@ -640,7 +640,7 @@ export namespace Prisma {
   export const ModelName: {
     Article: 'Article',
     Market: 'Market',
-    Bet: 'Bet',
+    Stake: 'Stake',
     User: 'User'
   };
 
@@ -660,7 +660,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "article" | "market" | "bet" | "user"
+      modelProps: "article" | "market" | "stake" | "user"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -812,77 +812,77 @@ export namespace Prisma {
           }
         }
       }
-      Bet: {
-        payload: Prisma.$BetPayload<ExtArgs>
-        fields: Prisma.BetFieldRefs
+      Stake: {
+        payload: Prisma.$StakePayload<ExtArgs>
+        fields: Prisma.StakeFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.BetFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BetPayload> | null
+            args: Prisma.StakeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StakePayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.BetFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BetPayload>
+            args: Prisma.StakeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StakePayload>
           }
           findFirst: {
-            args: Prisma.BetFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BetPayload> | null
+            args: Prisma.StakeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StakePayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.BetFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BetPayload>
+            args: Prisma.StakeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StakePayload>
           }
           findMany: {
-            args: Prisma.BetFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BetPayload>[]
+            args: Prisma.StakeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StakePayload>[]
           }
           create: {
-            args: Prisma.BetCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BetPayload>
+            args: Prisma.StakeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StakePayload>
           }
           createMany: {
-            args: Prisma.BetCreateManyArgs<ExtArgs>
+            args: Prisma.StakeCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.BetCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BetPayload>[]
+            args: Prisma.StakeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StakePayload>[]
           }
           delete: {
-            args: Prisma.BetDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BetPayload>
+            args: Prisma.StakeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StakePayload>
           }
           update: {
-            args: Prisma.BetUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BetPayload>
+            args: Prisma.StakeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StakePayload>
           }
           deleteMany: {
-            args: Prisma.BetDeleteManyArgs<ExtArgs>
+            args: Prisma.StakeDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.BetUpdateManyArgs<ExtArgs>
+            args: Prisma.StakeUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.BetUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BetPayload>[]
+            args: Prisma.StakeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StakePayload>[]
           }
           upsert: {
-            args: Prisma.BetUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BetPayload>
+            args: Prisma.StakeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StakePayload>
           }
           aggregate: {
-            args: Prisma.BetAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateBet>
+            args: Prisma.StakeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStake>
           }
           groupBy: {
-            args: Prisma.BetGroupByArgs<ExtArgs>
-            result: $Utils.Optional<BetGroupByOutputType>[]
+            args: Prisma.StakeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StakeGroupByOutputType>[]
           }
           count: {
-            args: Prisma.BetCountArgs<ExtArgs>
-            result: $Utils.Optional<BetCountAggregateOutputType> | number
+            args: Prisma.StakeCountArgs<ExtArgs>
+            result: $Utils.Optional<StakeCountAggregateOutputType> | number
           }
         }
       }
@@ -1046,7 +1046,7 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     article?: ArticleOmit
     market?: MarketOmit
-    bet?: BetOmit
+    stake?: StakeOmit
     user?: UserOmit
   }
 
@@ -1142,11 +1142,11 @@ export namespace Prisma {
    */
 
   export type MarketCountOutputType = {
-    bets: number
+    stakes: number
   }
 
   export type MarketCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    bets?: boolean | MarketCountOutputTypeCountBetsArgs
+    stakes?: boolean | MarketCountOutputTypeCountStakesArgs
   }
 
   // Custom InputTypes
@@ -1163,8 +1163,39 @@ export namespace Prisma {
   /**
    * MarketCountOutputType without action
    */
-  export type MarketCountOutputTypeCountBetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: BetWhereInput
+  export type MarketCountOutputTypeCountStakesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StakeWhereInput
+  }
+
+
+  /**
+   * Count Type UserCountOutputType
+   */
+
+  export type UserCountOutputType = {
+    stakes: number
+  }
+
+  export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    stakes?: boolean | UserCountOutputTypeCountStakesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserCountOutputType
+     */
+    select?: UserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountStakesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StakeWhereInput
   }
 
 
@@ -1203,6 +1234,7 @@ export namespace Prisma {
     publishedAt: Date | null
     content: string | null
     createdAt: Date | null
+    category: string | null
   }
 
   export type ArticleMaxAggregateOutputType = {
@@ -1216,6 +1248,7 @@ export namespace Prisma {
     publishedAt: Date | null
     content: string | null
     createdAt: Date | null
+    category: string | null
   }
 
   export type ArticleCountAggregateOutputType = {
@@ -1229,6 +1262,7 @@ export namespace Prisma {
     publishedAt: number
     content: number
     createdAt: number
+    category: number
     _all: number
   }
 
@@ -1252,6 +1286,7 @@ export namespace Prisma {
     publishedAt?: true
     content?: true
     createdAt?: true
+    category?: true
   }
 
   export type ArticleMaxAggregateInputType = {
@@ -1265,6 +1300,7 @@ export namespace Prisma {
     publishedAt?: true
     content?: true
     createdAt?: true
+    category?: true
   }
 
   export type ArticleCountAggregateInputType = {
@@ -1278,6 +1314,7 @@ export namespace Prisma {
     publishedAt?: true
     content?: true
     createdAt?: true
+    category?: true
     _all?: true
   }
 
@@ -1378,6 +1415,7 @@ export namespace Prisma {
     publishedAt: Date
     content: string | null
     createdAt: Date
+    category: string | null
     _count: ArticleCountAggregateOutputType | null
     _avg: ArticleAvgAggregateOutputType | null
     _sum: ArticleSumAggregateOutputType | null
@@ -1410,6 +1448,7 @@ export namespace Prisma {
     publishedAt?: boolean
     content?: boolean
     createdAt?: boolean
+    category?: boolean
     market?: boolean | Article$marketArgs<ExtArgs>
   }, ExtArgs["result"]["article"]>
 
@@ -1424,6 +1463,7 @@ export namespace Prisma {
     publishedAt?: boolean
     content?: boolean
     createdAt?: boolean
+    category?: boolean
   }, ExtArgs["result"]["article"]>
 
   export type ArticleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1437,6 +1477,7 @@ export namespace Prisma {
     publishedAt?: boolean
     content?: boolean
     createdAt?: boolean
+    category?: boolean
   }, ExtArgs["result"]["article"]>
 
   export type ArticleSelectScalar = {
@@ -1450,9 +1491,10 @@ export namespace Prisma {
     publishedAt?: boolean
     content?: boolean
     createdAt?: boolean
+    category?: boolean
   }
 
-  export type ArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sourceName" | "author" | "title" | "description" | "url" | "urlToImage" | "publishedAt" | "content" | "createdAt", ExtArgs["result"]["article"]>
+  export type ArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sourceName" | "author" | "title" | "description" | "url" | "urlToImage" | "publishedAt" | "content" | "createdAt" | "category", ExtArgs["result"]["article"]>
   export type ArticleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     market?: boolean | Article$marketArgs<ExtArgs>
   }
@@ -1475,6 +1517,7 @@ export namespace Prisma {
       publishedAt: Date
       content: string | null
       createdAt: Date
+      category: string | null
     }, ExtArgs["result"]["article"]>
     composites: {}
   }
@@ -1909,6 +1952,7 @@ export namespace Prisma {
     readonly publishedAt: FieldRef<"Article", 'DateTime'>
     readonly content: FieldRef<"Article", 'String'>
     readonly createdAt: FieldRef<"Article", 'DateTime'>
+    readonly category: FieldRef<"Article", 'String'>
   }
     
 
@@ -2347,39 +2391,66 @@ export namespace Prisma {
   export type MarketAvgAggregateOutputType = {
     id: number | null
     articleId: number | null
-    totalTrue: number | null
-    totalFalse: number | null
+    resolveCount: number | null
+    sharesTrue: number | null
+    sharesFalse: number | null
+    probTrue: number | null
+    probFalse: number | null
   }
 
   export type MarketSumAggregateOutputType = {
     id: number | null
     articleId: number | null
-    totalTrue: number | null
-    totalFalse: number | null
+    resolveCount: number | null
+    sharesTrue: number | null
+    sharesFalse: number | null
+    probTrue: number | null
+    probFalse: number | null
   }
 
   export type MarketMinAggregateOutputType = {
     id: number | null
     articleId: number | null
-    totalTrue: number | null
-    totalFalse: number | null
+    closed: boolean | null
+    resolveCount: number | null
+    outcome: boolean | null
     createdAt: Date | null
+    lastResolve: Date | null
+    nextResolve: Date | null
+    sharesTrue: number | null
+    sharesFalse: number | null
+    probTrue: number | null
+    probFalse: number | null
   }
 
   export type MarketMaxAggregateOutputType = {
     id: number | null
     articleId: number | null
-    totalTrue: number | null
-    totalFalse: number | null
+    closed: boolean | null
+    resolveCount: number | null
+    outcome: boolean | null
     createdAt: Date | null
+    lastResolve: Date | null
+    nextResolve: Date | null
+    sharesTrue: number | null
+    sharesFalse: number | null
+    probTrue: number | null
+    probFalse: number | null
   }
 
   export type MarketCountAggregateOutputType = {
     id: number
     articleId: number
-    totalTrue: number
-    totalFalse: number
+    closed: number
+    resolveCount: number
+    outcome: number
     createdAt: number
+    lastResolve: number
+    nextResolve: number
+    sharesTrue: number
+    sharesFalse: number
+    probTrue: number
+    probFalse: number
     _all: number
   }
 
@@ -2387,39 +2458,66 @@ export namespace Prisma {
   export type MarketAvgAggregateInputType = {
     id?: true
     articleId?: true
-    totalTrue?: true
-    totalFalse?: true
+    resolveCount?: true
+    sharesTrue?: true
+    sharesFalse?: true
+    probTrue?: true
+    probFalse?: true
   }
 
   export type MarketSumAggregateInputType = {
     id?: true
     articleId?: true
-    totalTrue?: true
-    totalFalse?: true
+    resolveCount?: true
+    sharesTrue?: true
+    sharesFalse?: true
+    probTrue?: true
+    probFalse?: true
   }
 
   export type MarketMinAggregateInputType = {
     id?: true
     articleId?: true
-    totalTrue?: true
-    totalFalse?: true
+    closed?: true
+    resolveCount?: true
+    outcome?: true
     createdAt?: true
+    lastResolve?: true
+    nextResolve?: true
+    sharesTrue?: true
+    sharesFalse?: true
+    probTrue?: true
+    probFalse?: true
   }
 
   export type MarketMaxAggregateInputType = {
     id?: true
     articleId?: true
-    totalTrue?: true
-    totalFalse?: true
+    closed?: true
+    resolveCount?: true
+    outcome?: true
     createdAt?: true
+    lastResolve?: true
+    nextResolve?: true
+    sharesTrue?: true
+    sharesFalse?: true
+    probTrue?: true
+    probFalse?: true
   }
 
   export type MarketCountAggregateInputType = {
     id?: true
     articleId?: true
-    totalTrue?: true
-    totalFalse?: true
+    closed?: true
+    resolveCount?: true
+    outcome?: true
     createdAt?: true
+    lastResolve?: true
+    nextResolve?: true
+    sharesTrue?: true
+    sharesFalse?: true
+    probTrue?: true
+    probFalse?: true
     _all?: true
   }
 
@@ -2512,9 +2610,16 @@ export namespace Prisma {
   export type MarketGroupByOutputType = {
     id: number
     articleId: number
-    totalTrue: number
-    totalFalse: number
+    closed: boolean
+    resolveCount: number
+    outcome: boolean | null
     createdAt: Date
+    lastResolve: Date
+    nextResolve: Date
+    sharesTrue: number
+    sharesFalse: number
+    probTrue: number
+    probFalse: number
     _count: MarketCountAggregateOutputType | null
     _avg: MarketAvgAggregateOutputType | null
     _sum: MarketSumAggregateOutputType | null
@@ -2539,44 +2644,72 @@ export namespace Prisma {
   export type MarketSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     articleId?: boolean
-    totalTrue?: boolean
-    totalFalse?: boolean
+    closed?: boolean
+    resolveCount?: boolean
+    outcome?: boolean
     createdAt?: boolean
+    lastResolve?: boolean
+    nextResolve?: boolean
+    sharesTrue?: boolean
+    sharesFalse?: boolean
+    probTrue?: boolean
+    probFalse?: boolean
     article?: boolean | ArticleDefaultArgs<ExtArgs>
-    bets?: boolean | Market$betsArgs<ExtArgs>
+    stakes?: boolean | Market$stakesArgs<ExtArgs>
     _count?: boolean | MarketCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["market"]>
 
   export type MarketSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     articleId?: boolean
-    totalTrue?: boolean
-    totalFalse?: boolean
+    closed?: boolean
+    resolveCount?: boolean
+    outcome?: boolean
     createdAt?: boolean
+    lastResolve?: boolean
+    nextResolve?: boolean
+    sharesTrue?: boolean
+    sharesFalse?: boolean
+    probTrue?: boolean
+    probFalse?: boolean
     article?: boolean | ArticleDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["market"]>
 
   export type MarketSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     articleId?: boolean
-    totalTrue?: boolean
-    totalFalse?: boolean
+    closed?: boolean
+    resolveCount?: boolean
+    outcome?: boolean
     createdAt?: boolean
+    lastResolve?: boolean
+    nextResolve?: boolean
+    sharesTrue?: boolean
+    sharesFalse?: boolean
+    probTrue?: boolean
+    probFalse?: boolean
     article?: boolean | ArticleDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["market"]>
 
   export type MarketSelectScalar = {
     id?: boolean
     articleId?: boolean
-    totalTrue?: boolean
-    totalFalse?: boolean
+    closed?: boolean
+    resolveCount?: boolean
+    outcome?: boolean
     createdAt?: boolean
+    lastResolve?: boolean
+    nextResolve?: boolean
+    sharesTrue?: boolean
+    sharesFalse?: boolean
+    probTrue?: boolean
+    probFalse?: boolean
   }
 
-  export type MarketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "articleId" | "totalTrue" | "totalFalse" | "createdAt", ExtArgs["result"]["market"]>
+  export type MarketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "articleId" | "closed" | "resolveCount" | "outcome" | "createdAt" | "lastResolve" | "nextResolve" | "sharesTrue" | "sharesFalse" | "probTrue" | "probFalse", ExtArgs["result"]["market"]>
   export type MarketInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     article?: boolean | ArticleDefaultArgs<ExtArgs>
-    bets?: boolean | Market$betsArgs<ExtArgs>
+    stakes?: boolean | Market$stakesArgs<ExtArgs>
     _count?: boolean | MarketCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type MarketIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2590,14 +2723,21 @@ export namespace Prisma {
     name: "Market"
     objects: {
       article: Prisma.$ArticlePayload<ExtArgs>
-      bets: Prisma.$BetPayload<ExtArgs>[]
+      stakes: Prisma.$StakePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       articleId: number
-      totalTrue: number
-      totalFalse: number
+      closed: boolean
+      resolveCount: number
+      outcome: boolean | null
       createdAt: Date
+      lastResolve: Date
+      nextResolve: Date
+      sharesTrue: number
+      sharesFalse: number
+      probTrue: number
+      probFalse: number
     }, ExtArgs["result"]["market"]>
     composites: {}
   }
@@ -2993,7 +3133,7 @@ export namespace Prisma {
   export interface Prisma__MarketClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     article<T extends ArticleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ArticleDefaultArgs<ExtArgs>>): Prisma__ArticleClient<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    bets<T extends Market$betsArgs<ExtArgs> = {}>(args?: Subset<T, Market$betsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    stakes<T extends Market$stakesArgs<ExtArgs> = {}>(args?: Subset<T, Market$stakesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3025,9 +3165,16 @@ export namespace Prisma {
   interface MarketFieldRefs {
     readonly id: FieldRef<"Market", 'Int'>
     readonly articleId: FieldRef<"Market", 'Int'>
-    readonly totalTrue: FieldRef<"Market", 'Float'>
-    readonly totalFalse: FieldRef<"Market", 'Float'>
+    readonly closed: FieldRef<"Market", 'Boolean'>
+    readonly resolveCount: FieldRef<"Market", 'Int'>
+    readonly outcome: FieldRef<"Market", 'Boolean'>
     readonly createdAt: FieldRef<"Market", 'DateTime'>
+    readonly lastResolve: FieldRef<"Market", 'DateTime'>
+    readonly nextResolve: FieldRef<"Market", 'DateTime'>
+    readonly sharesTrue: FieldRef<"Market", 'Float'>
+    readonly sharesFalse: FieldRef<"Market", 'Float'>
+    readonly probTrue: FieldRef<"Market", 'Float'>
+    readonly probFalse: FieldRef<"Market", 'Float'>
   }
     
 
@@ -3422,27 +3569,27 @@ export namespace Prisma {
   }
 
   /**
-   * Market.bets
+   * Market.stakes
    */
-  export type Market$betsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Market$stakesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bet
+     * Select specific fields to fetch from the Stake
      */
-    select?: BetSelect<ExtArgs> | null
+    select?: StakeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Bet
+     * Omit specific fields from the Stake
      */
-    omit?: BetOmit<ExtArgs> | null
+    omit?: StakeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BetInclude<ExtArgs> | null
-    where?: BetWhereInput
-    orderBy?: BetOrderByWithRelationInput | BetOrderByWithRelationInput[]
-    cursor?: BetWhereUniqueInput
+    include?: StakeInclude<ExtArgs> | null
+    where?: StakeWhereInput
+    orderBy?: StakeOrderByWithRelationInput | StakeOrderByWithRelationInput[]
+    cursor?: StakeWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: BetScalarFieldEnum | BetScalarFieldEnum[]
+    distinct?: StakeScalarFieldEnum | StakeScalarFieldEnum[]
   }
 
   /**
@@ -3465,392 +3612,443 @@ export namespace Prisma {
 
 
   /**
-   * Model Bet
+   * Model Stake
    */
 
-  export type AggregateBet = {
-    _count: BetCountAggregateOutputType | null
-    _avg: BetAvgAggregateOutputType | null
-    _sum: BetSumAggregateOutputType | null
-    _min: BetMinAggregateOutputType | null
-    _max: BetMaxAggregateOutputType | null
+  export type AggregateStake = {
+    _count: StakeCountAggregateOutputType | null
+    _avg: StakeAvgAggregateOutputType | null
+    _sum: StakeSumAggregateOutputType | null
+    _min: StakeMinAggregateOutputType | null
+    _max: StakeMaxAggregateOutputType | null
   }
 
-  export type BetAvgAggregateOutputType = {
+  export type StakeAvgAggregateOutputType = {
     id: number | null
-    amount: number | null
+    userId: number | null
     marketId: number | null
+    stakeAmount: number | null
+    upside: number | null
   }
 
-  export type BetSumAggregateOutputType = {
+  export type StakeSumAggregateOutputType = {
     id: number | null
-    amount: number | null
+    userId: number | null
     marketId: number | null
+    stakeAmount: number | null
+    upside: number | null
   }
 
-  export type BetMinAggregateOutputType = {
+  export type StakeMinAggregateOutputType = {
     id: number | null
-    amount: number | null
-    choice: string | null
+    userId: number | null
+    marketId: number | null
+    resolved: boolean | null
+    prediction: boolean | null
+    stakeAmount: number | null
+    upside: number | null
     createdAt: Date | null
-    marketId: number | null
   }
 
-  export type BetMaxAggregateOutputType = {
+  export type StakeMaxAggregateOutputType = {
     id: number | null
-    amount: number | null
-    choice: string | null
-    createdAt: Date | null
+    userId: number | null
     marketId: number | null
+    resolved: boolean | null
+    prediction: boolean | null
+    stakeAmount: number | null
+    upside: number | null
+    createdAt: Date | null
   }
 
-  export type BetCountAggregateOutputType = {
+  export type StakeCountAggregateOutputType = {
     id: number
-    amount: number
-    choice: number
-    createdAt: number
+    userId: number
     marketId: number
+    resolved: number
+    prediction: number
+    stakeAmount: number
+    upside: number
+    createdAt: number
     _all: number
   }
 
 
-  export type BetAvgAggregateInputType = {
+  export type StakeAvgAggregateInputType = {
     id?: true
-    amount?: true
+    userId?: true
     marketId?: true
+    stakeAmount?: true
+    upside?: true
   }
 
-  export type BetSumAggregateInputType = {
+  export type StakeSumAggregateInputType = {
     id?: true
-    amount?: true
+    userId?: true
     marketId?: true
+    stakeAmount?: true
+    upside?: true
   }
 
-  export type BetMinAggregateInputType = {
+  export type StakeMinAggregateInputType = {
     id?: true
-    amount?: true
-    choice?: true
+    userId?: true
+    marketId?: true
+    resolved?: true
+    prediction?: true
+    stakeAmount?: true
+    upside?: true
     createdAt?: true
-    marketId?: true
   }
 
-  export type BetMaxAggregateInputType = {
+  export type StakeMaxAggregateInputType = {
     id?: true
-    amount?: true
-    choice?: true
-    createdAt?: true
+    userId?: true
     marketId?: true
+    resolved?: true
+    prediction?: true
+    stakeAmount?: true
+    upside?: true
+    createdAt?: true
   }
 
-  export type BetCountAggregateInputType = {
+  export type StakeCountAggregateInputType = {
     id?: true
-    amount?: true
-    choice?: true
-    createdAt?: true
+    userId?: true
     marketId?: true
+    resolved?: true
+    prediction?: true
+    stakeAmount?: true
+    upside?: true
+    createdAt?: true
     _all?: true
   }
 
-  export type BetAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which Bet to aggregate.
+     * Filter which Stake to aggregate.
      */
-    where?: BetWhereInput
+    where?: StakeWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Bets to fetch.
+     * Determine the order of Stakes to fetch.
      */
-    orderBy?: BetOrderByWithRelationInput | BetOrderByWithRelationInput[]
+    orderBy?: StakeOrderByWithRelationInput | StakeOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: BetWhereUniqueInput
+    cursor?: StakeWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Bets from the position of the cursor.
+     * Take `±n` Stakes from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Bets.
+     * Skip the first `n` Stakes.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned Bets
+     * Count returned Stakes
     **/
-    _count?: true | BetCountAggregateInputType
+    _count?: true | StakeCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: BetAvgAggregateInputType
+    _avg?: StakeAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: BetSumAggregateInputType
+    _sum?: StakeSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: BetMinAggregateInputType
+    _min?: StakeMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: BetMaxAggregateInputType
+    _max?: StakeMaxAggregateInputType
   }
 
-  export type GetBetAggregateType<T extends BetAggregateArgs> = {
-        [P in keyof T & keyof AggregateBet]: P extends '_count' | 'count'
+  export type GetStakeAggregateType<T extends StakeAggregateArgs> = {
+        [P in keyof T & keyof AggregateStake]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateBet[P]>
-      : GetScalarType<T[P], AggregateBet[P]>
+        : GetScalarType<T[P], AggregateStake[P]>
+      : GetScalarType<T[P], AggregateStake[P]>
   }
 
 
 
 
-  export type BetGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: BetWhereInput
-    orderBy?: BetOrderByWithAggregationInput | BetOrderByWithAggregationInput[]
-    by: BetScalarFieldEnum[] | BetScalarFieldEnum
-    having?: BetScalarWhereWithAggregatesInput
+  export type StakeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StakeWhereInput
+    orderBy?: StakeOrderByWithAggregationInput | StakeOrderByWithAggregationInput[]
+    by: StakeScalarFieldEnum[] | StakeScalarFieldEnum
+    having?: StakeScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: BetCountAggregateInputType | true
-    _avg?: BetAvgAggregateInputType
-    _sum?: BetSumAggregateInputType
-    _min?: BetMinAggregateInputType
-    _max?: BetMaxAggregateInputType
+    _count?: StakeCountAggregateInputType | true
+    _avg?: StakeAvgAggregateInputType
+    _sum?: StakeSumAggregateInputType
+    _min?: StakeMinAggregateInputType
+    _max?: StakeMaxAggregateInputType
   }
 
-  export type BetGroupByOutputType = {
+  export type StakeGroupByOutputType = {
     id: number
-    amount: number
-    choice: string
-    createdAt: Date
+    userId: number
     marketId: number
-    _count: BetCountAggregateOutputType | null
-    _avg: BetAvgAggregateOutputType | null
-    _sum: BetSumAggregateOutputType | null
-    _min: BetMinAggregateOutputType | null
-    _max: BetMaxAggregateOutputType | null
+    resolved: boolean
+    prediction: boolean
+    stakeAmount: number
+    upside: number
+    createdAt: Date
+    _count: StakeCountAggregateOutputType | null
+    _avg: StakeAvgAggregateOutputType | null
+    _sum: StakeSumAggregateOutputType | null
+    _min: StakeMinAggregateOutputType | null
+    _max: StakeMaxAggregateOutputType | null
   }
 
-  type GetBetGroupByPayload<T extends BetGroupByArgs> = Prisma.PrismaPromise<
+  type GetStakeGroupByPayload<T extends StakeGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<BetGroupByOutputType, T['by']> &
+      PickEnumerable<StakeGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof BetGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof StakeGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], BetGroupByOutputType[P]>
-            : GetScalarType<T[P], BetGroupByOutputType[P]>
+              : GetScalarType<T[P], StakeGroupByOutputType[P]>
+            : GetScalarType<T[P], StakeGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type BetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type StakeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    amount?: boolean
-    choice?: boolean
-    createdAt?: boolean
+    userId?: boolean
     marketId?: boolean
+    resolved?: boolean
+    prediction?: boolean
+    stakeAmount?: boolean
+    upside?: boolean
+    createdAt?: boolean
     market?: boolean | MarketDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["bet"]>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stake"]>
 
-  export type BetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type StakeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    amount?: boolean
-    choice?: boolean
-    createdAt?: boolean
+    userId?: boolean
     marketId?: boolean
+    resolved?: boolean
+    prediction?: boolean
+    stakeAmount?: boolean
+    upside?: boolean
+    createdAt?: boolean
     market?: boolean | MarketDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["bet"]>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stake"]>
 
-  export type BetSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type StakeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    amount?: boolean
-    choice?: boolean
-    createdAt?: boolean
+    userId?: boolean
     marketId?: boolean
+    resolved?: boolean
+    prediction?: boolean
+    stakeAmount?: boolean
+    upside?: boolean
+    createdAt?: boolean
     market?: boolean | MarketDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["bet"]>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stake"]>
 
-  export type BetSelectScalar = {
+  export type StakeSelectScalar = {
     id?: boolean
-    amount?: boolean
-    choice?: boolean
-    createdAt?: boolean
+    userId?: boolean
     marketId?: boolean
+    resolved?: boolean
+    prediction?: boolean
+    stakeAmount?: boolean
+    upside?: boolean
+    createdAt?: boolean
   }
 
-  export type BetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "amount" | "choice" | "createdAt" | "marketId", ExtArgs["result"]["bet"]>
-  export type BetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "marketId" | "resolved" | "prediction" | "stakeAmount" | "upside" | "createdAt", ExtArgs["result"]["stake"]>
+  export type StakeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     market?: boolean | MarketDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
-  export type BetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     market?: boolean | MarketDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
-  export type BetIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     market?: boolean | MarketDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
-  export type $BetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Bet"
+  export type $StakePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Stake"
     objects: {
       market: Prisma.$MarketPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
-      amount: number
-      choice: string
-      createdAt: Date
+      userId: number
       marketId: number
-    }, ExtArgs["result"]["bet"]>
+      resolved: boolean
+      prediction: boolean
+      stakeAmount: number
+      upside: number
+      createdAt: Date
+    }, ExtArgs["result"]["stake"]>
     composites: {}
   }
 
-  type BetGetPayload<S extends boolean | null | undefined | BetDefaultArgs> = $Result.GetResult<Prisma.$BetPayload, S>
+  type StakeGetPayload<S extends boolean | null | undefined | StakeDefaultArgs> = $Result.GetResult<Prisma.$StakePayload, S>
 
-  type BetCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<BetFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: BetCountAggregateInputType | true
+  type StakeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<StakeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: StakeCountAggregateInputType | true
     }
 
-  export interface BetDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Bet'], meta: { name: 'Bet' } }
+  export interface StakeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Stake'], meta: { name: 'Stake' } }
     /**
-     * Find zero or one Bet that matches the filter.
-     * @param {BetFindUniqueArgs} args - Arguments to find a Bet
+     * Find zero or one Stake that matches the filter.
+     * @param {StakeFindUniqueArgs} args - Arguments to find a Stake
      * @example
-     * // Get one Bet
-     * const bet = await prisma.bet.findUnique({
+     * // Get one Stake
+     * const stake = await prisma.stake.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends BetFindUniqueArgs>(args: SelectSubset<T, BetFindUniqueArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends StakeFindUniqueArgs>(args: SelectSubset<T, StakeFindUniqueArgs<ExtArgs>>): Prisma__StakeClient<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one Bet that matches the filter or throw an error with `error.code='P2025'`
+     * Find one Stake that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {BetFindUniqueOrThrowArgs} args - Arguments to find a Bet
+     * @param {StakeFindUniqueOrThrowArgs} args - Arguments to find a Stake
      * @example
-     * // Get one Bet
-     * const bet = await prisma.bet.findUniqueOrThrow({
+     * // Get one Stake
+     * const stake = await prisma.stake.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends BetFindUniqueOrThrowArgs>(args: SelectSubset<T, BetFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends StakeFindUniqueOrThrowArgs>(args: SelectSubset<T, StakeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StakeClient<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first Bet that matches the filter.
+     * Find the first Stake that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BetFindFirstArgs} args - Arguments to find a Bet
+     * @param {StakeFindFirstArgs} args - Arguments to find a Stake
      * @example
-     * // Get one Bet
-     * const bet = await prisma.bet.findFirst({
+     * // Get one Stake
+     * const stake = await prisma.stake.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends BetFindFirstArgs>(args?: SelectSubset<T, BetFindFirstArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends StakeFindFirstArgs>(args?: SelectSubset<T, StakeFindFirstArgs<ExtArgs>>): Prisma__StakeClient<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first Bet that matches the filter or
+     * Find the first Stake that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BetFindFirstOrThrowArgs} args - Arguments to find a Bet
+     * @param {StakeFindFirstOrThrowArgs} args - Arguments to find a Stake
      * @example
-     * // Get one Bet
-     * const bet = await prisma.bet.findFirstOrThrow({
+     * // Get one Stake
+     * const stake = await prisma.stake.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends BetFindFirstOrThrowArgs>(args?: SelectSubset<T, BetFindFirstOrThrowArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends StakeFindFirstOrThrowArgs>(args?: SelectSubset<T, StakeFindFirstOrThrowArgs<ExtArgs>>): Prisma__StakeClient<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more Bets that matches the filter.
+     * Find zero or more Stakes that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BetFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {StakeFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all Bets
-     * const bets = await prisma.bet.findMany()
+     * // Get all Stakes
+     * const stakes = await prisma.stake.findMany()
      * 
-     * // Get first 10 Bets
-     * const bets = await prisma.bet.findMany({ take: 10 })
+     * // Get first 10 Stakes
+     * const stakes = await prisma.stake.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const betWithIdOnly = await prisma.bet.findMany({ select: { id: true } })
+     * const stakeWithIdOnly = await prisma.stake.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends BetFindManyArgs>(args?: SelectSubset<T, BetFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends StakeFindManyArgs>(args?: SelectSubset<T, StakeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a Bet.
-     * @param {BetCreateArgs} args - Arguments to create a Bet.
+     * Create a Stake.
+     * @param {StakeCreateArgs} args - Arguments to create a Stake.
      * @example
-     * // Create one Bet
-     * const Bet = await prisma.bet.create({
+     * // Create one Stake
+     * const Stake = await prisma.stake.create({
      *   data: {
-     *     // ... data to create a Bet
+     *     // ... data to create a Stake
      *   }
      * })
      * 
      */
-    create<T extends BetCreateArgs>(args: SelectSubset<T, BetCreateArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends StakeCreateArgs>(args: SelectSubset<T, StakeCreateArgs<ExtArgs>>): Prisma__StakeClient<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many Bets.
-     * @param {BetCreateManyArgs} args - Arguments to create many Bets.
+     * Create many Stakes.
+     * @param {StakeCreateManyArgs} args - Arguments to create many Stakes.
      * @example
-     * // Create many Bets
-     * const bet = await prisma.bet.createMany({
+     * // Create many Stakes
+     * const stake = await prisma.stake.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends BetCreateManyArgs>(args?: SelectSubset<T, BetCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends StakeCreateManyArgs>(args?: SelectSubset<T, StakeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many Bets and returns the data saved in the database.
-     * @param {BetCreateManyAndReturnArgs} args - Arguments to create many Bets.
+     * Create many Stakes and returns the data saved in the database.
+     * @param {StakeCreateManyAndReturnArgs} args - Arguments to create many Stakes.
      * @example
-     * // Create many Bets
-     * const bet = await prisma.bet.createManyAndReturn({
+     * // Create many Stakes
+     * const stake = await prisma.stake.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many Bets and only return the `id`
-     * const betWithIdOnly = await prisma.bet.createManyAndReturn({
+     * // Create many Stakes and only return the `id`
+     * const stakeWithIdOnly = await prisma.stake.createManyAndReturn({
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -3860,28 +4058,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends BetCreateManyAndReturnArgs>(args?: SelectSubset<T, BetCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends StakeCreateManyAndReturnArgs>(args?: SelectSubset<T, StakeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a Bet.
-     * @param {BetDeleteArgs} args - Arguments to delete one Bet.
+     * Delete a Stake.
+     * @param {StakeDeleteArgs} args - Arguments to delete one Stake.
      * @example
-     * // Delete one Bet
-     * const Bet = await prisma.bet.delete({
+     * // Delete one Stake
+     * const Stake = await prisma.stake.delete({
      *   where: {
-     *     // ... filter to delete one Bet
+     *     // ... filter to delete one Stake
      *   }
      * })
      * 
      */
-    delete<T extends BetDeleteArgs>(args: SelectSubset<T, BetDeleteArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends StakeDeleteArgs>(args: SelectSubset<T, StakeDeleteArgs<ExtArgs>>): Prisma__StakeClient<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one Bet.
-     * @param {BetUpdateArgs} args - Arguments to update one Bet.
+     * Update one Stake.
+     * @param {StakeUpdateArgs} args - Arguments to update one Stake.
      * @example
-     * // Update one Bet
-     * const bet = await prisma.bet.update({
+     * // Update one Stake
+     * const stake = await prisma.stake.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -3891,30 +4089,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends BetUpdateArgs>(args: SelectSubset<T, BetUpdateArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends StakeUpdateArgs>(args: SelectSubset<T, StakeUpdateArgs<ExtArgs>>): Prisma__StakeClient<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more Bets.
-     * @param {BetDeleteManyArgs} args - Arguments to filter Bets to delete.
+     * Delete zero or more Stakes.
+     * @param {StakeDeleteManyArgs} args - Arguments to filter Stakes to delete.
      * @example
-     * // Delete a few Bets
-     * const { count } = await prisma.bet.deleteMany({
+     * // Delete a few Stakes
+     * const { count } = await prisma.stake.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends BetDeleteManyArgs>(args?: SelectSubset<T, BetDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends StakeDeleteManyArgs>(args?: SelectSubset<T, StakeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more Bets.
+     * Update zero or more Stakes.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BetUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {StakeUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many Bets
-     * const bet = await prisma.bet.updateMany({
+     * // Update many Stakes
+     * const stake = await prisma.stake.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -3924,14 +4122,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends BetUpdateManyArgs>(args: SelectSubset<T, BetUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends StakeUpdateManyArgs>(args: SelectSubset<T, StakeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more Bets and returns the data updated in the database.
-     * @param {BetUpdateManyAndReturnArgs} args - Arguments to update many Bets.
+     * Update zero or more Stakes and returns the data updated in the database.
+     * @param {StakeUpdateManyAndReturnArgs} args - Arguments to update many Stakes.
      * @example
-     * // Update many Bets
-     * const bet = await prisma.bet.updateManyAndReturn({
+     * // Update many Stakes
+     * const stake = await prisma.stake.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -3940,8 +4138,8 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more Bets and only return the `id`
-     * const betWithIdOnly = await prisma.bet.updateManyAndReturn({
+     * // Update zero or more Stakes and only return the `id`
+     * const stakeWithIdOnly = await prisma.stake.updateManyAndReturn({
      *   select: { id: true },
      *   where: {
      *     // ... provide filter here
@@ -3954,56 +4152,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends BetUpdateManyAndReturnArgs>(args: SelectSubset<T, BetUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends StakeUpdateManyAndReturnArgs>(args: SelectSubset<T, StakeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one Bet.
-     * @param {BetUpsertArgs} args - Arguments to update or create a Bet.
+     * Create or update one Stake.
+     * @param {StakeUpsertArgs} args - Arguments to update or create a Stake.
      * @example
-     * // Update or create a Bet
-     * const bet = await prisma.bet.upsert({
+     * // Update or create a Stake
+     * const stake = await prisma.stake.upsert({
      *   create: {
-     *     // ... data to create a Bet
+     *     // ... data to create a Stake
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the Bet we want to update
+     *     // ... the filter for the Stake we want to update
      *   }
      * })
      */
-    upsert<T extends BetUpsertArgs>(args: SelectSubset<T, BetUpsertArgs<ExtArgs>>): Prisma__BetClient<$Result.GetResult<Prisma.$BetPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends StakeUpsertArgs>(args: SelectSubset<T, StakeUpsertArgs<ExtArgs>>): Prisma__StakeClient<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of Bets.
+     * Count the number of Stakes.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BetCountArgs} args - Arguments to filter Bets to count.
+     * @param {StakeCountArgs} args - Arguments to filter Stakes to count.
      * @example
-     * // Count the number of Bets
-     * const count = await prisma.bet.count({
+     * // Count the number of Stakes
+     * const count = await prisma.stake.count({
      *   where: {
-     *     // ... the filter for the Bets we want to count
+     *     // ... the filter for the Stakes we want to count
      *   }
      * })
     **/
-    count<T extends BetCountArgs>(
-      args?: Subset<T, BetCountArgs>,
+    count<T extends StakeCountArgs>(
+      args?: Subset<T, StakeCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], BetCountAggregateOutputType>
+          : GetScalarType<T['select'], StakeCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a Bet.
+     * Allows you to perform aggregations operations on a Stake.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BetAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {StakeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -4023,13 +4221,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends BetAggregateArgs>(args: Subset<T, BetAggregateArgs>): Prisma.PrismaPromise<GetBetAggregateType<T>>
+    aggregate<T extends StakeAggregateArgs>(args: Subset<T, StakeAggregateArgs>): Prisma.PrismaPromise<GetStakeAggregateType<T>>
 
     /**
-     * Group by Bet.
+     * Group by Stake.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BetGroupByArgs} args - Group by arguments.
+     * @param {StakeGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -4044,14 +4242,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends BetGroupByArgs,
+      T extends StakeGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: BetGroupByArgs['orderBy'] }
-        : { orderBy?: BetGroupByArgs['orderBy'] },
+        ? { orderBy: StakeGroupByArgs['orderBy'] }
+        : { orderBy?: StakeGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -4100,22 +4298,23 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, BetGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBetGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, StakeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStakeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the Bet model
+   * Fields of the Stake model
    */
-  readonly fields: BetFieldRefs;
+  readonly fields: StakeFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for Bet.
+   * The delegate class that acts as a "Promise-like" for Stake.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__BetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__StakeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     market<T extends MarketDefaultArgs<ExtArgs> = {}>(args?: Subset<T, MarketDefaultArgs<ExtArgs>>): Prisma__MarketClient<$Result.GetResult<Prisma.$MarketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4142,423 +4341,426 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the Bet model
+   * Fields of the Stake model
    */
-  interface BetFieldRefs {
-    readonly id: FieldRef<"Bet", 'Int'>
-    readonly amount: FieldRef<"Bet", 'Float'>
-    readonly choice: FieldRef<"Bet", 'String'>
-    readonly createdAt: FieldRef<"Bet", 'DateTime'>
-    readonly marketId: FieldRef<"Bet", 'Int'>
+  interface StakeFieldRefs {
+    readonly id: FieldRef<"Stake", 'Int'>
+    readonly userId: FieldRef<"Stake", 'Int'>
+    readonly marketId: FieldRef<"Stake", 'Int'>
+    readonly resolved: FieldRef<"Stake", 'Boolean'>
+    readonly prediction: FieldRef<"Stake", 'Boolean'>
+    readonly stakeAmount: FieldRef<"Stake", 'Float'>
+    readonly upside: FieldRef<"Stake", 'Float'>
+    readonly createdAt: FieldRef<"Stake", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * Bet findUnique
+   * Stake findUnique
    */
-  export type BetFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bet
+     * Select specific fields to fetch from the Stake
      */
-    select?: BetSelect<ExtArgs> | null
+    select?: StakeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Bet
+     * Omit specific fields from the Stake
      */
-    omit?: BetOmit<ExtArgs> | null
+    omit?: StakeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BetInclude<ExtArgs> | null
+    include?: StakeInclude<ExtArgs> | null
     /**
-     * Filter, which Bet to fetch.
+     * Filter, which Stake to fetch.
      */
-    where: BetWhereUniqueInput
+    where: StakeWhereUniqueInput
   }
 
   /**
-   * Bet findUniqueOrThrow
+   * Stake findUniqueOrThrow
    */
-  export type BetFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bet
+     * Select specific fields to fetch from the Stake
      */
-    select?: BetSelect<ExtArgs> | null
+    select?: StakeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Bet
+     * Omit specific fields from the Stake
      */
-    omit?: BetOmit<ExtArgs> | null
+    omit?: StakeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BetInclude<ExtArgs> | null
+    include?: StakeInclude<ExtArgs> | null
     /**
-     * Filter, which Bet to fetch.
+     * Filter, which Stake to fetch.
      */
-    where: BetWhereUniqueInput
+    where: StakeWhereUniqueInput
   }
 
   /**
-   * Bet findFirst
+   * Stake findFirst
    */
-  export type BetFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bet
+     * Select specific fields to fetch from the Stake
      */
-    select?: BetSelect<ExtArgs> | null
+    select?: StakeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Bet
+     * Omit specific fields from the Stake
      */
-    omit?: BetOmit<ExtArgs> | null
+    omit?: StakeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BetInclude<ExtArgs> | null
+    include?: StakeInclude<ExtArgs> | null
     /**
-     * Filter, which Bet to fetch.
+     * Filter, which Stake to fetch.
      */
-    where?: BetWhereInput
+    where?: StakeWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Bets to fetch.
+     * Determine the order of Stakes to fetch.
      */
-    orderBy?: BetOrderByWithRelationInput | BetOrderByWithRelationInput[]
+    orderBy?: StakeOrderByWithRelationInput | StakeOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Bets.
+     * Sets the position for searching for Stakes.
      */
-    cursor?: BetWhereUniqueInput
+    cursor?: StakeWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Bets from the position of the cursor.
+     * Take `±n` Stakes from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Bets.
+     * Skip the first `n` Stakes.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Bets.
+     * Filter by unique combinations of Stakes.
      */
-    distinct?: BetScalarFieldEnum | BetScalarFieldEnum[]
+    distinct?: StakeScalarFieldEnum | StakeScalarFieldEnum[]
   }
 
   /**
-   * Bet findFirstOrThrow
+   * Stake findFirstOrThrow
    */
-  export type BetFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bet
+     * Select specific fields to fetch from the Stake
      */
-    select?: BetSelect<ExtArgs> | null
+    select?: StakeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Bet
+     * Omit specific fields from the Stake
      */
-    omit?: BetOmit<ExtArgs> | null
+    omit?: StakeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BetInclude<ExtArgs> | null
+    include?: StakeInclude<ExtArgs> | null
     /**
-     * Filter, which Bet to fetch.
+     * Filter, which Stake to fetch.
      */
-    where?: BetWhereInput
+    where?: StakeWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Bets to fetch.
+     * Determine the order of Stakes to fetch.
      */
-    orderBy?: BetOrderByWithRelationInput | BetOrderByWithRelationInput[]
+    orderBy?: StakeOrderByWithRelationInput | StakeOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Bets.
+     * Sets the position for searching for Stakes.
      */
-    cursor?: BetWhereUniqueInput
+    cursor?: StakeWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Bets from the position of the cursor.
+     * Take `±n` Stakes from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Bets.
+     * Skip the first `n` Stakes.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Bets.
+     * Filter by unique combinations of Stakes.
      */
-    distinct?: BetScalarFieldEnum | BetScalarFieldEnum[]
+    distinct?: StakeScalarFieldEnum | StakeScalarFieldEnum[]
   }
 
   /**
-   * Bet findMany
+   * Stake findMany
    */
-  export type BetFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bet
+     * Select specific fields to fetch from the Stake
      */
-    select?: BetSelect<ExtArgs> | null
+    select?: StakeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Bet
+     * Omit specific fields from the Stake
      */
-    omit?: BetOmit<ExtArgs> | null
+    omit?: StakeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BetInclude<ExtArgs> | null
+    include?: StakeInclude<ExtArgs> | null
     /**
-     * Filter, which Bets to fetch.
+     * Filter, which Stakes to fetch.
      */
-    where?: BetWhereInput
+    where?: StakeWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Bets to fetch.
+     * Determine the order of Stakes to fetch.
      */
-    orderBy?: BetOrderByWithRelationInput | BetOrderByWithRelationInput[]
+    orderBy?: StakeOrderByWithRelationInput | StakeOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing Bets.
+     * Sets the position for listing Stakes.
      */
-    cursor?: BetWhereUniqueInput
+    cursor?: StakeWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Bets from the position of the cursor.
+     * Take `±n` Stakes from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Bets.
+     * Skip the first `n` Stakes.
      */
     skip?: number
-    distinct?: BetScalarFieldEnum | BetScalarFieldEnum[]
+    distinct?: StakeScalarFieldEnum | StakeScalarFieldEnum[]
   }
 
   /**
-   * Bet create
+   * Stake create
    */
-  export type BetCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bet
+     * Select specific fields to fetch from the Stake
      */
-    select?: BetSelect<ExtArgs> | null
+    select?: StakeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Bet
+     * Omit specific fields from the Stake
      */
-    omit?: BetOmit<ExtArgs> | null
+    omit?: StakeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BetInclude<ExtArgs> | null
+    include?: StakeInclude<ExtArgs> | null
     /**
-     * The data needed to create a Bet.
+     * The data needed to create a Stake.
      */
-    data: XOR<BetCreateInput, BetUncheckedCreateInput>
+    data: XOR<StakeCreateInput, StakeUncheckedCreateInput>
   }
 
   /**
-   * Bet createMany
+   * Stake createMany
    */
-  export type BetCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many Bets.
+     * The data used to create many Stakes.
      */
-    data: BetCreateManyInput | BetCreateManyInput[]
+    data: StakeCreateManyInput | StakeCreateManyInput[]
   }
 
   /**
-   * Bet createManyAndReturn
+   * Stake createManyAndReturn
    */
-  export type BetCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bet
+     * Select specific fields to fetch from the Stake
      */
-    select?: BetSelectCreateManyAndReturn<ExtArgs> | null
+    select?: StakeSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the Bet
+     * Omit specific fields from the Stake
      */
-    omit?: BetOmit<ExtArgs> | null
+    omit?: StakeOmit<ExtArgs> | null
     /**
-     * The data used to create many Bets.
+     * The data used to create many Stakes.
      */
-    data: BetCreateManyInput | BetCreateManyInput[]
+    data: StakeCreateManyInput | StakeCreateManyInput[]
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BetIncludeCreateManyAndReturn<ExtArgs> | null
+    include?: StakeIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * Bet update
+   * Stake update
    */
-  export type BetUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bet
+     * Select specific fields to fetch from the Stake
      */
-    select?: BetSelect<ExtArgs> | null
+    select?: StakeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Bet
+     * Omit specific fields from the Stake
      */
-    omit?: BetOmit<ExtArgs> | null
+    omit?: StakeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BetInclude<ExtArgs> | null
+    include?: StakeInclude<ExtArgs> | null
     /**
-     * The data needed to update a Bet.
+     * The data needed to update a Stake.
      */
-    data: XOR<BetUpdateInput, BetUncheckedUpdateInput>
+    data: XOR<StakeUpdateInput, StakeUncheckedUpdateInput>
     /**
-     * Choose, which Bet to update.
+     * Choose, which Stake to update.
      */
-    where: BetWhereUniqueInput
+    where: StakeWhereUniqueInput
   }
 
   /**
-   * Bet updateMany
+   * Stake updateMany
    */
-  export type BetUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update Bets.
+     * The data used to update Stakes.
      */
-    data: XOR<BetUpdateManyMutationInput, BetUncheckedUpdateManyInput>
+    data: XOR<StakeUpdateManyMutationInput, StakeUncheckedUpdateManyInput>
     /**
-     * Filter which Bets to update
+     * Filter which Stakes to update
      */
-    where?: BetWhereInput
+    where?: StakeWhereInput
     /**
-     * Limit how many Bets to update.
+     * Limit how many Stakes to update.
      */
     limit?: number
   }
 
   /**
-   * Bet updateManyAndReturn
+   * Stake updateManyAndReturn
    */
-  export type BetUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bet
+     * Select specific fields to fetch from the Stake
      */
-    select?: BetSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: StakeSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the Bet
+     * Omit specific fields from the Stake
      */
-    omit?: BetOmit<ExtArgs> | null
+    omit?: StakeOmit<ExtArgs> | null
     /**
-     * The data used to update Bets.
+     * The data used to update Stakes.
      */
-    data: XOR<BetUpdateManyMutationInput, BetUncheckedUpdateManyInput>
+    data: XOR<StakeUpdateManyMutationInput, StakeUncheckedUpdateManyInput>
     /**
-     * Filter which Bets to update
+     * Filter which Stakes to update
      */
-    where?: BetWhereInput
+    where?: StakeWhereInput
     /**
-     * Limit how many Bets to update.
+     * Limit how many Stakes to update.
      */
     limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BetIncludeUpdateManyAndReturn<ExtArgs> | null
+    include?: StakeIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * Bet upsert
+   * Stake upsert
    */
-  export type BetUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bet
+     * Select specific fields to fetch from the Stake
      */
-    select?: BetSelect<ExtArgs> | null
+    select?: StakeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Bet
+     * Omit specific fields from the Stake
      */
-    omit?: BetOmit<ExtArgs> | null
+    omit?: StakeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BetInclude<ExtArgs> | null
+    include?: StakeInclude<ExtArgs> | null
     /**
-     * The filter to search for the Bet to update in case it exists.
+     * The filter to search for the Stake to update in case it exists.
      */
-    where: BetWhereUniqueInput
+    where: StakeWhereUniqueInput
     /**
-     * In case the Bet found by the `where` argument doesn't exist, create a new Bet with this data.
+     * In case the Stake found by the `where` argument doesn't exist, create a new Stake with this data.
      */
-    create: XOR<BetCreateInput, BetUncheckedCreateInput>
+    create: XOR<StakeCreateInput, StakeUncheckedCreateInput>
     /**
-     * In case the Bet was found with the provided `where` argument, update it with this data.
+     * In case the Stake was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<BetUpdateInput, BetUncheckedUpdateInput>
+    update: XOR<StakeUpdateInput, StakeUncheckedUpdateInput>
   }
 
   /**
-   * Bet delete
+   * Stake delete
    */
-  export type BetDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bet
+     * Select specific fields to fetch from the Stake
      */
-    select?: BetSelect<ExtArgs> | null
+    select?: StakeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Bet
+     * Omit specific fields from the Stake
      */
-    omit?: BetOmit<ExtArgs> | null
+    omit?: StakeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BetInclude<ExtArgs> | null
+    include?: StakeInclude<ExtArgs> | null
     /**
-     * Filter which Bet to delete.
+     * Filter which Stake to delete.
      */
-    where: BetWhereUniqueInput
+    where: StakeWhereUniqueInput
   }
 
   /**
-   * Bet deleteMany
+   * Stake deleteMany
    */
-  export type BetDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which Bets to delete
+     * Filter which Stakes to delete
      */
-    where?: BetWhereInput
+    where?: StakeWhereInput
     /**
-     * Limit how many Bets to delete.
+     * Limit how many Stakes to delete.
      */
     limit?: number
   }
 
   /**
-   * Bet without action
+   * Stake without action
    */
-  export type BetDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StakeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bet
+     * Select specific fields to fetch from the Stake
      */
-    select?: BetSelect<ExtArgs> | null
+    select?: StakeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Bet
+     * Omit specific fields from the Stake
      */
-    omit?: BetOmit<ExtArgs> | null
+    omit?: StakeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BetInclude<ExtArgs> | null
+    include?: StakeInclude<ExtArgs> | null
   }
 
 
@@ -4576,10 +4778,12 @@ export namespace Prisma {
 
   export type UserAvgAggregateOutputType = {
     id: number | null
+    provePoints: number | null
   }
 
   export type UserSumAggregateOutputType = {
     id: number | null
+    provePoints: number | null
   }
 
   export type UserMinAggregateOutputType = {
@@ -4587,8 +4791,18 @@ export namespace Prisma {
     username: string | null
     email: string | null
     password: string | null
+    isAdmin: boolean | null
+    provePoints: number | null
+    resetToken: string | null
+    resetTokenExpiry: Date | null
     createdAt: Date | null
     updatedAt: Date | null
+    avatarSkinColor: string | null
+    avatarHairColor: string | null
+    avatarHair: string | null
+    avatarEyes: string | null
+    avatarMouth: string | null
+    avatarAccessories: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -4596,8 +4810,18 @@ export namespace Prisma {
     username: string | null
     email: string | null
     password: string | null
+    isAdmin: boolean | null
+    provePoints: number | null
+    resetToken: string | null
+    resetTokenExpiry: Date | null
     createdAt: Date | null
     updatedAt: Date | null
+    avatarSkinColor: string | null
+    avatarHairColor: string | null
+    avatarHair: string | null
+    avatarEyes: string | null
+    avatarMouth: string | null
+    avatarAccessories: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -4605,18 +4829,30 @@ export namespace Prisma {
     username: number
     email: number
     password: number
+    isAdmin: number
+    provePoints: number
+    resetToken: number
+    resetTokenExpiry: number
     createdAt: number
     updatedAt: number
+    avatarSkinColor: number
+    avatarHairColor: number
+    avatarHair: number
+    avatarEyes: number
+    avatarMouth: number
+    avatarAccessories: number
     _all: number
   }
 
 
   export type UserAvgAggregateInputType = {
     id?: true
+    provePoints?: true
   }
 
   export type UserSumAggregateInputType = {
     id?: true
+    provePoints?: true
   }
 
   export type UserMinAggregateInputType = {
@@ -4624,8 +4860,18 @@ export namespace Prisma {
     username?: true
     email?: true
     password?: true
+    isAdmin?: true
+    provePoints?: true
+    resetToken?: true
+    resetTokenExpiry?: true
     createdAt?: true
     updatedAt?: true
+    avatarSkinColor?: true
+    avatarHairColor?: true
+    avatarHair?: true
+    avatarEyes?: true
+    avatarMouth?: true
+    avatarAccessories?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -4633,8 +4879,18 @@ export namespace Prisma {
     username?: true
     email?: true
     password?: true
+    isAdmin?: true
+    provePoints?: true
+    resetToken?: true
+    resetTokenExpiry?: true
     createdAt?: true
     updatedAt?: true
+    avatarSkinColor?: true
+    avatarHairColor?: true
+    avatarHair?: true
+    avatarEyes?: true
+    avatarMouth?: true
+    avatarAccessories?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -4642,8 +4898,18 @@ export namespace Prisma {
     username?: true
     email?: true
     password?: true
+    isAdmin?: true
+    provePoints?: true
+    resetToken?: true
+    resetTokenExpiry?: true
     createdAt?: true
     updatedAt?: true
+    avatarSkinColor?: true
+    avatarHairColor?: true
+    avatarHair?: true
+    avatarEyes?: true
+    avatarMouth?: true
+    avatarAccessories?: true
     _all?: true
   }
 
@@ -4738,8 +5004,18 @@ export namespace Prisma {
     username: string
     email: string
     password: string
+    isAdmin: boolean
+    provePoints: number
+    resetToken: string | null
+    resetTokenExpiry: Date | null
     createdAt: Date
     updatedAt: Date
+    avatarSkinColor: string
+    avatarHairColor: string
+    avatarHair: string
+    avatarEyes: string
+    avatarMouth: string
+    avatarAccessories: string
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -4766,8 +5042,20 @@ export namespace Prisma {
     username?: boolean
     email?: boolean
     password?: boolean
+    isAdmin?: boolean
+    provePoints?: boolean
+    resetToken?: boolean
+    resetTokenExpiry?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    avatarSkinColor?: boolean
+    avatarHairColor?: boolean
+    avatarHair?: boolean
+    avatarEyes?: boolean
+    avatarMouth?: boolean
+    avatarAccessories?: boolean
+    stakes?: boolean | User$stakesArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4775,8 +5063,18 @@ export namespace Prisma {
     username?: boolean
     email?: boolean
     password?: boolean
+    isAdmin?: boolean
+    provePoints?: boolean
+    resetToken?: boolean
+    resetTokenExpiry?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    avatarSkinColor?: boolean
+    avatarHairColor?: boolean
+    avatarHair?: boolean
+    avatarEyes?: boolean
+    avatarMouth?: boolean
+    avatarAccessories?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4784,8 +5082,18 @@ export namespace Prisma {
     username?: boolean
     email?: boolean
     password?: boolean
+    isAdmin?: boolean
+    provePoints?: boolean
+    resetToken?: boolean
+    resetTokenExpiry?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    avatarSkinColor?: boolean
+    avatarHairColor?: boolean
+    avatarHair?: boolean
+    avatarEyes?: boolean
+    avatarMouth?: boolean
+    avatarAccessories?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -4793,22 +5101,50 @@ export namespace Prisma {
     username?: boolean
     email?: boolean
     password?: boolean
+    isAdmin?: boolean
+    provePoints?: boolean
+    resetToken?: boolean
+    resetTokenExpiry?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    avatarSkinColor?: boolean
+    avatarHairColor?: boolean
+    avatarHair?: boolean
+    avatarEyes?: boolean
+    avatarMouth?: boolean
+    avatarAccessories?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "email" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "email" | "password" | "isAdmin" | "provePoints" | "resetToken" | "resetTokenExpiry" | "createdAt" | "updatedAt" | "avatarSkinColor" | "avatarHairColor" | "avatarHair" | "avatarEyes" | "avatarMouth" | "avatarAccessories", ExtArgs["result"]["user"]>
+  export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    stakes?: boolean | User$stakesArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
-    objects: {}
+    objects: {
+      stakes: Prisma.$StakePayload<ExtArgs>[]
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       username: string
       email: string
       password: string
+      isAdmin: boolean
+      provePoints: number
+      resetToken: string | null
+      resetTokenExpiry: Date | null
       createdAt: Date
       updatedAt: Date
+      avatarSkinColor: string
+      avatarHairColor: string
+      avatarHair: string
+      avatarEyes: string
+      avatarMouth: string
+      avatarAccessories: string
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -5203,6 +5539,7 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    stakes<T extends User$stakesArgs<ExtArgs> = {}>(args?: Subset<T, User$stakesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5236,8 +5573,18 @@ export namespace Prisma {
     readonly username: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
     readonly password: FieldRef<"User", 'String'>
+    readonly isAdmin: FieldRef<"User", 'Boolean'>
+    readonly provePoints: FieldRef<"User", 'Float'>
+    readonly resetToken: FieldRef<"User", 'String'>
+    readonly resetTokenExpiry: FieldRef<"User", 'DateTime'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
+    readonly avatarSkinColor: FieldRef<"User", 'String'>
+    readonly avatarHairColor: FieldRef<"User", 'String'>
+    readonly avatarHair: FieldRef<"User", 'String'>
+    readonly avatarEyes: FieldRef<"User", 'String'>
+    readonly avatarMouth: FieldRef<"User", 'String'>
+    readonly avatarAccessories: FieldRef<"User", 'String'>
   }
     
 
@@ -5254,6 +5601,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * Filter, which User to fetch.
      */
@@ -5273,6 +5624,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where: UserWhereUniqueInput
@@ -5290,6 +5645,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * Filter, which User to fetch.
      */
@@ -5339,6 +5698,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where?: UserWhereInput
@@ -5387,6 +5750,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which Users to fetch.
      */
     where?: UserWhereInput
@@ -5429,6 +5796,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * The data needed to create a User.
      */
@@ -5475,6 +5846,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * The data needed to update a User.
      */
@@ -5542,6 +5917,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * The filter to search for the User to update in case it exists.
      */
     where: UserWhereUniqueInput
@@ -5568,6 +5947,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter which User to delete.
      */
     where: UserWhereUniqueInput
@@ -5588,6 +5971,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.stakes
+   */
+  export type User$stakesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stake
+     */
+    select?: StakeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stake
+     */
+    omit?: StakeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StakeInclude<ExtArgs> | null
+    where?: StakeWhereInput
+    orderBy?: StakeOrderByWithRelationInput | StakeOrderByWithRelationInput[]
+    cursor?: StakeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StakeScalarFieldEnum | StakeScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5599,6 +6006,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
   }
 
 
@@ -5623,7 +6034,8 @@ export namespace Prisma {
     urlToImage: 'urlToImage',
     publishedAt: 'publishedAt',
     content: 'content',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    category: 'category'
   };
 
   export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]
@@ -5632,23 +6044,33 @@ export namespace Prisma {
   export const MarketScalarFieldEnum: {
     id: 'id',
     articleId: 'articleId',
-    totalTrue: 'totalTrue',
-    totalFalse: 'totalFalse',
-    createdAt: 'createdAt'
+    closed: 'closed',
+    resolveCount: 'resolveCount',
+    outcome: 'outcome',
+    createdAt: 'createdAt',
+    lastResolve: 'lastResolve',
+    nextResolve: 'nextResolve',
+    sharesTrue: 'sharesTrue',
+    sharesFalse: 'sharesFalse',
+    probTrue: 'probTrue',
+    probFalse: 'probFalse'
   };
 
   export type MarketScalarFieldEnum = (typeof MarketScalarFieldEnum)[keyof typeof MarketScalarFieldEnum]
 
 
-  export const BetScalarFieldEnum: {
+  export const StakeScalarFieldEnum: {
     id: 'id',
-    amount: 'amount',
-    choice: 'choice',
-    createdAt: 'createdAt',
-    marketId: 'marketId'
+    userId: 'userId',
+    marketId: 'marketId',
+    resolved: 'resolved',
+    prediction: 'prediction',
+    stakeAmount: 'stakeAmount',
+    upside: 'upside',
+    createdAt: 'createdAt'
   };
 
-  export type BetScalarFieldEnum = (typeof BetScalarFieldEnum)[keyof typeof BetScalarFieldEnum]
+  export type StakeScalarFieldEnum = (typeof StakeScalarFieldEnum)[keyof typeof StakeScalarFieldEnum]
 
 
   export const UserScalarFieldEnum: {
@@ -5656,8 +6078,18 @@ export namespace Prisma {
     username: 'username',
     email: 'email',
     password: 'password',
+    isAdmin: 'isAdmin',
+    provePoints: 'provePoints',
+    resetToken: 'resetToken',
+    resetTokenExpiry: 'resetTokenExpiry',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    avatarSkinColor: 'avatarSkinColor',
+    avatarHairColor: 'avatarHairColor',
+    avatarHair: 'avatarHair',
+    avatarEyes: 'avatarEyes',
+    avatarMouth: 'avatarMouth',
+    avatarAccessories: 'avatarAccessories'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -5706,6 +6138,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -5729,6 +6168,7 @@ export namespace Prisma {
     publishedAt?: DateTimeFilter<"Article"> | Date | string
     content?: StringNullableFilter<"Article"> | string | null
     createdAt?: DateTimeFilter<"Article"> | Date | string
+    category?: StringNullableFilter<"Article"> | string | null
     market?: XOR<MarketNullableScalarRelationFilter, MarketWhereInput> | null
   }
 
@@ -5743,6 +6183,7 @@ export namespace Prisma {
     publishedAt?: SortOrder
     content?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    category?: SortOrderInput | SortOrder
     market?: MarketOrderByWithRelationInput
   }
 
@@ -5760,6 +6201,7 @@ export namespace Prisma {
     publishedAt?: DateTimeFilter<"Article"> | Date | string
     content?: StringNullableFilter<"Article"> | string | null
     createdAt?: DateTimeFilter<"Article"> | Date | string
+    category?: StringNullableFilter<"Article"> | string | null
     market?: XOR<MarketNullableScalarRelationFilter, MarketWhereInput> | null
   }, "id" | "url">
 
@@ -5774,6 +6216,7 @@ export namespace Prisma {
     publishedAt?: SortOrder
     content?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    category?: SortOrderInput | SortOrder
     _count?: ArticleCountOrderByAggregateInput
     _avg?: ArticleAvgOrderByAggregateInput
     _max?: ArticleMaxOrderByAggregateInput
@@ -5795,6 +6238,7 @@ export namespace Prisma {
     publishedAt?: DateTimeWithAggregatesFilter<"Article"> | Date | string
     content?: StringNullableWithAggregatesFilter<"Article"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Article"> | Date | string
+    category?: StringNullableWithAggregatesFilter<"Article"> | string | null
   }
 
   export type MarketWhereInput = {
@@ -5803,21 +6247,35 @@ export namespace Prisma {
     NOT?: MarketWhereInput | MarketWhereInput[]
     id?: IntFilter<"Market"> | number
     articleId?: IntFilter<"Market"> | number
-    totalTrue?: FloatFilter<"Market"> | number
-    totalFalse?: FloatFilter<"Market"> | number
+    closed?: BoolFilter<"Market"> | boolean
+    resolveCount?: IntFilter<"Market"> | number
+    outcome?: BoolNullableFilter<"Market"> | boolean | null
     createdAt?: DateTimeFilter<"Market"> | Date | string
+    lastResolve?: DateTimeFilter<"Market"> | Date | string
+    nextResolve?: DateTimeFilter<"Market"> | Date | string
+    sharesTrue?: FloatFilter<"Market"> | number
+    sharesFalse?: FloatFilter<"Market"> | number
+    probTrue?: FloatFilter<"Market"> | number
+    probFalse?: FloatFilter<"Market"> | number
     article?: XOR<ArticleScalarRelationFilter, ArticleWhereInput>
-    bets?: BetListRelationFilter
+    stakes?: StakeListRelationFilter
   }
 
   export type MarketOrderByWithRelationInput = {
     id?: SortOrder
     articleId?: SortOrder
-    totalTrue?: SortOrder
-    totalFalse?: SortOrder
+    closed?: SortOrder
+    resolveCount?: SortOrder
+    outcome?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    lastResolve?: SortOrder
+    nextResolve?: SortOrder
+    sharesTrue?: SortOrder
+    sharesFalse?: SortOrder
+    probTrue?: SortOrder
+    probFalse?: SortOrder
     article?: ArticleOrderByWithRelationInput
-    bets?: BetOrderByRelationAggregateInput
+    stakes?: StakeOrderByRelationAggregateInput
   }
 
   export type MarketWhereUniqueInput = Prisma.AtLeast<{
@@ -5826,19 +6284,33 @@ export namespace Prisma {
     AND?: MarketWhereInput | MarketWhereInput[]
     OR?: MarketWhereInput[]
     NOT?: MarketWhereInput | MarketWhereInput[]
-    totalTrue?: FloatFilter<"Market"> | number
-    totalFalse?: FloatFilter<"Market"> | number
+    closed?: BoolFilter<"Market"> | boolean
+    resolveCount?: IntFilter<"Market"> | number
+    outcome?: BoolNullableFilter<"Market"> | boolean | null
     createdAt?: DateTimeFilter<"Market"> | Date | string
+    lastResolve?: DateTimeFilter<"Market"> | Date | string
+    nextResolve?: DateTimeFilter<"Market"> | Date | string
+    sharesTrue?: FloatFilter<"Market"> | number
+    sharesFalse?: FloatFilter<"Market"> | number
+    probTrue?: FloatFilter<"Market"> | number
+    probFalse?: FloatFilter<"Market"> | number
     article?: XOR<ArticleScalarRelationFilter, ArticleWhereInput>
-    bets?: BetListRelationFilter
+    stakes?: StakeListRelationFilter
   }, "id" | "articleId">
 
   export type MarketOrderByWithAggregationInput = {
     id?: SortOrder
     articleId?: SortOrder
-    totalTrue?: SortOrder
-    totalFalse?: SortOrder
+    closed?: SortOrder
+    resolveCount?: SortOrder
+    outcome?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    lastResolve?: SortOrder
+    nextResolve?: SortOrder
+    sharesTrue?: SortOrder
+    sharesFalse?: SortOrder
+    probTrue?: SortOrder
+    probFalse?: SortOrder
     _count?: MarketCountOrderByAggregateInput
     _avg?: MarketAvgOrderByAggregateInput
     _max?: MarketMaxOrderByAggregateInput
@@ -5852,66 +6324,91 @@ export namespace Prisma {
     NOT?: MarketScalarWhereWithAggregatesInput | MarketScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Market"> | number
     articleId?: IntWithAggregatesFilter<"Market"> | number
-    totalTrue?: FloatWithAggregatesFilter<"Market"> | number
-    totalFalse?: FloatWithAggregatesFilter<"Market"> | number
+    closed?: BoolWithAggregatesFilter<"Market"> | boolean
+    resolveCount?: IntWithAggregatesFilter<"Market"> | number
+    outcome?: BoolNullableWithAggregatesFilter<"Market"> | boolean | null
     createdAt?: DateTimeWithAggregatesFilter<"Market"> | Date | string
+    lastResolve?: DateTimeWithAggregatesFilter<"Market"> | Date | string
+    nextResolve?: DateTimeWithAggregatesFilter<"Market"> | Date | string
+    sharesTrue?: FloatWithAggregatesFilter<"Market"> | number
+    sharesFalse?: FloatWithAggregatesFilter<"Market"> | number
+    probTrue?: FloatWithAggregatesFilter<"Market"> | number
+    probFalse?: FloatWithAggregatesFilter<"Market"> | number
   }
 
-  export type BetWhereInput = {
-    AND?: BetWhereInput | BetWhereInput[]
-    OR?: BetWhereInput[]
-    NOT?: BetWhereInput | BetWhereInput[]
-    id?: IntFilter<"Bet"> | number
-    amount?: FloatFilter<"Bet"> | number
-    choice?: StringFilter<"Bet"> | string
-    createdAt?: DateTimeFilter<"Bet"> | Date | string
-    marketId?: IntFilter<"Bet"> | number
+  export type StakeWhereInput = {
+    AND?: StakeWhereInput | StakeWhereInput[]
+    OR?: StakeWhereInput[]
+    NOT?: StakeWhereInput | StakeWhereInput[]
+    id?: IntFilter<"Stake"> | number
+    userId?: IntFilter<"Stake"> | number
+    marketId?: IntFilter<"Stake"> | number
+    resolved?: BoolFilter<"Stake"> | boolean
+    prediction?: BoolFilter<"Stake"> | boolean
+    stakeAmount?: FloatFilter<"Stake"> | number
+    upside?: FloatFilter<"Stake"> | number
+    createdAt?: DateTimeFilter<"Stake"> | Date | string
     market?: XOR<MarketScalarRelationFilter, MarketWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
-  export type BetOrderByWithRelationInput = {
+  export type StakeOrderByWithRelationInput = {
     id?: SortOrder
-    amount?: SortOrder
-    choice?: SortOrder
-    createdAt?: SortOrder
+    userId?: SortOrder
     marketId?: SortOrder
+    resolved?: SortOrder
+    prediction?: SortOrder
+    stakeAmount?: SortOrder
+    upside?: SortOrder
+    createdAt?: SortOrder
     market?: MarketOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
   }
 
-  export type BetWhereUniqueInput = Prisma.AtLeast<{
+  export type StakeWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    AND?: BetWhereInput | BetWhereInput[]
-    OR?: BetWhereInput[]
-    NOT?: BetWhereInput | BetWhereInput[]
-    amount?: FloatFilter<"Bet"> | number
-    choice?: StringFilter<"Bet"> | string
-    createdAt?: DateTimeFilter<"Bet"> | Date | string
-    marketId?: IntFilter<"Bet"> | number
+    AND?: StakeWhereInput | StakeWhereInput[]
+    OR?: StakeWhereInput[]
+    NOT?: StakeWhereInput | StakeWhereInput[]
+    userId?: IntFilter<"Stake"> | number
+    marketId?: IntFilter<"Stake"> | number
+    resolved?: BoolFilter<"Stake"> | boolean
+    prediction?: BoolFilter<"Stake"> | boolean
+    stakeAmount?: FloatFilter<"Stake"> | number
+    upside?: FloatFilter<"Stake"> | number
+    createdAt?: DateTimeFilter<"Stake"> | Date | string
     market?: XOR<MarketScalarRelationFilter, MarketWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
-  export type BetOrderByWithAggregationInput = {
+  export type StakeOrderByWithAggregationInput = {
     id?: SortOrder
-    amount?: SortOrder
-    choice?: SortOrder
-    createdAt?: SortOrder
+    userId?: SortOrder
     marketId?: SortOrder
-    _count?: BetCountOrderByAggregateInput
-    _avg?: BetAvgOrderByAggregateInput
-    _max?: BetMaxOrderByAggregateInput
-    _min?: BetMinOrderByAggregateInput
-    _sum?: BetSumOrderByAggregateInput
+    resolved?: SortOrder
+    prediction?: SortOrder
+    stakeAmount?: SortOrder
+    upside?: SortOrder
+    createdAt?: SortOrder
+    _count?: StakeCountOrderByAggregateInput
+    _avg?: StakeAvgOrderByAggregateInput
+    _max?: StakeMaxOrderByAggregateInput
+    _min?: StakeMinOrderByAggregateInput
+    _sum?: StakeSumOrderByAggregateInput
   }
 
-  export type BetScalarWhereWithAggregatesInput = {
-    AND?: BetScalarWhereWithAggregatesInput | BetScalarWhereWithAggregatesInput[]
-    OR?: BetScalarWhereWithAggregatesInput[]
-    NOT?: BetScalarWhereWithAggregatesInput | BetScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"Bet"> | number
-    amount?: FloatWithAggregatesFilter<"Bet"> | number
-    choice?: StringWithAggregatesFilter<"Bet"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"Bet"> | Date | string
-    marketId?: IntWithAggregatesFilter<"Bet"> | number
+  export type StakeScalarWhereWithAggregatesInput = {
+    AND?: StakeScalarWhereWithAggregatesInput | StakeScalarWhereWithAggregatesInput[]
+    OR?: StakeScalarWhereWithAggregatesInput[]
+    NOT?: StakeScalarWhereWithAggregatesInput | StakeScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Stake"> | number
+    userId?: IntWithAggregatesFilter<"Stake"> | number
+    marketId?: IntWithAggregatesFilter<"Stake"> | number
+    resolved?: BoolWithAggregatesFilter<"Stake"> | boolean
+    prediction?: BoolWithAggregatesFilter<"Stake"> | boolean
+    stakeAmount?: FloatWithAggregatesFilter<"Stake"> | number
+    upside?: FloatWithAggregatesFilter<"Stake"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"Stake"> | Date | string
   }
 
   export type UserWhereInput = {
@@ -5922,8 +6419,19 @@ export namespace Prisma {
     username?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
     password?: StringFilter<"User"> | string
+    isAdmin?: BoolFilter<"User"> | boolean
+    provePoints?: FloatFilter<"User"> | number
+    resetToken?: StringNullableFilter<"User"> | string | null
+    resetTokenExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    avatarSkinColor?: StringFilter<"User"> | string
+    avatarHairColor?: StringFilter<"User"> | string
+    avatarHair?: StringFilter<"User"> | string
+    avatarEyes?: StringFilter<"User"> | string
+    avatarMouth?: StringFilter<"User"> | string
+    avatarAccessories?: StringFilter<"User"> | string
+    stakes?: StakeListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -5931,8 +6439,19 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
+    isAdmin?: SortOrder
+    provePoints?: SortOrder
+    resetToken?: SortOrderInput | SortOrder
+    resetTokenExpiry?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    avatarSkinColor?: SortOrder
+    avatarHairColor?: SortOrder
+    avatarHair?: SortOrder
+    avatarEyes?: SortOrder
+    avatarMouth?: SortOrder
+    avatarAccessories?: SortOrder
+    stakes?: StakeOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -5943,8 +6462,19 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     password?: StringFilter<"User"> | string
+    isAdmin?: BoolFilter<"User"> | boolean
+    provePoints?: FloatFilter<"User"> | number
+    resetToken?: StringNullableFilter<"User"> | string | null
+    resetTokenExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    avatarSkinColor?: StringFilter<"User"> | string
+    avatarHairColor?: StringFilter<"User"> | string
+    avatarHair?: StringFilter<"User"> | string
+    avatarEyes?: StringFilter<"User"> | string
+    avatarMouth?: StringFilter<"User"> | string
+    avatarAccessories?: StringFilter<"User"> | string
+    stakes?: StakeListRelationFilter
   }, "id" | "username" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -5952,8 +6482,18 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
+    isAdmin?: SortOrder
+    provePoints?: SortOrder
+    resetToken?: SortOrderInput | SortOrder
+    resetTokenExpiry?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    avatarSkinColor?: SortOrder
+    avatarHairColor?: SortOrder
+    avatarHair?: SortOrder
+    avatarEyes?: SortOrder
+    avatarMouth?: SortOrder
+    avatarAccessories?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -5969,8 +6509,18 @@ export namespace Prisma {
     username?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
     password?: StringWithAggregatesFilter<"User"> | string
+    isAdmin?: BoolWithAggregatesFilter<"User"> | boolean
+    provePoints?: FloatWithAggregatesFilter<"User"> | number
+    resetToken?: StringNullableWithAggregatesFilter<"User"> | string | null
+    resetTokenExpiry?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+    avatarSkinColor?: StringWithAggregatesFilter<"User"> | string
+    avatarHairColor?: StringWithAggregatesFilter<"User"> | string
+    avatarHair?: StringWithAggregatesFilter<"User"> | string
+    avatarEyes?: StringWithAggregatesFilter<"User"> | string
+    avatarMouth?: StringWithAggregatesFilter<"User"> | string
+    avatarAccessories?: StringWithAggregatesFilter<"User"> | string
   }
 
   export type ArticleCreateInput = {
@@ -5983,6 +6533,7 @@ export namespace Prisma {
     publishedAt: Date | string
     content?: string | null
     createdAt?: Date | string
+    category?: string | null
     market?: MarketCreateNestedOneWithoutArticleInput
   }
 
@@ -5997,6 +6548,7 @@ export namespace Prisma {
     publishedAt: Date | string
     content?: string | null
     createdAt?: Date | string
+    category?: string | null
     market?: MarketUncheckedCreateNestedOneWithoutArticleInput
   }
 
@@ -6010,6 +6562,7 @@ export namespace Prisma {
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
     market?: MarketUpdateOneWithoutArticleNestedInput
   }
 
@@ -6024,6 +6577,7 @@ export namespace Prisma {
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
     market?: MarketUncheckedUpdateOneWithoutArticleNestedInput
   }
 
@@ -6038,6 +6592,7 @@ export namespace Prisma {
     publishedAt: Date | string
     content?: string | null
     createdAt?: Date | string
+    category?: string | null
   }
 
   export type ArticleUpdateManyMutationInput = {
@@ -6050,6 +6605,7 @@ export namespace Prisma {
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ArticleUncheckedUpdateManyInput = {
@@ -6063,122 +6619,203 @@ export namespace Prisma {
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MarketCreateInput = {
-    totalTrue?: number
-    totalFalse?: number
+    closed?: boolean
+    resolveCount?: number
+    outcome?: boolean | null
     createdAt?: Date | string
+    lastResolve?: Date | string
+    nextResolve: Date | string
+    sharesTrue: number
+    sharesFalse: number
+    probTrue: number
+    probFalse: number
     article: ArticleCreateNestedOneWithoutMarketInput
-    bets?: BetCreateNestedManyWithoutMarketInput
+    stakes?: StakeCreateNestedManyWithoutMarketInput
   }
 
   export type MarketUncheckedCreateInput = {
     id?: number
     articleId: number
-    totalTrue?: number
-    totalFalse?: number
+    closed?: boolean
+    resolveCount?: number
+    outcome?: boolean | null
     createdAt?: Date | string
-    bets?: BetUncheckedCreateNestedManyWithoutMarketInput
+    lastResolve?: Date | string
+    nextResolve: Date | string
+    sharesTrue: number
+    sharesFalse: number
+    probTrue: number
+    probFalse: number
+    stakes?: StakeUncheckedCreateNestedManyWithoutMarketInput
   }
 
   export type MarketUpdateInput = {
-    totalTrue?: FloatFieldUpdateOperationsInput | number
-    totalFalse?: FloatFieldUpdateOperationsInput | number
+    closed?: BoolFieldUpdateOperationsInput | boolean
+    resolveCount?: IntFieldUpdateOperationsInput | number
+    outcome?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    nextResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    sharesTrue?: FloatFieldUpdateOperationsInput | number
+    sharesFalse?: FloatFieldUpdateOperationsInput | number
+    probTrue?: FloatFieldUpdateOperationsInput | number
+    probFalse?: FloatFieldUpdateOperationsInput | number
     article?: ArticleUpdateOneRequiredWithoutMarketNestedInput
-    bets?: BetUpdateManyWithoutMarketNestedInput
+    stakes?: StakeUpdateManyWithoutMarketNestedInput
   }
 
   export type MarketUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     articleId?: IntFieldUpdateOperationsInput | number
-    totalTrue?: FloatFieldUpdateOperationsInput | number
-    totalFalse?: FloatFieldUpdateOperationsInput | number
+    closed?: BoolFieldUpdateOperationsInput | boolean
+    resolveCount?: IntFieldUpdateOperationsInput | number
+    outcome?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    bets?: BetUncheckedUpdateManyWithoutMarketNestedInput
+    lastResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    nextResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    sharesTrue?: FloatFieldUpdateOperationsInput | number
+    sharesFalse?: FloatFieldUpdateOperationsInput | number
+    probTrue?: FloatFieldUpdateOperationsInput | number
+    probFalse?: FloatFieldUpdateOperationsInput | number
+    stakes?: StakeUncheckedUpdateManyWithoutMarketNestedInput
   }
 
   export type MarketCreateManyInput = {
     id?: number
     articleId: number
-    totalTrue?: number
-    totalFalse?: number
+    closed?: boolean
+    resolveCount?: number
+    outcome?: boolean | null
     createdAt?: Date | string
+    lastResolve?: Date | string
+    nextResolve: Date | string
+    sharesTrue: number
+    sharesFalse: number
+    probTrue: number
+    probFalse: number
   }
 
   export type MarketUpdateManyMutationInput = {
-    totalTrue?: FloatFieldUpdateOperationsInput | number
-    totalFalse?: FloatFieldUpdateOperationsInput | number
+    closed?: BoolFieldUpdateOperationsInput | boolean
+    resolveCount?: IntFieldUpdateOperationsInput | number
+    outcome?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    nextResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    sharesTrue?: FloatFieldUpdateOperationsInput | number
+    sharesFalse?: FloatFieldUpdateOperationsInput | number
+    probTrue?: FloatFieldUpdateOperationsInput | number
+    probFalse?: FloatFieldUpdateOperationsInput | number
   }
 
   export type MarketUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     articleId?: IntFieldUpdateOperationsInput | number
-    totalTrue?: FloatFieldUpdateOperationsInput | number
-    totalFalse?: FloatFieldUpdateOperationsInput | number
+    closed?: BoolFieldUpdateOperationsInput | boolean
+    resolveCount?: IntFieldUpdateOperationsInput | number
+    outcome?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    nextResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    sharesTrue?: FloatFieldUpdateOperationsInput | number
+    sharesFalse?: FloatFieldUpdateOperationsInput | number
+    probTrue?: FloatFieldUpdateOperationsInput | number
+    probFalse?: FloatFieldUpdateOperationsInput | number
   }
 
-  export type BetCreateInput = {
-    amount: number
-    choice: string
+  export type StakeCreateInput = {
+    resolved: boolean
+    prediction: boolean
+    stakeAmount: number
+    upside: number
     createdAt?: Date | string
-    market: MarketCreateNestedOneWithoutBetsInput
+    market: MarketCreateNestedOneWithoutStakesInput
+    user: UserCreateNestedOneWithoutStakesInput
   }
 
-  export type BetUncheckedCreateInput = {
+  export type StakeUncheckedCreateInput = {
     id?: number
-    amount: number
-    choice: string
-    createdAt?: Date | string
+    userId: number
     marketId: number
+    resolved: boolean
+    prediction: boolean
+    stakeAmount: number
+    upside: number
+    createdAt?: Date | string
   }
 
-  export type BetUpdateInput = {
-    amount?: FloatFieldUpdateOperationsInput | number
-    choice?: StringFieldUpdateOperationsInput | string
+  export type StakeUpdateInput = {
+    resolved?: BoolFieldUpdateOperationsInput | boolean
+    prediction?: BoolFieldUpdateOperationsInput | boolean
+    stakeAmount?: FloatFieldUpdateOperationsInput | number
+    upside?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    market?: MarketUpdateOneRequiredWithoutBetsNestedInput
+    market?: MarketUpdateOneRequiredWithoutStakesNestedInput
+    user?: UserUpdateOneRequiredWithoutStakesNestedInput
   }
 
-  export type BetUncheckedUpdateInput = {
+  export type StakeUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
-    choice?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: IntFieldUpdateOperationsInput | number
     marketId?: IntFieldUpdateOperationsInput | number
+    resolved?: BoolFieldUpdateOperationsInput | boolean
+    prediction?: BoolFieldUpdateOperationsInput | boolean
+    stakeAmount?: FloatFieldUpdateOperationsInput | number
+    upside?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type BetCreateManyInput = {
+  export type StakeCreateManyInput = {
     id?: number
-    amount: number
-    choice: string
-    createdAt?: Date | string
+    userId: number
     marketId: number
+    resolved: boolean
+    prediction: boolean
+    stakeAmount: number
+    upside: number
+    createdAt?: Date | string
   }
 
-  export type BetUpdateManyMutationInput = {
-    amount?: FloatFieldUpdateOperationsInput | number
-    choice?: StringFieldUpdateOperationsInput | string
+  export type StakeUpdateManyMutationInput = {
+    resolved?: BoolFieldUpdateOperationsInput | boolean
+    prediction?: BoolFieldUpdateOperationsInput | boolean
+    stakeAmount?: FloatFieldUpdateOperationsInput | number
+    upside?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type BetUncheckedUpdateManyInput = {
+  export type StakeUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
-    choice?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: IntFieldUpdateOperationsInput | number
     marketId?: IntFieldUpdateOperationsInput | number
+    resolved?: BoolFieldUpdateOperationsInput | boolean
+    prediction?: BoolFieldUpdateOperationsInput | boolean
+    stakeAmount?: FloatFieldUpdateOperationsInput | number
+    upside?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserCreateInput = {
     username: string
     email: string
     password: string
+    isAdmin?: boolean
+    provePoints?: number
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    avatarSkinColor?: string
+    avatarHairColor?: string
+    avatarHair?: string
+    avatarEyes?: string
+    avatarMouth?: string
+    avatarAccessories?: string
+    stakes?: StakeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -6186,16 +6823,38 @@ export namespace Prisma {
     username: string
     email: string
     password: string
+    isAdmin?: boolean
+    provePoints?: number
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    avatarSkinColor?: string
+    avatarHairColor?: string
+    avatarHair?: string
+    avatarEyes?: string
+    avatarMouth?: string
+    avatarAccessories?: string
+    stakes?: StakeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    provePoints?: FloatFieldUpdateOperationsInput | number
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    avatarSkinColor?: StringFieldUpdateOperationsInput | string
+    avatarHairColor?: StringFieldUpdateOperationsInput | string
+    avatarHair?: StringFieldUpdateOperationsInput | string
+    avatarEyes?: StringFieldUpdateOperationsInput | string
+    avatarMouth?: StringFieldUpdateOperationsInput | string
+    avatarAccessories?: StringFieldUpdateOperationsInput | string
+    stakes?: StakeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -6203,8 +6862,19 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    provePoints?: FloatFieldUpdateOperationsInput | number
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    avatarSkinColor?: StringFieldUpdateOperationsInput | string
+    avatarHairColor?: StringFieldUpdateOperationsInput | string
+    avatarHair?: StringFieldUpdateOperationsInput | string
+    avatarEyes?: StringFieldUpdateOperationsInput | string
+    avatarMouth?: StringFieldUpdateOperationsInput | string
+    avatarAccessories?: StringFieldUpdateOperationsInput | string
+    stakes?: StakeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -6212,16 +6882,36 @@ export namespace Prisma {
     username: string
     email: string
     password: string
+    isAdmin?: boolean
+    provePoints?: number
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    avatarSkinColor?: string
+    avatarHairColor?: string
+    avatarHair?: string
+    avatarEyes?: string
+    avatarMouth?: string
+    avatarAccessories?: string
   }
 
   export type UserUpdateManyMutationInput = {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    provePoints?: FloatFieldUpdateOperationsInput | number
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    avatarSkinColor?: StringFieldUpdateOperationsInput | string
+    avatarHairColor?: StringFieldUpdateOperationsInput | string
+    avatarHair?: StringFieldUpdateOperationsInput | string
+    avatarEyes?: StringFieldUpdateOperationsInput | string
+    avatarMouth?: StringFieldUpdateOperationsInput | string
+    avatarAccessories?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -6229,8 +6919,18 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    provePoints?: FloatFieldUpdateOperationsInput | number
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    avatarSkinColor?: StringFieldUpdateOperationsInput | string
+    avatarHairColor?: StringFieldUpdateOperationsInput | string
+    avatarHair?: StringFieldUpdateOperationsInput | string
+    avatarEyes?: StringFieldUpdateOperationsInput | string
+    avatarMouth?: StringFieldUpdateOperationsInput | string
+    avatarAccessories?: StringFieldUpdateOperationsInput | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -6304,6 +7004,7 @@ export namespace Prisma {
     publishedAt?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
+    category?: SortOrder
   }
 
   export type ArticleAvgOrderByAggregateInput = {
@@ -6321,6 +7022,7 @@ export namespace Prisma {
     publishedAt?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
+    category?: SortOrder
   }
 
   export type ArticleMinOrderByAggregateInput = {
@@ -6334,6 +7036,7 @@ export namespace Prisma {
     publishedAt?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
+    category?: SortOrder
   }
 
   export type ArticleSumOrderByAggregateInput = {
@@ -6404,6 +7107,16 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type BoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
   export type FloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
     in?: number[]
@@ -6420,52 +7133,95 @@ export namespace Prisma {
     isNot?: ArticleWhereInput
   }
 
-  export type BetListRelationFilter = {
-    every?: BetWhereInput
-    some?: BetWhereInput
-    none?: BetWhereInput
+  export type StakeListRelationFilter = {
+    every?: StakeWhereInput
+    some?: StakeWhereInput
+    none?: StakeWhereInput
   }
 
-  export type BetOrderByRelationAggregateInput = {
+  export type StakeOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type MarketCountOrderByAggregateInput = {
     id?: SortOrder
     articleId?: SortOrder
-    totalTrue?: SortOrder
-    totalFalse?: SortOrder
+    closed?: SortOrder
+    resolveCount?: SortOrder
+    outcome?: SortOrder
     createdAt?: SortOrder
+    lastResolve?: SortOrder
+    nextResolve?: SortOrder
+    sharesTrue?: SortOrder
+    sharesFalse?: SortOrder
+    probTrue?: SortOrder
+    probFalse?: SortOrder
   }
 
   export type MarketAvgOrderByAggregateInput = {
     id?: SortOrder
     articleId?: SortOrder
-    totalTrue?: SortOrder
-    totalFalse?: SortOrder
+    resolveCount?: SortOrder
+    sharesTrue?: SortOrder
+    sharesFalse?: SortOrder
+    probTrue?: SortOrder
+    probFalse?: SortOrder
   }
 
   export type MarketMaxOrderByAggregateInput = {
     id?: SortOrder
     articleId?: SortOrder
-    totalTrue?: SortOrder
-    totalFalse?: SortOrder
+    closed?: SortOrder
+    resolveCount?: SortOrder
+    outcome?: SortOrder
     createdAt?: SortOrder
+    lastResolve?: SortOrder
+    nextResolve?: SortOrder
+    sharesTrue?: SortOrder
+    sharesFalse?: SortOrder
+    probTrue?: SortOrder
+    probFalse?: SortOrder
   }
 
   export type MarketMinOrderByAggregateInput = {
     id?: SortOrder
     articleId?: SortOrder
-    totalTrue?: SortOrder
-    totalFalse?: SortOrder
+    closed?: SortOrder
+    resolveCount?: SortOrder
+    outcome?: SortOrder
     createdAt?: SortOrder
+    lastResolve?: SortOrder
+    nextResolve?: SortOrder
+    sharesTrue?: SortOrder
+    sharesFalse?: SortOrder
+    probTrue?: SortOrder
+    probFalse?: SortOrder
   }
 
   export type MarketSumOrderByAggregateInput = {
     id?: SortOrder
     articleId?: SortOrder
-    totalTrue?: SortOrder
-    totalFalse?: SortOrder
+    resolveCount?: SortOrder
+    sharesTrue?: SortOrder
+    sharesFalse?: SortOrder
+    probTrue?: SortOrder
+    probFalse?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type FloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -6489,40 +7245,69 @@ export namespace Prisma {
     isNot?: MarketWhereInput
   }
 
-  export type BetCountOrderByAggregateInput = {
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type StakeCountOrderByAggregateInput = {
     id?: SortOrder
-    amount?: SortOrder
-    choice?: SortOrder
+    userId?: SortOrder
+    marketId?: SortOrder
+    resolved?: SortOrder
+    prediction?: SortOrder
+    stakeAmount?: SortOrder
+    upside?: SortOrder
     createdAt?: SortOrder
-    marketId?: SortOrder
   }
 
-  export type BetAvgOrderByAggregateInput = {
+  export type StakeAvgOrderByAggregateInput = {
     id?: SortOrder
-    amount?: SortOrder
+    userId?: SortOrder
     marketId?: SortOrder
+    stakeAmount?: SortOrder
+    upside?: SortOrder
   }
 
-  export type BetMaxOrderByAggregateInput = {
+  export type StakeMaxOrderByAggregateInput = {
     id?: SortOrder
-    amount?: SortOrder
-    choice?: SortOrder
+    userId?: SortOrder
+    marketId?: SortOrder
+    resolved?: SortOrder
+    prediction?: SortOrder
+    stakeAmount?: SortOrder
+    upside?: SortOrder
     createdAt?: SortOrder
-    marketId?: SortOrder
   }
 
-  export type BetMinOrderByAggregateInput = {
+  export type StakeMinOrderByAggregateInput = {
     id?: SortOrder
-    amount?: SortOrder
-    choice?: SortOrder
+    userId?: SortOrder
+    marketId?: SortOrder
+    resolved?: SortOrder
+    prediction?: SortOrder
+    stakeAmount?: SortOrder
+    upside?: SortOrder
     createdAt?: SortOrder
-    marketId?: SortOrder
   }
 
-  export type BetSumOrderByAggregateInput = {
+  export type StakeSumOrderByAggregateInput = {
     id?: SortOrder
-    amount?: SortOrder
+    userId?: SortOrder
     marketId?: SortOrder
+    stakeAmount?: SortOrder
+    upside?: SortOrder
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type UserCountOrderByAggregateInput = {
@@ -6530,12 +7315,23 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
+    isAdmin?: SortOrder
+    provePoints?: SortOrder
+    resetToken?: SortOrder
+    resetTokenExpiry?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    avatarSkinColor?: SortOrder
+    avatarHairColor?: SortOrder
+    avatarHair?: SortOrder
+    avatarEyes?: SortOrder
+    avatarMouth?: SortOrder
+    avatarAccessories?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
     id?: SortOrder
+    provePoints?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -6543,8 +7339,18 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
+    isAdmin?: SortOrder
+    provePoints?: SortOrder
+    resetToken?: SortOrder
+    resetTokenExpiry?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    avatarSkinColor?: SortOrder
+    avatarHairColor?: SortOrder
+    avatarHair?: SortOrder
+    avatarEyes?: SortOrder
+    avatarMouth?: SortOrder
+    avatarAccessories?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -6552,12 +7358,37 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
+    isAdmin?: SortOrder
+    provePoints?: SortOrder
+    resetToken?: SortOrder
+    resetTokenExpiry?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    avatarSkinColor?: SortOrder
+    avatarHairColor?: SortOrder
+    avatarHair?: SortOrder
+    avatarEyes?: SortOrder
+    avatarMouth?: SortOrder
+    avatarAccessories?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
     id?: SortOrder
+    provePoints?: SortOrder
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type MarketCreateNestedOneWithoutArticleInput = {
@@ -6618,18 +7449,26 @@ export namespace Prisma {
     connect?: ArticleWhereUniqueInput
   }
 
-  export type BetCreateNestedManyWithoutMarketInput = {
-    create?: XOR<BetCreateWithoutMarketInput, BetUncheckedCreateWithoutMarketInput> | BetCreateWithoutMarketInput[] | BetUncheckedCreateWithoutMarketInput[]
-    connectOrCreate?: BetCreateOrConnectWithoutMarketInput | BetCreateOrConnectWithoutMarketInput[]
-    createMany?: BetCreateManyMarketInputEnvelope
-    connect?: BetWhereUniqueInput | BetWhereUniqueInput[]
+  export type StakeCreateNestedManyWithoutMarketInput = {
+    create?: XOR<StakeCreateWithoutMarketInput, StakeUncheckedCreateWithoutMarketInput> | StakeCreateWithoutMarketInput[] | StakeUncheckedCreateWithoutMarketInput[]
+    connectOrCreate?: StakeCreateOrConnectWithoutMarketInput | StakeCreateOrConnectWithoutMarketInput[]
+    createMany?: StakeCreateManyMarketInputEnvelope
+    connect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
   }
 
-  export type BetUncheckedCreateNestedManyWithoutMarketInput = {
-    create?: XOR<BetCreateWithoutMarketInput, BetUncheckedCreateWithoutMarketInput> | BetCreateWithoutMarketInput[] | BetUncheckedCreateWithoutMarketInput[]
-    connectOrCreate?: BetCreateOrConnectWithoutMarketInput | BetCreateOrConnectWithoutMarketInput[]
-    createMany?: BetCreateManyMarketInputEnvelope
-    connect?: BetWhereUniqueInput | BetWhereUniqueInput[]
+  export type StakeUncheckedCreateNestedManyWithoutMarketInput = {
+    create?: XOR<StakeCreateWithoutMarketInput, StakeUncheckedCreateWithoutMarketInput> | StakeCreateWithoutMarketInput[] | StakeUncheckedCreateWithoutMarketInput[]
+    connectOrCreate?: StakeCreateOrConnectWithoutMarketInput | StakeCreateOrConnectWithoutMarketInput[]
+    createMany?: StakeCreateManyMarketInputEnvelope
+    connect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null
   }
 
   export type FloatFieldUpdateOperationsInput = {
@@ -6648,46 +7487,106 @@ export namespace Prisma {
     update?: XOR<XOR<ArticleUpdateToOneWithWhereWithoutMarketInput, ArticleUpdateWithoutMarketInput>, ArticleUncheckedUpdateWithoutMarketInput>
   }
 
-  export type BetUpdateManyWithoutMarketNestedInput = {
-    create?: XOR<BetCreateWithoutMarketInput, BetUncheckedCreateWithoutMarketInput> | BetCreateWithoutMarketInput[] | BetUncheckedCreateWithoutMarketInput[]
-    connectOrCreate?: BetCreateOrConnectWithoutMarketInput | BetCreateOrConnectWithoutMarketInput[]
-    upsert?: BetUpsertWithWhereUniqueWithoutMarketInput | BetUpsertWithWhereUniqueWithoutMarketInput[]
-    createMany?: BetCreateManyMarketInputEnvelope
-    set?: BetWhereUniqueInput | BetWhereUniqueInput[]
-    disconnect?: BetWhereUniqueInput | BetWhereUniqueInput[]
-    delete?: BetWhereUniqueInput | BetWhereUniqueInput[]
-    connect?: BetWhereUniqueInput | BetWhereUniqueInput[]
-    update?: BetUpdateWithWhereUniqueWithoutMarketInput | BetUpdateWithWhereUniqueWithoutMarketInput[]
-    updateMany?: BetUpdateManyWithWhereWithoutMarketInput | BetUpdateManyWithWhereWithoutMarketInput[]
-    deleteMany?: BetScalarWhereInput | BetScalarWhereInput[]
+  export type StakeUpdateManyWithoutMarketNestedInput = {
+    create?: XOR<StakeCreateWithoutMarketInput, StakeUncheckedCreateWithoutMarketInput> | StakeCreateWithoutMarketInput[] | StakeUncheckedCreateWithoutMarketInput[]
+    connectOrCreate?: StakeCreateOrConnectWithoutMarketInput | StakeCreateOrConnectWithoutMarketInput[]
+    upsert?: StakeUpsertWithWhereUniqueWithoutMarketInput | StakeUpsertWithWhereUniqueWithoutMarketInput[]
+    createMany?: StakeCreateManyMarketInputEnvelope
+    set?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    disconnect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    delete?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    connect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    update?: StakeUpdateWithWhereUniqueWithoutMarketInput | StakeUpdateWithWhereUniqueWithoutMarketInput[]
+    updateMany?: StakeUpdateManyWithWhereWithoutMarketInput | StakeUpdateManyWithWhereWithoutMarketInput[]
+    deleteMany?: StakeScalarWhereInput | StakeScalarWhereInput[]
   }
 
-  export type BetUncheckedUpdateManyWithoutMarketNestedInput = {
-    create?: XOR<BetCreateWithoutMarketInput, BetUncheckedCreateWithoutMarketInput> | BetCreateWithoutMarketInput[] | BetUncheckedCreateWithoutMarketInput[]
-    connectOrCreate?: BetCreateOrConnectWithoutMarketInput | BetCreateOrConnectWithoutMarketInput[]
-    upsert?: BetUpsertWithWhereUniqueWithoutMarketInput | BetUpsertWithWhereUniqueWithoutMarketInput[]
-    createMany?: BetCreateManyMarketInputEnvelope
-    set?: BetWhereUniqueInput | BetWhereUniqueInput[]
-    disconnect?: BetWhereUniqueInput | BetWhereUniqueInput[]
-    delete?: BetWhereUniqueInput | BetWhereUniqueInput[]
-    connect?: BetWhereUniqueInput | BetWhereUniqueInput[]
-    update?: BetUpdateWithWhereUniqueWithoutMarketInput | BetUpdateWithWhereUniqueWithoutMarketInput[]
-    updateMany?: BetUpdateManyWithWhereWithoutMarketInput | BetUpdateManyWithWhereWithoutMarketInput[]
-    deleteMany?: BetScalarWhereInput | BetScalarWhereInput[]
+  export type StakeUncheckedUpdateManyWithoutMarketNestedInput = {
+    create?: XOR<StakeCreateWithoutMarketInput, StakeUncheckedCreateWithoutMarketInput> | StakeCreateWithoutMarketInput[] | StakeUncheckedCreateWithoutMarketInput[]
+    connectOrCreate?: StakeCreateOrConnectWithoutMarketInput | StakeCreateOrConnectWithoutMarketInput[]
+    upsert?: StakeUpsertWithWhereUniqueWithoutMarketInput | StakeUpsertWithWhereUniqueWithoutMarketInput[]
+    createMany?: StakeCreateManyMarketInputEnvelope
+    set?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    disconnect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    delete?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    connect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    update?: StakeUpdateWithWhereUniqueWithoutMarketInput | StakeUpdateWithWhereUniqueWithoutMarketInput[]
+    updateMany?: StakeUpdateManyWithWhereWithoutMarketInput | StakeUpdateManyWithWhereWithoutMarketInput[]
+    deleteMany?: StakeScalarWhereInput | StakeScalarWhereInput[]
   }
 
-  export type MarketCreateNestedOneWithoutBetsInput = {
-    create?: XOR<MarketCreateWithoutBetsInput, MarketUncheckedCreateWithoutBetsInput>
-    connectOrCreate?: MarketCreateOrConnectWithoutBetsInput
+  export type MarketCreateNestedOneWithoutStakesInput = {
+    create?: XOR<MarketCreateWithoutStakesInput, MarketUncheckedCreateWithoutStakesInput>
+    connectOrCreate?: MarketCreateOrConnectWithoutStakesInput
     connect?: MarketWhereUniqueInput
   }
 
-  export type MarketUpdateOneRequiredWithoutBetsNestedInput = {
-    create?: XOR<MarketCreateWithoutBetsInput, MarketUncheckedCreateWithoutBetsInput>
-    connectOrCreate?: MarketCreateOrConnectWithoutBetsInput
-    upsert?: MarketUpsertWithoutBetsInput
+  export type UserCreateNestedOneWithoutStakesInput = {
+    create?: XOR<UserCreateWithoutStakesInput, UserUncheckedCreateWithoutStakesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutStakesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type MarketUpdateOneRequiredWithoutStakesNestedInput = {
+    create?: XOR<MarketCreateWithoutStakesInput, MarketUncheckedCreateWithoutStakesInput>
+    connectOrCreate?: MarketCreateOrConnectWithoutStakesInput
+    upsert?: MarketUpsertWithoutStakesInput
     connect?: MarketWhereUniqueInput
-    update?: XOR<XOR<MarketUpdateToOneWithWhereWithoutBetsInput, MarketUpdateWithoutBetsInput>, MarketUncheckedUpdateWithoutBetsInput>
+    update?: XOR<XOR<MarketUpdateToOneWithWhereWithoutStakesInput, MarketUpdateWithoutStakesInput>, MarketUncheckedUpdateWithoutStakesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutStakesNestedInput = {
+    create?: XOR<UserCreateWithoutStakesInput, UserUncheckedCreateWithoutStakesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutStakesInput
+    upsert?: UserUpsertWithoutStakesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutStakesInput, UserUpdateWithoutStakesInput>, UserUncheckedUpdateWithoutStakesInput>
+  }
+
+  export type StakeCreateNestedManyWithoutUserInput = {
+    create?: XOR<StakeCreateWithoutUserInput, StakeUncheckedCreateWithoutUserInput> | StakeCreateWithoutUserInput[] | StakeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: StakeCreateOrConnectWithoutUserInput | StakeCreateOrConnectWithoutUserInput[]
+    createMany?: StakeCreateManyUserInputEnvelope
+    connect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+  }
+
+  export type StakeUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<StakeCreateWithoutUserInput, StakeUncheckedCreateWithoutUserInput> | StakeCreateWithoutUserInput[] | StakeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: StakeCreateOrConnectWithoutUserInput | StakeCreateOrConnectWithoutUserInput[]
+    createMany?: StakeCreateManyUserInputEnvelope
+    connect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type StakeUpdateManyWithoutUserNestedInput = {
+    create?: XOR<StakeCreateWithoutUserInput, StakeUncheckedCreateWithoutUserInput> | StakeCreateWithoutUserInput[] | StakeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: StakeCreateOrConnectWithoutUserInput | StakeCreateOrConnectWithoutUserInput[]
+    upsert?: StakeUpsertWithWhereUniqueWithoutUserInput | StakeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: StakeCreateManyUserInputEnvelope
+    set?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    disconnect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    delete?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    connect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    update?: StakeUpdateWithWhereUniqueWithoutUserInput | StakeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: StakeUpdateManyWithWhereWithoutUserInput | StakeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: StakeScalarWhereInput | StakeScalarWhereInput[]
+  }
+
+  export type StakeUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<StakeCreateWithoutUserInput, StakeUncheckedCreateWithoutUserInput> | StakeCreateWithoutUserInput[] | StakeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: StakeCreateOrConnectWithoutUserInput | StakeCreateOrConnectWithoutUserInput[]
+    upsert?: StakeUpsertWithWhereUniqueWithoutUserInput | StakeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: StakeCreateManyUserInputEnvelope
+    set?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    disconnect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    delete?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    connect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+    update?: StakeUpdateWithWhereUniqueWithoutUserInput | StakeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: StakeUpdateManyWithWhereWithoutUserInput | StakeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: StakeScalarWhereInput | StakeScalarWhereInput[]
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -6826,6 +7725,32 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
     in?: number[]
@@ -6842,19 +7767,58 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type MarketCreateWithoutArticleInput = {
-    totalTrue?: number
-    totalFalse?: number
+    closed?: boolean
+    resolveCount?: number
+    outcome?: boolean | null
     createdAt?: Date | string
-    bets?: BetCreateNestedManyWithoutMarketInput
+    lastResolve?: Date | string
+    nextResolve: Date | string
+    sharesTrue: number
+    sharesFalse: number
+    probTrue: number
+    probFalse: number
+    stakes?: StakeCreateNestedManyWithoutMarketInput
   }
 
   export type MarketUncheckedCreateWithoutArticleInput = {
     id?: number
-    totalTrue?: number
-    totalFalse?: number
+    closed?: boolean
+    resolveCount?: number
+    outcome?: boolean | null
     createdAt?: Date | string
-    bets?: BetUncheckedCreateNestedManyWithoutMarketInput
+    lastResolve?: Date | string
+    nextResolve: Date | string
+    sharesTrue: number
+    sharesFalse: number
+    probTrue: number
+    probFalse: number
+    stakes?: StakeUncheckedCreateNestedManyWithoutMarketInput
   }
 
   export type MarketCreateOrConnectWithoutArticleInput = {
@@ -6874,18 +7838,32 @@ export namespace Prisma {
   }
 
   export type MarketUpdateWithoutArticleInput = {
-    totalTrue?: FloatFieldUpdateOperationsInput | number
-    totalFalse?: FloatFieldUpdateOperationsInput | number
+    closed?: BoolFieldUpdateOperationsInput | boolean
+    resolveCount?: IntFieldUpdateOperationsInput | number
+    outcome?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    bets?: BetUpdateManyWithoutMarketNestedInput
+    lastResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    nextResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    sharesTrue?: FloatFieldUpdateOperationsInput | number
+    sharesFalse?: FloatFieldUpdateOperationsInput | number
+    probTrue?: FloatFieldUpdateOperationsInput | number
+    probFalse?: FloatFieldUpdateOperationsInput | number
+    stakes?: StakeUpdateManyWithoutMarketNestedInput
   }
 
   export type MarketUncheckedUpdateWithoutArticleInput = {
     id?: IntFieldUpdateOperationsInput | number
-    totalTrue?: FloatFieldUpdateOperationsInput | number
-    totalFalse?: FloatFieldUpdateOperationsInput | number
+    closed?: BoolFieldUpdateOperationsInput | boolean
+    resolveCount?: IntFieldUpdateOperationsInput | number
+    outcome?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    bets?: BetUncheckedUpdateManyWithoutMarketNestedInput
+    lastResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    nextResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    sharesTrue?: FloatFieldUpdateOperationsInput | number
+    sharesFalse?: FloatFieldUpdateOperationsInput | number
+    probTrue?: FloatFieldUpdateOperationsInput | number
+    probFalse?: FloatFieldUpdateOperationsInput | number
+    stakes?: StakeUncheckedUpdateManyWithoutMarketNestedInput
   }
 
   export type ArticleCreateWithoutMarketInput = {
@@ -6898,6 +7876,7 @@ export namespace Prisma {
     publishedAt: Date | string
     content?: string | null
     createdAt?: Date | string
+    category?: string | null
   }
 
   export type ArticleUncheckedCreateWithoutMarketInput = {
@@ -6911,6 +7890,7 @@ export namespace Prisma {
     publishedAt: Date | string
     content?: string | null
     createdAt?: Date | string
+    category?: string | null
   }
 
   export type ArticleCreateOrConnectWithoutMarketInput = {
@@ -6918,26 +7898,32 @@ export namespace Prisma {
     create: XOR<ArticleCreateWithoutMarketInput, ArticleUncheckedCreateWithoutMarketInput>
   }
 
-  export type BetCreateWithoutMarketInput = {
-    amount: number
-    choice: string
+  export type StakeCreateWithoutMarketInput = {
+    resolved: boolean
+    prediction: boolean
+    stakeAmount: number
+    upside: number
     createdAt?: Date | string
+    user: UserCreateNestedOneWithoutStakesInput
   }
 
-  export type BetUncheckedCreateWithoutMarketInput = {
+  export type StakeUncheckedCreateWithoutMarketInput = {
     id?: number
-    amount: number
-    choice: string
+    userId: number
+    resolved: boolean
+    prediction: boolean
+    stakeAmount: number
+    upside: number
     createdAt?: Date | string
   }
 
-  export type BetCreateOrConnectWithoutMarketInput = {
-    where: BetWhereUniqueInput
-    create: XOR<BetCreateWithoutMarketInput, BetUncheckedCreateWithoutMarketInput>
+  export type StakeCreateOrConnectWithoutMarketInput = {
+    where: StakeWhereUniqueInput
+    create: XOR<StakeCreateWithoutMarketInput, StakeUncheckedCreateWithoutMarketInput>
   }
 
-  export type BetCreateManyMarketInputEnvelope = {
-    data: BetCreateManyMarketInput | BetCreateManyMarketInput[]
+  export type StakeCreateManyMarketInputEnvelope = {
+    data: StakeCreateManyMarketInput | StakeCreateManyMarketInput[]
   }
 
   export type ArticleUpsertWithoutMarketInput = {
@@ -6961,6 +7947,7 @@ export namespace Prisma {
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ArticleUncheckedUpdateWithoutMarketInput = {
@@ -6974,105 +7961,322 @@ export namespace Prisma {
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type BetUpsertWithWhereUniqueWithoutMarketInput = {
-    where: BetWhereUniqueInput
-    update: XOR<BetUpdateWithoutMarketInput, BetUncheckedUpdateWithoutMarketInput>
-    create: XOR<BetCreateWithoutMarketInput, BetUncheckedCreateWithoutMarketInput>
+  export type StakeUpsertWithWhereUniqueWithoutMarketInput = {
+    where: StakeWhereUniqueInput
+    update: XOR<StakeUpdateWithoutMarketInput, StakeUncheckedUpdateWithoutMarketInput>
+    create: XOR<StakeCreateWithoutMarketInput, StakeUncheckedCreateWithoutMarketInput>
   }
 
-  export type BetUpdateWithWhereUniqueWithoutMarketInput = {
-    where: BetWhereUniqueInput
-    data: XOR<BetUpdateWithoutMarketInput, BetUncheckedUpdateWithoutMarketInput>
+  export type StakeUpdateWithWhereUniqueWithoutMarketInput = {
+    where: StakeWhereUniqueInput
+    data: XOR<StakeUpdateWithoutMarketInput, StakeUncheckedUpdateWithoutMarketInput>
   }
 
-  export type BetUpdateManyWithWhereWithoutMarketInput = {
-    where: BetScalarWhereInput
-    data: XOR<BetUpdateManyMutationInput, BetUncheckedUpdateManyWithoutMarketInput>
+  export type StakeUpdateManyWithWhereWithoutMarketInput = {
+    where: StakeScalarWhereInput
+    data: XOR<StakeUpdateManyMutationInput, StakeUncheckedUpdateManyWithoutMarketInput>
   }
 
-  export type BetScalarWhereInput = {
-    AND?: BetScalarWhereInput | BetScalarWhereInput[]
-    OR?: BetScalarWhereInput[]
-    NOT?: BetScalarWhereInput | BetScalarWhereInput[]
-    id?: IntFilter<"Bet"> | number
-    amount?: FloatFilter<"Bet"> | number
-    choice?: StringFilter<"Bet"> | string
-    createdAt?: DateTimeFilter<"Bet"> | Date | string
-    marketId?: IntFilter<"Bet"> | number
+  export type StakeScalarWhereInput = {
+    AND?: StakeScalarWhereInput | StakeScalarWhereInput[]
+    OR?: StakeScalarWhereInput[]
+    NOT?: StakeScalarWhereInput | StakeScalarWhereInput[]
+    id?: IntFilter<"Stake"> | number
+    userId?: IntFilter<"Stake"> | number
+    marketId?: IntFilter<"Stake"> | number
+    resolved?: BoolFilter<"Stake"> | boolean
+    prediction?: BoolFilter<"Stake"> | boolean
+    stakeAmount?: FloatFilter<"Stake"> | number
+    upside?: FloatFilter<"Stake"> | number
+    createdAt?: DateTimeFilter<"Stake"> | Date | string
   }
 
-  export type MarketCreateWithoutBetsInput = {
-    totalTrue?: number
-    totalFalse?: number
+  export type MarketCreateWithoutStakesInput = {
+    closed?: boolean
+    resolveCount?: number
+    outcome?: boolean | null
     createdAt?: Date | string
+    lastResolve?: Date | string
+    nextResolve: Date | string
+    sharesTrue: number
+    sharesFalse: number
+    probTrue: number
+    probFalse: number
     article: ArticleCreateNestedOneWithoutMarketInput
   }
 
-  export type MarketUncheckedCreateWithoutBetsInput = {
+  export type MarketUncheckedCreateWithoutStakesInput = {
     id?: number
     articleId: number
-    totalTrue?: number
-    totalFalse?: number
+    closed?: boolean
+    resolveCount?: number
+    outcome?: boolean | null
     createdAt?: Date | string
+    lastResolve?: Date | string
+    nextResolve: Date | string
+    sharesTrue: number
+    sharesFalse: number
+    probTrue: number
+    probFalse: number
   }
 
-  export type MarketCreateOrConnectWithoutBetsInput = {
+  export type MarketCreateOrConnectWithoutStakesInput = {
     where: MarketWhereUniqueInput
-    create: XOR<MarketCreateWithoutBetsInput, MarketUncheckedCreateWithoutBetsInput>
+    create: XOR<MarketCreateWithoutStakesInput, MarketUncheckedCreateWithoutStakesInput>
   }
 
-  export type MarketUpsertWithoutBetsInput = {
-    update: XOR<MarketUpdateWithoutBetsInput, MarketUncheckedUpdateWithoutBetsInput>
-    create: XOR<MarketCreateWithoutBetsInput, MarketUncheckedCreateWithoutBetsInput>
+  export type UserCreateWithoutStakesInput = {
+    username: string
+    email: string
+    password: string
+    isAdmin?: boolean
+    provePoints?: number
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    avatarSkinColor?: string
+    avatarHairColor?: string
+    avatarHair?: string
+    avatarEyes?: string
+    avatarMouth?: string
+    avatarAccessories?: string
+  }
+
+  export type UserUncheckedCreateWithoutStakesInput = {
+    id?: number
+    username: string
+    email: string
+    password: string
+    isAdmin?: boolean
+    provePoints?: number
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    avatarSkinColor?: string
+    avatarHairColor?: string
+    avatarHair?: string
+    avatarEyes?: string
+    avatarMouth?: string
+    avatarAccessories?: string
+  }
+
+  export type UserCreateOrConnectWithoutStakesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutStakesInput, UserUncheckedCreateWithoutStakesInput>
+  }
+
+  export type MarketUpsertWithoutStakesInput = {
+    update: XOR<MarketUpdateWithoutStakesInput, MarketUncheckedUpdateWithoutStakesInput>
+    create: XOR<MarketCreateWithoutStakesInput, MarketUncheckedCreateWithoutStakesInput>
     where?: MarketWhereInput
   }
 
-  export type MarketUpdateToOneWithWhereWithoutBetsInput = {
+  export type MarketUpdateToOneWithWhereWithoutStakesInput = {
     where?: MarketWhereInput
-    data: XOR<MarketUpdateWithoutBetsInput, MarketUncheckedUpdateWithoutBetsInput>
+    data: XOR<MarketUpdateWithoutStakesInput, MarketUncheckedUpdateWithoutStakesInput>
   }
 
-  export type MarketUpdateWithoutBetsInput = {
-    totalTrue?: FloatFieldUpdateOperationsInput | number
-    totalFalse?: FloatFieldUpdateOperationsInput | number
+  export type MarketUpdateWithoutStakesInput = {
+    closed?: BoolFieldUpdateOperationsInput | boolean
+    resolveCount?: IntFieldUpdateOperationsInput | number
+    outcome?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    nextResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    sharesTrue?: FloatFieldUpdateOperationsInput | number
+    sharesFalse?: FloatFieldUpdateOperationsInput | number
+    probTrue?: FloatFieldUpdateOperationsInput | number
+    probFalse?: FloatFieldUpdateOperationsInput | number
     article?: ArticleUpdateOneRequiredWithoutMarketNestedInput
   }
 
-  export type MarketUncheckedUpdateWithoutBetsInput = {
+  export type MarketUncheckedUpdateWithoutStakesInput = {
     id?: IntFieldUpdateOperationsInput | number
     articleId?: IntFieldUpdateOperationsInput | number
-    totalTrue?: FloatFieldUpdateOperationsInput | number
-    totalFalse?: FloatFieldUpdateOperationsInput | number
+    closed?: BoolFieldUpdateOperationsInput | boolean
+    resolveCount?: IntFieldUpdateOperationsInput | number
+    outcome?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    nextResolve?: DateTimeFieldUpdateOperationsInput | Date | string
+    sharesTrue?: FloatFieldUpdateOperationsInput | number
+    sharesFalse?: FloatFieldUpdateOperationsInput | number
+    probTrue?: FloatFieldUpdateOperationsInput | number
+    probFalse?: FloatFieldUpdateOperationsInput | number
   }
 
-  export type BetCreateManyMarketInput = {
+  export type UserUpsertWithoutStakesInput = {
+    update: XOR<UserUpdateWithoutStakesInput, UserUncheckedUpdateWithoutStakesInput>
+    create: XOR<UserCreateWithoutStakesInput, UserUncheckedCreateWithoutStakesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutStakesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutStakesInput, UserUncheckedUpdateWithoutStakesInput>
+  }
+
+  export type UserUpdateWithoutStakesInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    provePoints?: FloatFieldUpdateOperationsInput | number
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    avatarSkinColor?: StringFieldUpdateOperationsInput | string
+    avatarHairColor?: StringFieldUpdateOperationsInput | string
+    avatarHair?: StringFieldUpdateOperationsInput | string
+    avatarEyes?: StringFieldUpdateOperationsInput | string
+    avatarMouth?: StringFieldUpdateOperationsInput | string
+    avatarAccessories?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type UserUncheckedUpdateWithoutStakesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    provePoints?: FloatFieldUpdateOperationsInput | number
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    avatarSkinColor?: StringFieldUpdateOperationsInput | string
+    avatarHairColor?: StringFieldUpdateOperationsInput | string
+    avatarHair?: StringFieldUpdateOperationsInput | string
+    avatarEyes?: StringFieldUpdateOperationsInput | string
+    avatarMouth?: StringFieldUpdateOperationsInput | string
+    avatarAccessories?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type StakeCreateWithoutUserInput = {
+    resolved: boolean
+    prediction: boolean
+    stakeAmount: number
+    upside: number
+    createdAt?: Date | string
+    market: MarketCreateNestedOneWithoutStakesInput
+  }
+
+  export type StakeUncheckedCreateWithoutUserInput = {
     id?: number
-    amount: number
-    choice: string
+    marketId: number
+    resolved: boolean
+    prediction: boolean
+    stakeAmount: number
+    upside: number
     createdAt?: Date | string
   }
 
-  export type BetUpdateWithoutMarketInput = {
-    amount?: FloatFieldUpdateOperationsInput | number
-    choice?: StringFieldUpdateOperationsInput | string
+  export type StakeCreateOrConnectWithoutUserInput = {
+    where: StakeWhereUniqueInput
+    create: XOR<StakeCreateWithoutUserInput, StakeUncheckedCreateWithoutUserInput>
+  }
+
+  export type StakeCreateManyUserInputEnvelope = {
+    data: StakeCreateManyUserInput | StakeCreateManyUserInput[]
+  }
+
+  export type StakeUpsertWithWhereUniqueWithoutUserInput = {
+    where: StakeWhereUniqueInput
+    update: XOR<StakeUpdateWithoutUserInput, StakeUncheckedUpdateWithoutUserInput>
+    create: XOR<StakeCreateWithoutUserInput, StakeUncheckedCreateWithoutUserInput>
+  }
+
+  export type StakeUpdateWithWhereUniqueWithoutUserInput = {
+    where: StakeWhereUniqueInput
+    data: XOR<StakeUpdateWithoutUserInput, StakeUncheckedUpdateWithoutUserInput>
+  }
+
+  export type StakeUpdateManyWithWhereWithoutUserInput = {
+    where: StakeScalarWhereInput
+    data: XOR<StakeUpdateManyMutationInput, StakeUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type StakeCreateManyMarketInput = {
+    id?: number
+    userId: number
+    resolved: boolean
+    prediction: boolean
+    stakeAmount: number
+    upside: number
+    createdAt?: Date | string
+  }
+
+  export type StakeUpdateWithoutMarketInput = {
+    resolved?: BoolFieldUpdateOperationsInput | boolean
+    prediction?: BoolFieldUpdateOperationsInput | boolean
+    stakeAmount?: FloatFieldUpdateOperationsInput | number
+    upside?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutStakesNestedInput
+  }
+
+  export type StakeUncheckedUpdateWithoutMarketInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    resolved?: BoolFieldUpdateOperationsInput | boolean
+    prediction?: BoolFieldUpdateOperationsInput | boolean
+    stakeAmount?: FloatFieldUpdateOperationsInput | number
+    upside?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type BetUncheckedUpdateWithoutMarketInput = {
+  export type StakeUncheckedUpdateManyWithoutMarketInput = {
     id?: IntFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
-    choice?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    resolved?: BoolFieldUpdateOperationsInput | boolean
+    prediction?: BoolFieldUpdateOperationsInput | boolean
+    stakeAmount?: FloatFieldUpdateOperationsInput | number
+    upside?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type BetUncheckedUpdateManyWithoutMarketInput = {
+  export type StakeCreateManyUserInput = {
+    id?: number
+    marketId: number
+    resolved: boolean
+    prediction: boolean
+    stakeAmount: number
+    upside: number
+    createdAt?: Date | string
+  }
+
+  export type StakeUpdateWithoutUserInput = {
+    resolved?: BoolFieldUpdateOperationsInput | boolean
+    prediction?: BoolFieldUpdateOperationsInput | boolean
+    stakeAmount?: FloatFieldUpdateOperationsInput | number
+    upside?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    market?: MarketUpdateOneRequiredWithoutStakesNestedInput
+  }
+
+  export type StakeUncheckedUpdateWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
-    amount?: FloatFieldUpdateOperationsInput | number
-    choice?: StringFieldUpdateOperationsInput | string
+    marketId?: IntFieldUpdateOperationsInput | number
+    resolved?: BoolFieldUpdateOperationsInput | boolean
+    prediction?: BoolFieldUpdateOperationsInput | boolean
+    stakeAmount?: FloatFieldUpdateOperationsInput | number
+    upside?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StakeUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    marketId?: IntFieldUpdateOperationsInput | number
+    resolved?: BoolFieldUpdateOperationsInput | boolean
+    prediction?: BoolFieldUpdateOperationsInput | boolean
+    stakeAmount?: FloatFieldUpdateOperationsInput | number
+    upside?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

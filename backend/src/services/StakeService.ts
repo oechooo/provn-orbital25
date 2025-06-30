@@ -1,4 +1,4 @@
-import { PrismaClient, Stake } from '@prisma/client';
+import { PrismaClient, Stake } from '../prisma/client/index';
 import { MarketService } from './MarketService';
 
 export class StakeService {
