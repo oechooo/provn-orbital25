@@ -346,7 +346,7 @@ Making predictions on Provn.io is designed to be intuitive and rewarding. Here's
 
 ### Step-by-Step Staking Guide
 
-#### 2. **Conduct Thorough Research**
+#### 1. **Conduct Thorough Research**
 - Read the news article fully
 - Consult other news sources to ensure that its claims can be trusted
 - Check the current probability and market activity to evaluate if the market probability matches your assessment
@@ -373,7 +373,7 @@ Net Profit: 17.5 PP
 - Watch as new information affects market sentiment
 - Receive notifications when markets are resolved
 
-#### 4. **Receive Your Reward**
+#### 5. **Receive Your Reward**
 - Receive bonus PP if you were correct
 - Lose your staked amount if you were wrong
 
