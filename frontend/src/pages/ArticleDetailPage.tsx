@@ -147,7 +147,7 @@ const ArticleDetailPage: React.FC = () => {
     }
   }, [id]);
 
-  const fetchMarketData = async (marketId: number) => {
+  const fetchMarketData = async (idParam: number) => {
     try {
       setLoading(true);
       
@@ -155,21 +155,47 @@ const ArticleDetailPage: React.FC = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
-      const response = await fetch(`http://localhost:3000/api/markets/${marketId}`, {
-        signal: controller.signal,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+      let response: Response | undefined;
+      let data: any;
+      
+      // First try to fetch by article ID
+      try {
+        response = await fetch(`http://localhost:3000/api/markets/by-article/${idParam}`, {
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          data = await response.json();
         }
-      });
+      } catch (error) {
+        console.log('Failed to fetch by article ID, trying by market ID...');
+        response = undefined;
+      }
+      
+      // If article ID fetch failed, try by market ID
+      if (!data || !data.market) {
+        response = await fetch(`http://localhost:3000/api/markets/${idParam}`, {
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          data = await response.json();
+        }
+      }
       
       clearTimeout(timeoutId);
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response || !response.ok) {
+        throw new Error(`HTTP error! status: ${response?.status || 'unknown'}`);
       }
-      
-      const data = await response.json();
       
       if (data && data.market) {
         setMarket(data.market);

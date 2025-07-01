@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { getAllMarkets, getMarketById, createMarket, resolveMarket, getStakingParameters, getSimpleStats, setMarketOutcome, adminResolveMarket } from '../controllers/marketController';
+import { getAllMarkets, getMarketById, getMarketByArticleId, createMarket, resolveMarket, getStakingParameters, getSimpleStats, setMarketOutcome, adminResolveMarket } from '../controllers/marketController';
 import { auth } from '../middleware/auth';
 
 const router: Router = express.Router();
@@ -7,6 +7,7 @@ const router: Router = express.Router();
 // Public routes
 router.get('/simple-stats', getSimpleStats);
 router.get('/', getAllMarkets);
+router.get('/by-article/:articleId', getMarketByArticleId);
 router.get('/:id', getMarketById);
 router.get('/:id/staking-parameters', getStakingParameters);
 

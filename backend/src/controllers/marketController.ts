@@ -220,3 +220,20 @@ export const adminResolveMarket = async (req: AuthRequest, res: Response): Promi
     res.status(500).json({ message: 'Error resolving market' });
   }
 };
+
+export const getMarketByArticleId = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { articleId } = req.params;
+    const market = await marketService.getMarketByArticleId(parseInt(articleId));
+    
+    if (!market) {
+      res.status(404).json({ message: 'Market not found for this article' });
+      return;
+    }
+    
+    res.json({ market });
+  } catch (error) {
+    console.error('Get market by article ID error:', error);
+    res.status(500).json({ message: 'Error fetching market' });
+  }
+};

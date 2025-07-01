@@ -123,6 +123,27 @@ export class MarketService {
     });
   }
 
+  async getMarketByArticleId(articleId: number): Promise<MarketWithRelations> {
+    const market = await this.prisma.market.findUnique({
+      where: { articleId },
+      include: {
+        article: true,
+        stakes: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!market) throw new Error('Market not found for this article');
+    return market;
+  }
+
   async listMarkets(options: {
     includeClosed?: boolean;
     category?: string;
