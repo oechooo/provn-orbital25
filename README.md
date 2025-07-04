@@ -37,6 +37,7 @@ Not only does this allow us to gauge crowd sentiment about the veracity of news,
 ### Introduction
 - [Motivation](#motivation) - Why Provn.io?
 - [Core Features](#core-features) - Overview of all platform capabilities
+- [Upcoming Features] (#upcoming-features) - Upcoming features for Milestone 3
 - [Tech Stack](#tech-stack) - Technologies and frameworks used
 - [Getting Started](#getting-started) - Installation and setup instructions
 - [User Accounts & Testing](#user-accounts--testing) - Test accounts and registration
@@ -126,6 +127,13 @@ Research consistently shows that prediction markets are among the most accurate 
 - **Real-time Preview**: Instant preview of avatar changes in the editor
 - **Global Display**: Avatars appear throughout the app (navbar, profile, stakes history)
 - **Premium Features**: PP-gated premium avatar options, rewarding users for correct predictions with cosmetic features to customise their profile
+
+## Upcoming Features
+- **Stake Management**: Allow users to interact with the "My Stakes" segment of the Profile Page, and ensure that stakes are properly distributed to users upon market resolution
+- **User Generated Articles**: Allow users to publish their own articles attributed to their profiles on the platform, allowing our platform to host developing news stories that are validated with our prediction market system. Users can post their own corroborations and explainers giving larger contexts around news stories.
+- **Automatic Market Closure**: Allow markets to resolve by their stipulated times automatically instead of relying upon admin verification.
+- **Simulated Markets**: Use bot accounts following simple algorithms to stake on news articles, increasing trading volume in order to more effectively display Provn.io's user experience once a userbase has been built.
+- **ProvePoint Injections**: Implement monthly ProvePoint injections to ensure users who have lost ProvePoints on staking activities have enough ProvePoints to continue enjoying Provn.io
 
 ## Tech Stack
 
