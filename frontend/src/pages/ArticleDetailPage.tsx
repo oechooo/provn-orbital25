@@ -362,7 +362,7 @@ const ArticleDetailPage: React.FC = () => {
     }
 
     const userStake = market?.stakes.find(stake => stake.userId === user.id);
-    const stakeAmount = userStake ? userStake.amount : 0;
+    const stakeAmount = userStake ? userStake.stakeAmount : 0;
 
     const newForumPost: ForumPost = {
       id: Date.now(),
@@ -447,8 +447,26 @@ const ArticleDetailPage: React.FC = () => {
   }
 
   const { article } = market;
-  const totalStakes = market.stakes.length;
-  const totalVolume = market.stakes.reduce((sum, stake) => sum + stake.stakeAmount, 0);
+  const totalStakes = market.stakes?.length || 0;
+  const totalVolume = market.stakes?.reduce((sum, stake) => sum + (stake.stakeAmount || 0), 0) || 0;
+
+  // Safety check for article
+  if (!article) {
+    console.error('No article found in market data:', market);
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="glass-card p-8 text-center">
+            <h1 className="text-3xl font-bold text-white mb-4">Article Data Error</h1>
+            <p className="text-slate-300 mb-6">There was an issue loading the article data.</p>
+            <Link to="/dashboard" className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors">
+              Back to Dashboard
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -714,7 +732,7 @@ const ArticleDetailPage: React.FC = () => {
                 <div className="flex justify-between items-center mt-3">
                   <div className="text-sm text-slate-400">
                     {user.provePoints > 0 && market?.stakes.find(stake => stake.userId === user.id) && (
-                      <span>Your stake: {market.stakes.find(stake => stake.userId === user.id)?.amount.toFixed(2)} PP</span>
+                      <span>Your stake: {market.stakes.find(stake => stake.userId === user.id)?.stakeAmount.toFixed(2)} PP</span>
                     )}
                   </div>
                   <button

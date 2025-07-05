@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/SimpleAuthContext';
-import { stakeAPI, userAPI } from '../services/api';
+import { stakeAPI } from '../services/api';
 import ProtectedRoute from '../components/ProtectedRoute';
 import Avatar from '../components/Avatar';
-import AvatarEditor from '../components/AvatarEditor';
 import { AvatarConfig, DEFAULT_AVATAR_CONFIG } from '../utils/avatar';
 import toast from 'react-hot-toast';
 
@@ -31,12 +30,10 @@ interface Stake {
 }
 
 const ProfilePage: React.FC = () => {
-  const { user, logout, updateUser } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [stakes, setStakes] = useState<Stake[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAvatarEditor, setShowAvatarEditor] = useState(false);
-  const [avatarLoading, setAvatarLoading] = useState(false);
 
   if (!user) return null;
 
@@ -83,51 +80,19 @@ const ProfilePage: React.FC = () => {
 
   const getStakeResult = (stake: Stake) => {
     if (!stake.resolved) {
-      return { status: 'pending', color: 'text-yellow-400', text: 'Pending' };
+      return { status: 'pending', color: 'text-yellow-400', text: `Pending ${(stake.stakeAmount * stake.upside).toFixed(2)}PP` };
     }
     
     // For resolved stakes, use the 'won' field to determine the result
     if (stake.won === null) {
       // Refunded stake
-      return { status: 'refunded', color: 'text-blue-400', text: `Refunded ${stake.stakeAmount.toFixed(2)} PP` };
+      return { status: 'refunded', color: 'text-blue-400', text: `Refunded ${stake.stakeAmount.toFixed(2)}PP` };
     } else if (stake.won === true) {
       // Won stake
-      return { status: 'won', color: 'text-green-400', text: `Won ${(stake.stakeAmount * stake.upside).toFixed(2)} PP` };
+      return { status: 'won', color: 'text-green-400', text: `Won ${(stake.stakeAmount * stake.upside).toFixed(2)}PP` };
     } else {
       // Lost stake
-      return { status: 'lost', color: 'text-red-400', text: `Lost ${stake.stakeAmount.toFixed(2)} PP` };
-    }
-  };
-
-  const handleAvatarSave = async (newConfig: AvatarConfig) => {
-    try {
-      setAvatarLoading(true);
-      await userAPI.updateAvatar(user.id, {
-        avatarSkinColor: newConfig.skinColor,
-        avatarHairColor: newConfig.hairColor,
-        avatarHair: newConfig.hair,
-        avatarEyes: newConfig.eyes,
-        avatarMouth: newConfig.mouth,
-        avatarAccessories: newConfig.accessories
-      });
-      
-      // Update the user context with new avatar data
-      updateUser({
-        avatarSkinColor: newConfig.skinColor,
-        avatarHairColor: newConfig.hairColor,
-        avatarHair: newConfig.hair,
-        avatarEyes: newConfig.eyes,
-        avatarMouth: newConfig.mouth,
-        avatarAccessories: newConfig.accessories
-      });
-      
-      toast.success('Avatar updated successfully!');
-      setShowAvatarEditor(false);
-    } catch (error) {
-      console.error('Error updating avatar:', error);
-      toast.error('Failed to update avatar');
-    } finally {
-      setAvatarLoading(false);
+      return { status: 'lost', color: 'text-red-400', text: `Lost ${stake.stakeAmount.toFixed(2)}PP` };
     }
   };
 
@@ -146,7 +111,7 @@ const ProfilePage: React.FC = () => {
               <Avatar 
                 config={getCurrentAvatarConfig()} 
                 size={120} 
-                onClick={() => setShowAvatarEditor(true)}
+                onClick={() => navigate('/profile/avatar')}
                 className="flex-shrink-0"
               />
               <div className="text-center md:text-left">
@@ -231,66 +196,77 @@ const ProfilePage: React.FC = () => {
                 <p className="text-sm">Start making predictions to see your stakes here!</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {stakes.map((stake) => {
-                  const result = getStakeResult(stake);
-                  return (
-                    <div key={stake.id} className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-200">
-                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-white mb-2 line-clamp-2">
-                            {stake.market.article.title}
-                          </h3>
-                          <div className="flex flex-wrap items-center gap-4 text-sm text-slate-300">
-                            <span className="flex items-center gap-1">
-                              📰 {stake.market.article.sourceName}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              📅 {formatDate(stake.createdAt)}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-8">
-                          <div className="text-center">
-                            <div className={`text-lg font-bold ${stake.prediction ? 'text-green-400' : 'text-red-400'}`}>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left py-4 px-2 text-sm font-semibold text-slate-300">Article</th>
+                      <th className="text-center py-4 px-2 text-sm font-semibold text-slate-300">Source</th>
+                      <th className="text-center py-4 px-2 text-sm font-semibold text-slate-300">Prediction</th>
+                      <th className="text-center py-4 px-2 text-sm font-semibold text-slate-300">Stake</th>
+                      <th className="text-center py-4 px-2 text-sm font-semibold text-slate-300">Upside</th>
+                      <th className="text-center py-4 px-2 text-sm font-semibold text-slate-300">Result</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stakes.map((stake, index) => {
+                      const result = getStakeResult(stake);
+                      return (
+                        <tr 
+                          key={stake.id} 
+                          className={`hover:bg-white/5 transition-all duration-200 ${
+                            index % 2 === 0 ? 'bg-white/2' : 'bg-transparent'
+                          }`}
+                        >
+                          <td className="py-4 px-2">
+                            <div className="max-w-xs">
+                              <h3 
+                                className="text-white font-medium text-sm leading-tight line-clamp-2 cursor-pointer hover:text-cyan-400 transition-colors duration-200"
+                                onClick={() => navigate(`/article/${stake.market.article.id}`)}
+                              >
+                                {stake.market.article.title}
+                              </h3>
+                            </div>
+                          </td>
+                          <td className="py-4 px-2 text-center">
+                            <div className="text-slate-300 text-sm">
+                              <div className="font-medium">{stake.market.article.sourceName}</div>
+                              <div className="text-xs text-slate-400 mt-1">{formatDate(stake.createdAt)}</div>
+                            </div>
+                          </td>
+                          <td className="py-4 px-2 text-center">
+                            <span className={`font-bold text-sm px-3 py-1 rounded-full ${
+                              stake.prediction 
+                                ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                                : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                            }`}>
                               {stake.prediction ? 'TRUE' : 'FALSE'}
-                            </div>
-                            <div className="text-xs text-slate-400">Prediction</div>
-                          </div>
-                          
-                          <div className="text-center">
-                            <div className="text-lg font-bold text-white">
+                            </span>
+                          </td>
+                          <td className="py-4 px-2 text-center">
+                            <span className="text-white font-semibold text-sm">
                               {stake.stakeAmount.toFixed(2)} PP
-                            </div>
-                            <div className="text-xs text-slate-400">Staked</div>
-                          </div>
-                          
-                          <div className="text-center">
-                            <div className={`text-lg font-bold ${result.color}`}>
+                            </span>
+                          </td>
+                          <td className="py-4 px-2 text-center">
+                            <span className="text-slate-300 font-semibold text-sm">
+                              {stake.upside.toFixed(2)}x
+                            </span>
+                          </td>
+                          <td className="py-4 px-2 text-center">
+                            <span className={`font-semibold text-sm ${result.color}`}>
                               {result.text}
-                            </div>
-                            <div className="text-xs text-slate-400">Result</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
         </div>
-        
-        {/* Avatar Editor Modal */}
-        {showAvatarEditor && (
-          <AvatarEditor
-            initialConfig={getCurrentAvatarConfig()}
-            onSave={handleAvatarSave}
-            onCancel={() => setShowAvatarEditor(false)}
-            isLoading={avatarLoading}
-          />
-        )}
       </div>
     </ProtectedRoute>
   );

@@ -12,6 +12,7 @@ import DashboardPage from './pages/DashboardPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import AvatarEditorPage from './pages/AvatarEditorPage';
+import TestArticlePage from './pages/TestArticlePage';
 
 
 function App() {
@@ -24,11 +25,12 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/news" element={<NewsPage />} />
               <Route path="/article/:id" element={<ArticleDetailPage />} />
+              <Route path="/test-article/:id" element={<TestArticlePage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/shop" element={<AvatarEditorPage />} />
+              <Route path="/profile/avatar" element={<AvatarEditorPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
             </Routes>
