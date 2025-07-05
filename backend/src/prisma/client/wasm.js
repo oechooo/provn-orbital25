@@ -128,7 +128,8 @@ exports.Prisma.ArticleScalarFieldEnum = {
   publishedAt: 'publishedAt',
   content: 'content',
   createdAt: 'createdAt',
-  category: 'category'
+  category: 'category',
+  userId: 'userId'
 };
 
 exports.Prisma.MarketScalarFieldEnum = {

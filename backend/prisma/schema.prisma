@@ -20,7 +20,9 @@ model Article {
   content     String?
   createdAt   DateTime @default(now())
   category    String?
+  userId      Int?
   market      Market?
+  user        User?    @relation(fields: [userId], references: [id])
 }
 
 model Market {
@@ -73,4 +75,5 @@ model User {
   avatarMouth       String    @default("variant01")
   avatarAccessories String    @default("none")
   stakes            Stake[]
+  articles          Article[]
 }

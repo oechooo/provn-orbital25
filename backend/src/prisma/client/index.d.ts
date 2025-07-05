@@ -1174,10 +1174,12 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     stakes: number
+    articles: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     stakes?: boolean | UserCountOutputTypeCountStakesArgs
+    articles?: boolean | UserCountOutputTypeCountArticlesArgs
   }
 
   // Custom InputTypes
@@ -1196,6 +1198,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountStakesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StakeWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountArticlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArticleWhereInput
   }
 
 
@@ -1217,10 +1226,12 @@ export namespace Prisma {
 
   export type ArticleAvgAggregateOutputType = {
     id: number | null
+    userId: number | null
   }
 
   export type ArticleSumAggregateOutputType = {
     id: number | null
+    userId: number | null
   }
 
   export type ArticleMinAggregateOutputType = {
@@ -1235,6 +1246,7 @@ export namespace Prisma {
     content: string | null
     createdAt: Date | null
     category: string | null
+    userId: number | null
   }
 
   export type ArticleMaxAggregateOutputType = {
@@ -1249,6 +1261,7 @@ export namespace Prisma {
     content: string | null
     createdAt: Date | null
     category: string | null
+    userId: number | null
   }
 
   export type ArticleCountAggregateOutputType = {
@@ -1263,16 +1276,19 @@ export namespace Prisma {
     content: number
     createdAt: number
     category: number
+    userId: number
     _all: number
   }
 
 
   export type ArticleAvgAggregateInputType = {
     id?: true
+    userId?: true
   }
 
   export type ArticleSumAggregateInputType = {
     id?: true
+    userId?: true
   }
 
   export type ArticleMinAggregateInputType = {
@@ -1287,6 +1303,7 @@ export namespace Prisma {
     content?: true
     createdAt?: true
     category?: true
+    userId?: true
   }
 
   export type ArticleMaxAggregateInputType = {
@@ -1301,6 +1318,7 @@ export namespace Prisma {
     content?: true
     createdAt?: true
     category?: true
+    userId?: true
   }
 
   export type ArticleCountAggregateInputType = {
@@ -1315,6 +1333,7 @@ export namespace Prisma {
     content?: true
     createdAt?: true
     category?: true
+    userId?: true
     _all?: true
   }
 
@@ -1416,6 +1435,7 @@ export namespace Prisma {
     content: string | null
     createdAt: Date
     category: string | null
+    userId: number | null
     _count: ArticleCountAggregateOutputType | null
     _avg: ArticleAvgAggregateOutputType | null
     _sum: ArticleSumAggregateOutputType | null
@@ -1449,7 +1469,9 @@ export namespace Prisma {
     content?: boolean
     createdAt?: boolean
     category?: boolean
+    userId?: boolean
     market?: boolean | Article$marketArgs<ExtArgs>
+    user?: boolean | Article$userArgs<ExtArgs>
   }, ExtArgs["result"]["article"]>
 
   export type ArticleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1464,6 +1486,8 @@ export namespace Prisma {
     content?: boolean
     createdAt?: boolean
     category?: boolean
+    userId?: boolean
+    user?: boolean | Article$userArgs<ExtArgs>
   }, ExtArgs["result"]["article"]>
 
   export type ArticleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1478,6 +1502,8 @@ export namespace Prisma {
     content?: boolean
     createdAt?: boolean
     category?: boolean
+    userId?: boolean
+    user?: boolean | Article$userArgs<ExtArgs>
   }, ExtArgs["result"]["article"]>
 
   export type ArticleSelectScalar = {
@@ -1492,19 +1518,26 @@ export namespace Prisma {
     content?: boolean
     createdAt?: boolean
     category?: boolean
+    userId?: boolean
   }
 
-  export type ArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sourceName" | "author" | "title" | "description" | "url" | "urlToImage" | "publishedAt" | "content" | "createdAt" | "category", ExtArgs["result"]["article"]>
+  export type ArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sourceName" | "author" | "title" | "description" | "url" | "urlToImage" | "publishedAt" | "content" | "createdAt" | "category" | "userId", ExtArgs["result"]["article"]>
   export type ArticleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     market?: boolean | Article$marketArgs<ExtArgs>
+    user?: boolean | Article$userArgs<ExtArgs>
   }
-  export type ArticleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type ArticleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ArticleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Article$userArgs<ExtArgs>
+  }
+  export type ArticleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Article$userArgs<ExtArgs>
+  }
 
   export type $ArticlePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Article"
     objects: {
       market: Prisma.$MarketPayload<ExtArgs> | null
+      user: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -1518,6 +1551,7 @@ export namespace Prisma {
       content: string | null
       createdAt: Date
       category: string | null
+      userId: number | null
     }, ExtArgs["result"]["article"]>
     composites: {}
   }
@@ -1913,6 +1947,7 @@ export namespace Prisma {
   export interface Prisma__ArticleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     market<T extends Article$marketArgs<ExtArgs> = {}>(args?: Subset<T, Article$marketArgs<ExtArgs>>): Prisma__MarketClient<$Result.GetResult<Prisma.$MarketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    user<T extends Article$userArgs<ExtArgs> = {}>(args?: Subset<T, Article$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1953,6 +1988,7 @@ export namespace Prisma {
     readonly content: FieldRef<"Article", 'String'>
     readonly createdAt: FieldRef<"Article", 'DateTime'>
     readonly category: FieldRef<"Article", 'String'>
+    readonly userId: FieldRef<"Article", 'Int'>
   }
     
 
@@ -2200,6 +2236,10 @@ export namespace Prisma {
      * The data used to create many Articles.
      */
     data: ArticleCreateManyInput | ArticleCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArticleIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -2270,6 +2310,10 @@ export namespace Prisma {
      * Limit how many Articles to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArticleIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -2355,6 +2399,25 @@ export namespace Prisma {
      */
     include?: MarketInclude<ExtArgs> | null
     where?: MarketWhereInput
+  }
+
+  /**
+   * Article.user
+   */
+  export type Article$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -5077,6 +5140,7 @@ export namespace Prisma {
     avatarMouth?: boolean
     avatarAccessories?: boolean
     stakes?: boolean | User$stakesArgs<ExtArgs>
+    articles?: boolean | User$articlesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5140,6 +5204,7 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "email" | "password" | "isAdmin" | "provePoints" | "resetToken" | "resetTokenExpiry" | "createdAt" | "updatedAt" | "avatarSkinColor" | "avatarHairColor" | "avatarHair" | "avatarEyes" | "avatarMouth" | "avatarAccessories", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     stakes?: boolean | User$stakesArgs<ExtArgs>
+    articles?: boolean | User$articlesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5149,6 +5214,7 @@ export namespace Prisma {
     name: "User"
     objects: {
       stakes: Prisma.$StakePayload<ExtArgs>[]
+      articles: Prisma.$ArticlePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -5562,6 +5628,7 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     stakes<T extends User$stakesArgs<ExtArgs> = {}>(args?: Subset<T, User$stakesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StakePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    articles<T extends User$articlesArgs<ExtArgs> = {}>(args?: Subset<T, User$articlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6017,6 +6084,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.articles
+   */
+  export type User$articlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Article
+     */
+    select?: ArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Article
+     */
+    omit?: ArticleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArticleInclude<ExtArgs> | null
+    where?: ArticleWhereInput
+    orderBy?: ArticleOrderByWithRelationInput | ArticleOrderByWithRelationInput[]
+    cursor?: ArticleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ArticleScalarFieldEnum | ArticleScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6057,7 +6148,8 @@ export namespace Prisma {
     publishedAt: 'publishedAt',
     content: 'content',
     createdAt: 'createdAt',
-    category: 'category'
+    category: 'category',
+    userId: 'userId'
   };
 
   export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]
@@ -6232,7 +6324,9 @@ export namespace Prisma {
     content?: StringNullableFilter<"Article"> | string | null
     createdAt?: DateTimeFilter<"Article"> | Date | string
     category?: StringNullableFilter<"Article"> | string | null
+    userId?: IntNullableFilter<"Article"> | number | null
     market?: XOR<MarketNullableScalarRelationFilter, MarketWhereInput> | null
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type ArticleOrderByWithRelationInput = {
@@ -6247,7 +6341,9 @@ export namespace Prisma {
     content?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     category?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
     market?: MarketOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
   }
 
   export type ArticleWhereUniqueInput = Prisma.AtLeast<{
@@ -6265,7 +6361,9 @@ export namespace Prisma {
     content?: StringNullableFilter<"Article"> | string | null
     createdAt?: DateTimeFilter<"Article"> | Date | string
     category?: StringNullableFilter<"Article"> | string | null
+    userId?: IntNullableFilter<"Article"> | number | null
     market?: XOR<MarketNullableScalarRelationFilter, MarketWhereInput> | null
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id" | "url">
 
   export type ArticleOrderByWithAggregationInput = {
@@ -6280,6 +6378,7 @@ export namespace Prisma {
     content?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     category?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
     _count?: ArticleCountOrderByAggregateInput
     _avg?: ArticleAvgOrderByAggregateInput
     _max?: ArticleMaxOrderByAggregateInput
@@ -6302,6 +6401,7 @@ export namespace Prisma {
     content?: StringNullableWithAggregatesFilter<"Article"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Article"> | Date | string
     category?: StringNullableWithAggregatesFilter<"Article"> | string | null
+    userId?: IntNullableWithAggregatesFilter<"Article"> | number | null
   }
 
   export type MarketWhereInput = {
@@ -6505,6 +6605,7 @@ export namespace Prisma {
     avatarMouth?: StringFilter<"User"> | string
     avatarAccessories?: StringFilter<"User"> | string
     stakes?: StakeListRelationFilter
+    articles?: ArticleListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -6525,6 +6626,7 @@ export namespace Prisma {
     avatarMouth?: SortOrder
     avatarAccessories?: SortOrder
     stakes?: StakeOrderByRelationAggregateInput
+    articles?: ArticleOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -6548,6 +6650,7 @@ export namespace Prisma {
     avatarMouth?: StringFilter<"User"> | string
     avatarAccessories?: StringFilter<"User"> | string
     stakes?: StakeListRelationFilter
+    articles?: ArticleListRelationFilter
   }, "id" | "username" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -6608,6 +6711,7 @@ export namespace Prisma {
     createdAt?: Date | string
     category?: string | null
     market?: MarketCreateNestedOneWithoutArticleInput
+    user?: UserCreateNestedOneWithoutArticlesInput
   }
 
   export type ArticleUncheckedCreateInput = {
@@ -6622,6 +6726,7 @@ export namespace Prisma {
     content?: string | null
     createdAt?: Date | string
     category?: string | null
+    userId?: number | null
     market?: MarketUncheckedCreateNestedOneWithoutArticleInput
   }
 
@@ -6637,6 +6742,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     market?: MarketUpdateOneWithoutArticleNestedInput
+    user?: UserUpdateOneWithoutArticlesNestedInput
   }
 
   export type ArticleUncheckedUpdateInput = {
@@ -6651,6 +6757,7 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
     market?: MarketUncheckedUpdateOneWithoutArticleNestedInput
   }
 
@@ -6666,6 +6773,7 @@ export namespace Prisma {
     content?: string | null
     createdAt?: Date | string
     category?: string | null
+    userId?: number | null
   }
 
   export type ArticleUpdateManyMutationInput = {
@@ -6693,6 +6801,7 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type MarketCreateInput = {
@@ -6903,6 +7012,7 @@ export namespace Prisma {
     avatarMouth?: string
     avatarAccessories?: string
     stakes?: StakeCreateNestedManyWithoutUserInput
+    articles?: ArticleCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -6923,6 +7033,7 @@ export namespace Prisma {
     avatarMouth?: string
     avatarAccessories?: string
     stakes?: StakeUncheckedCreateNestedManyWithoutUserInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -6942,6 +7053,7 @@ export namespace Prisma {
     avatarMouth?: StringFieldUpdateOperationsInput | string
     avatarAccessories?: StringFieldUpdateOperationsInput | string
     stakes?: StakeUpdateManyWithoutUserNestedInput
+    articles?: ArticleUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -6962,6 +7074,7 @@ export namespace Prisma {
     avatarMouth?: StringFieldUpdateOperationsInput | string
     avatarAccessories?: StringFieldUpdateOperationsInput | string
     stakes?: StakeUncheckedUpdateManyWithoutUserNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -7070,9 +7183,25 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type MarketNullableScalarRelationFilter = {
     is?: MarketWhereInput | null
     isNot?: MarketWhereInput | null
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
   }
 
   export type SortOrderInput = {
@@ -7092,10 +7221,12 @@ export namespace Prisma {
     content?: SortOrder
     createdAt?: SortOrder
     category?: SortOrder
+    userId?: SortOrder
   }
 
   export type ArticleAvgOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
   }
 
   export type ArticleMaxOrderByAggregateInput = {
@@ -7110,6 +7241,7 @@ export namespace Prisma {
     content?: SortOrder
     createdAt?: SortOrder
     category?: SortOrder
+    userId?: SortOrder
   }
 
   export type ArticleMinOrderByAggregateInput = {
@@ -7124,10 +7256,12 @@ export namespace Prisma {
     content?: SortOrder
     createdAt?: SortOrder
     category?: SortOrder
+    userId?: SortOrder
   }
 
   export type ArticleSumOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -7192,6 +7326,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -7440,6 +7590,16 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type ArticleListRelationFilter = {
+    every?: ArticleWhereInput
+    some?: ArticleWhereInput
+    none?: ArticleWhereInput
+  }
+
+  export type ArticleOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     username?: SortOrder
@@ -7527,6 +7687,12 @@ export namespace Prisma {
     connect?: MarketWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutArticlesInput = {
+    create?: XOR<UserCreateWithoutArticlesInput, UserUncheckedCreateWithoutArticlesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutArticlesInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type MarketUncheckedCreateNestedOneWithoutArticleInput = {
     create?: XOR<MarketCreateWithoutArticleInput, MarketUncheckedCreateWithoutArticleInput>
     connectOrCreate?: MarketCreateOrConnectWithoutArticleInput
@@ -7555,8 +7721,26 @@ export namespace Prisma {
     update?: XOR<XOR<MarketUpdateToOneWithWhereWithoutArticleInput, MarketUpdateWithoutArticleInput>, MarketUncheckedUpdateWithoutArticleInput>
   }
 
+  export type UserUpdateOneWithoutArticlesNestedInput = {
+    create?: XOR<UserCreateWithoutArticlesInput, UserUncheckedCreateWithoutArticlesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutArticlesInput
+    upsert?: UserUpsertWithoutArticlesInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutArticlesInput, UserUpdateWithoutArticlesInput>, UserUncheckedUpdateWithoutArticlesInput>
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
     increment?: number
     decrement?: number
     multiply?: number
@@ -7680,11 +7864,25 @@ export namespace Prisma {
     connect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
   }
 
+  export type ArticleCreateNestedManyWithoutUserInput = {
+    create?: XOR<ArticleCreateWithoutUserInput, ArticleUncheckedCreateWithoutUserInput> | ArticleCreateWithoutUserInput[] | ArticleUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArticleCreateOrConnectWithoutUserInput | ArticleCreateOrConnectWithoutUserInput[]
+    createMany?: ArticleCreateManyUserInputEnvelope
+    connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+  }
+
   export type StakeUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<StakeCreateWithoutUserInput, StakeUncheckedCreateWithoutUserInput> | StakeCreateWithoutUserInput[] | StakeUncheckedCreateWithoutUserInput[]
     connectOrCreate?: StakeCreateOrConnectWithoutUserInput | StakeCreateOrConnectWithoutUserInput[]
     createMany?: StakeCreateManyUserInputEnvelope
     connect?: StakeWhereUniqueInput | StakeWhereUniqueInput[]
+  }
+
+  export type ArticleUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ArticleCreateWithoutUserInput, ArticleUncheckedCreateWithoutUserInput> | ArticleCreateWithoutUserInput[] | ArticleUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArticleCreateOrConnectWithoutUserInput | ArticleCreateOrConnectWithoutUserInput[]
+    createMany?: ArticleCreateManyUserInputEnvelope
+    connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -7705,6 +7903,20 @@ export namespace Prisma {
     deleteMany?: StakeScalarWhereInput | StakeScalarWhereInput[]
   }
 
+  export type ArticleUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ArticleCreateWithoutUserInput, ArticleUncheckedCreateWithoutUserInput> | ArticleCreateWithoutUserInput[] | ArticleUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArticleCreateOrConnectWithoutUserInput | ArticleCreateOrConnectWithoutUserInput[]
+    upsert?: ArticleUpsertWithWhereUniqueWithoutUserInput | ArticleUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ArticleCreateManyUserInputEnvelope
+    set?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    disconnect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    delete?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    update?: ArticleUpdateWithWhereUniqueWithoutUserInput | ArticleUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ArticleUpdateManyWithWhereWithoutUserInput | ArticleUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
+  }
+
   export type StakeUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<StakeCreateWithoutUserInput, StakeUncheckedCreateWithoutUserInput> | StakeCreateWithoutUserInput[] | StakeUncheckedCreateWithoutUserInput[]
     connectOrCreate?: StakeCreateOrConnectWithoutUserInput | StakeCreateOrConnectWithoutUserInput[]
@@ -7717,6 +7929,20 @@ export namespace Prisma {
     update?: StakeUpdateWithWhereUniqueWithoutUserInput | StakeUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: StakeUpdateManyWithWhereWithoutUserInput | StakeUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: StakeScalarWhereInput | StakeScalarWhereInput[]
+  }
+
+  export type ArticleUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ArticleCreateWithoutUserInput, ArticleUncheckedCreateWithoutUserInput> | ArticleCreateWithoutUserInput[] | ArticleUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArticleCreateOrConnectWithoutUserInput | ArticleCreateOrConnectWithoutUserInput[]
+    upsert?: ArticleUpsertWithWhereUniqueWithoutUserInput | ArticleUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ArticleCreateManyUserInputEnvelope
+    set?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    disconnect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    delete?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    update?: ArticleUpdateWithWhereUniqueWithoutUserInput | ArticleUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ArticleUpdateManyWithWhereWithoutUserInput | ArticleUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -7767,6 +7993,17 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -7830,17 +8067,6 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[]
@@ -7853,6 +8079,33 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedBoolFilter<$PrismaModel = never> = {
@@ -7976,6 +8229,50 @@ export namespace Prisma {
     create: XOR<MarketCreateWithoutArticleInput, MarketUncheckedCreateWithoutArticleInput>
   }
 
+  export type UserCreateWithoutArticlesInput = {
+    username: string
+    email: string
+    password: string
+    isAdmin?: boolean
+    provePoints?: number
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    avatarSkinColor?: string
+    avatarHairColor?: string
+    avatarHair?: string
+    avatarEyes?: string
+    avatarMouth?: string
+    avatarAccessories?: string
+    stakes?: StakeCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutArticlesInput = {
+    id?: number
+    username: string
+    email: string
+    password: string
+    isAdmin?: boolean
+    provePoints?: number
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    avatarSkinColor?: string
+    avatarHairColor?: string
+    avatarHair?: string
+    avatarEyes?: string
+    avatarMouth?: string
+    avatarAccessories?: string
+    stakes?: StakeUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutArticlesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutArticlesInput, UserUncheckedCreateWithoutArticlesInput>
+  }
+
   export type MarketUpsertWithoutArticleInput = {
     update: XOR<MarketUpdateWithoutArticleInput, MarketUncheckedUpdateWithoutArticleInput>
     create: XOR<MarketCreateWithoutArticleInput, MarketUncheckedCreateWithoutArticleInput>
@@ -8018,6 +8315,56 @@ export namespace Prisma {
     stakes?: StakeUncheckedUpdateManyWithoutMarketNestedInput
   }
 
+  export type UserUpsertWithoutArticlesInput = {
+    update: XOR<UserUpdateWithoutArticlesInput, UserUncheckedUpdateWithoutArticlesInput>
+    create: XOR<UserCreateWithoutArticlesInput, UserUncheckedCreateWithoutArticlesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutArticlesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutArticlesInput, UserUncheckedUpdateWithoutArticlesInput>
+  }
+
+  export type UserUpdateWithoutArticlesInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    provePoints?: FloatFieldUpdateOperationsInput | number
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    avatarSkinColor?: StringFieldUpdateOperationsInput | string
+    avatarHairColor?: StringFieldUpdateOperationsInput | string
+    avatarHair?: StringFieldUpdateOperationsInput | string
+    avatarEyes?: StringFieldUpdateOperationsInput | string
+    avatarMouth?: StringFieldUpdateOperationsInput | string
+    avatarAccessories?: StringFieldUpdateOperationsInput | string
+    stakes?: StakeUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutArticlesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    provePoints?: FloatFieldUpdateOperationsInput | number
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    avatarSkinColor?: StringFieldUpdateOperationsInput | string
+    avatarHairColor?: StringFieldUpdateOperationsInput | string
+    avatarHair?: StringFieldUpdateOperationsInput | string
+    avatarEyes?: StringFieldUpdateOperationsInput | string
+    avatarMouth?: StringFieldUpdateOperationsInput | string
+    avatarAccessories?: StringFieldUpdateOperationsInput | string
+    stakes?: StakeUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type ArticleCreateWithoutMarketInput = {
     sourceName: string
     author?: string | null
@@ -8029,6 +8376,7 @@ export namespace Prisma {
     content?: string | null
     createdAt?: Date | string
     category?: string | null
+    user?: UserCreateNestedOneWithoutArticlesInput
   }
 
   export type ArticleUncheckedCreateWithoutMarketInput = {
@@ -8043,6 +8391,7 @@ export namespace Prisma {
     content?: string | null
     createdAt?: Date | string
     category?: string | null
+    userId?: number | null
   }
 
   export type ArticleCreateOrConnectWithoutMarketInput = {
@@ -8102,6 +8451,7 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    user?: UserUpdateOneWithoutArticlesNestedInput
   }
 
   export type ArticleUncheckedUpdateWithoutMarketInput = {
@@ -8116,6 +8466,7 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type StakeUpsertWithWhereUniqueWithoutMarketInput = {
@@ -8201,6 +8552,7 @@ export namespace Prisma {
     avatarEyes?: string
     avatarMouth?: string
     avatarAccessories?: string
+    articles?: ArticleCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutStakesInput = {
@@ -8220,6 +8572,7 @@ export namespace Prisma {
     avatarEyes?: string
     avatarMouth?: string
     avatarAccessories?: string
+    articles?: ArticleUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutStakesInput = {
@@ -8296,6 +8649,7 @@ export namespace Prisma {
     avatarEyes?: StringFieldUpdateOperationsInput | string
     avatarMouth?: StringFieldUpdateOperationsInput | string
     avatarAccessories?: StringFieldUpdateOperationsInput | string
+    articles?: ArticleUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStakesInput = {
@@ -8315,6 +8669,7 @@ export namespace Prisma {
     avatarEyes?: StringFieldUpdateOperationsInput | string
     avatarMouth?: StringFieldUpdateOperationsInput | string
     avatarAccessories?: StringFieldUpdateOperationsInput | string
+    articles?: ArticleUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type StakeCreateWithoutUserInput = {
@@ -8347,6 +8702,44 @@ export namespace Prisma {
     data: StakeCreateManyUserInput | StakeCreateManyUserInput[]
   }
 
+  export type ArticleCreateWithoutUserInput = {
+    sourceName: string
+    author?: string | null
+    title: string
+    description?: string | null
+    url: string
+    urlToImage?: string | null
+    publishedAt: Date | string
+    content?: string | null
+    createdAt?: Date | string
+    category?: string | null
+    market?: MarketCreateNestedOneWithoutArticleInput
+  }
+
+  export type ArticleUncheckedCreateWithoutUserInput = {
+    id?: number
+    sourceName: string
+    author?: string | null
+    title: string
+    description?: string | null
+    url: string
+    urlToImage?: string | null
+    publishedAt: Date | string
+    content?: string | null
+    createdAt?: Date | string
+    category?: string | null
+    market?: MarketUncheckedCreateNestedOneWithoutArticleInput
+  }
+
+  export type ArticleCreateOrConnectWithoutUserInput = {
+    where: ArticleWhereUniqueInput
+    create: XOR<ArticleCreateWithoutUserInput, ArticleUncheckedCreateWithoutUserInput>
+  }
+
+  export type ArticleCreateManyUserInputEnvelope = {
+    data: ArticleCreateManyUserInput | ArticleCreateManyUserInput[]
+  }
+
   export type StakeUpsertWithWhereUniqueWithoutUserInput = {
     where: StakeWhereUniqueInput
     update: XOR<StakeUpdateWithoutUserInput, StakeUncheckedUpdateWithoutUserInput>
@@ -8361,6 +8754,40 @@ export namespace Prisma {
   export type StakeUpdateManyWithWhereWithoutUserInput = {
     where: StakeScalarWhereInput
     data: XOR<StakeUpdateManyMutationInput, StakeUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ArticleUpsertWithWhereUniqueWithoutUserInput = {
+    where: ArticleWhereUniqueInput
+    update: XOR<ArticleUpdateWithoutUserInput, ArticleUncheckedUpdateWithoutUserInput>
+    create: XOR<ArticleCreateWithoutUserInput, ArticleUncheckedCreateWithoutUserInput>
+  }
+
+  export type ArticleUpdateWithWhereUniqueWithoutUserInput = {
+    where: ArticleWhereUniqueInput
+    data: XOR<ArticleUpdateWithoutUserInput, ArticleUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ArticleUpdateManyWithWhereWithoutUserInput = {
+    where: ArticleScalarWhereInput
+    data: XOR<ArticleUpdateManyMutationInput, ArticleUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ArticleScalarWhereInput = {
+    AND?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
+    OR?: ArticleScalarWhereInput[]
+    NOT?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
+    id?: IntFilter<"Article"> | number
+    sourceName?: StringFilter<"Article"> | string
+    author?: StringNullableFilter<"Article"> | string | null
+    title?: StringFilter<"Article"> | string
+    description?: StringNullableFilter<"Article"> | string | null
+    url?: StringFilter<"Article"> | string
+    urlToImage?: StringNullableFilter<"Article"> | string | null
+    publishedAt?: DateTimeFilter<"Article"> | Date | string
+    content?: StringNullableFilter<"Article"> | string | null
+    createdAt?: DateTimeFilter<"Article"> | Date | string
+    category?: StringNullableFilter<"Article"> | string | null
+    userId?: IntNullableFilter<"Article"> | number | null
   }
 
   export type StakeCreateManyMarketInput = {
@@ -8417,6 +8844,20 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type ArticleCreateManyUserInput = {
+    id?: number
+    sourceName: string
+    author?: string | null
+    title: string
+    description?: string | null
+    url: string
+    urlToImage?: string | null
+    publishedAt: Date | string
+    content?: string | null
+    createdAt?: Date | string
+    category?: string | null
+  }
+
   export type StakeUpdateWithoutUserInput = {
     resolved?: BoolFieldUpdateOperationsInput | boolean
     prediction?: BoolFieldUpdateOperationsInput | boolean
@@ -8447,6 +8888,49 @@ export namespace Prisma {
     upside?: FloatFieldUpdateOperationsInput | number
     won?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArticleUpdateWithoutUserInput = {
+    sourceName?: StringFieldUpdateOperationsInput | string
+    author?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    url?: StringFieldUpdateOperationsInput | string
+    urlToImage?: NullableStringFieldUpdateOperationsInput | string | null
+    publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    market?: MarketUpdateOneWithoutArticleNestedInput
+  }
+
+  export type ArticleUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sourceName?: StringFieldUpdateOperationsInput | string
+    author?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    url?: StringFieldUpdateOperationsInput | string
+    urlToImage?: NullableStringFieldUpdateOperationsInput | string | null
+    publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    market?: MarketUncheckedUpdateOneWithoutArticleNestedInput
+  }
+
+  export type ArticleUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sourceName?: StringFieldUpdateOperationsInput | string
+    author?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    url?: StringFieldUpdateOperationsInput | string
+    urlToImage?: NullableStringFieldUpdateOperationsInput | string | null
+    publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
 

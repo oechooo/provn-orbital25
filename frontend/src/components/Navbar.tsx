@@ -44,15 +44,26 @@ const Navbar = () => {
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
             {user && (
-              <Link
-                to="/shop"
-                className="p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300"
-                title="Shop"
-              >
-                <svg className="w-5 h-5 text-white/70 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-              </Link>
+              <>
+                <Link
+                  to="/create-article"
+                  className="p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300"
+                  title="Create Post"
+                >
+                  <svg className="w-5 h-5 text-white/70 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </Link>
+                <Link
+                  to="/shop"
+                  className="p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300"
+                  title="Shop"
+                >
+                  <svg className="w-5 h-5 text-white/70 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                </Link>
+              </>
             )}
             {user ? (
               <Link
@@ -123,6 +134,15 @@ const Navbar = () => {
             >
               News
             </Link>
+            {user && (
+              <Link 
+                to="/create-article" 
+                className="block px-3 py-2 rounded-md text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Create Post
+              </Link>
+            )}
             {user ? (
               <Link 
                 to="/profile" 

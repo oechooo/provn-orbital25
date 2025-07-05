@@ -20,7 +20,9 @@ model Article {
   content     String?
   createdAt   DateTime @default(now())
   category    String?
+  userId      Int?
   market      Market?
+  user        User?    @relation(fields: [userId], references: [id])
 }
 
 model Market {
@@ -36,6 +38,7 @@ model Market {
   sharesFalse  Float
   probTrue     Float
   probFalse    Float
+  probHistory  Json?
   article      Article  @relation(fields: [articleId], references: [id])
   stakes       Stake[]
 }
@@ -48,6 +51,7 @@ model Stake {
   prediction  Boolean
   stakeAmount Float
   upside      Float
+  won         Boolean?
   createdAt   DateTime @default(now())
   market      Market   @relation(fields: [marketId], references: [id])
   user        User     @relation(fields: [userId], references: [id])
@@ -71,4 +75,5 @@ model User {
   avatarMouth       String    @default("variant01")
   avatarAccessories String    @default("none")
   stakes            Stake[]
+  articles          Article[]
 }

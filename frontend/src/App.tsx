@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/SimpleAuthContext';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
+import ArticleCreationPage from './pages/ArticleCreationPage';
 import NewsPage from './pages/NewsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -25,6 +26,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/news" element={<NewsPage />} />
               <Route path="/article/:id" element={<ArticleDetailPage />} />
+              <Route path="/create-article" element={<ArticleCreationPage />} />
               <Route path="/test-article/:id" element={<TestArticlePage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/login" element={<LoginPage />} />

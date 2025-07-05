@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '../prisma/client';
 import { ArticleService } from '../services/ArticleService';
 import { MarketService } from '../services/MarketService';
+import { AuthRequest } from '../middleware/auth';
 import axios from 'axios';
 
 const articleService = new ArticleService(prisma);
@@ -133,5 +134,92 @@ export const getCategories = async (req: Request, res: Response): Promise<void> 
   } catch (error) {
     console.error('Get categories error:', error);
     res.status(500).json({ message: 'Error fetching categories' });
+  }
+};
+
+export const createUserArticle = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { title, content, urlToImage, category } = req.body;
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      res.status(401).json({ message: 'Authentication required' });
+      return;
+    }
+
+    if (!title) {
+      res.status(400).json({ message: 'Title is required' });
+      return;
+    }
+
+    // Generate a unique URL for user-created articles
+    const articleUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/article/user-${Date.now()}`;
+
+    // Generate description from first 20 words of content
+    let description: string | undefined = undefined;
+    if (content && content.trim()) {
+      const words = content.trim().split(/\s+/);
+      if (words.length > 20) {
+        description = words.slice(0, 20).join(' ') + '...';
+      } else {
+        description = content.trim();
+      }
+    }
+
+    // Create the article
+    const newArticle = await articleService.createArticle({
+      sourceName: 'User Submitted',
+      author: req.user?.username || 'Anonymous',
+      title,
+      description,
+      url: articleUrl,
+      urlToImage: urlToImage || undefined,
+      publishedAt: new Date(),
+      content: content || undefined,
+      category: category || 'general',
+      userId: userId, // Add the userId to associate with the user
+    });
+
+    // Create a market for the user-submitted article
+    try {
+      const market = await marketService.createMarket(newArticle.id);
+      console.log(`📊 Created market ${market.id} for user article ${newArticle.id}`);
+    } catch (marketError: any) {
+      console.error(`❌ Error creating market for user article ${newArticle.id}:`, marketError.message);
+    }
+
+    res.status(201).json({ 
+      message: 'Article created successfully',
+      article: newArticle
+    });
+
+  } catch (error: any) {
+    console.error('Create user article error:', error);
+    if (error.code === 'P2002') {
+      res.status(409).json({ message: 'Article with this URL already exists' });
+    } else {
+      res.status(500).json({ message: 'Error creating article' });
+    }
+  }
+};
+
+export const getUserArticles = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      res.status(401).json({ message: 'Authentication required' });
+      return;
+    }
+
+    const articles = await articleService.getArticlesByUserId(userId);
+    
+    res.json({ 
+      articles,
+      total: articles.length 
+    });
+  } catch (error) {
+    console.error('Get user articles error:', error);
+    res.status(500).json({ message: 'Error fetching user articles' });
   }
 };

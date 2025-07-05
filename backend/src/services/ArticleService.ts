@@ -11,6 +11,7 @@ export interface CreateArticleInput {
     publishedAt: Date;
     content?: string;
     category?: string;
+    userId?: number;
 }
 
 type ArticleTimeRange = '24h' | '1m' | '5m';
@@ -154,5 +155,18 @@ export class ArticleService {
             .map(item => item.category)
             .filter((category): category is string => category !== null)
             .sort();
+    }
+
+    // Get articles by user ID
+    public async getArticlesByUserId(userId: number): Promise<ArticleWithMarket[]> {
+        return this.prisma.article.findMany({
+            where: { userId },
+            include: {
+                market: true
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
     }
 }
