@@ -14,6 +14,7 @@ interface Stake {
   stakeAmount: number;
   upside: number;
   resolved: boolean;
+  won: boolean | null;
   createdAt: string;
   market: {
     id: number;
@@ -81,16 +82,21 @@ const ProfilePage: React.FC = () => {
   };
 
   const getStakeResult = (stake: Stake) => {
-    if (!stake.resolved || stake.market.outcome === null) {
+    if (!stake.resolved) {
       return { status: 'pending', color: 'text-yellow-400', text: 'Pending' };
     }
     
-    const won = stake.prediction === stake.market.outcome;
-    return {
-      status: won ? 'won' : 'lost',
-      color: won ? 'text-green-400' : 'text-red-400',
-      text: won ? `Won ${(stake.stakeAmount * stake.upside).toFixed(2)} PP` : `Lost ${stake.stakeAmount.toFixed(2)} PP`
-    };
+    // For resolved stakes, use the 'won' field to determine the result
+    if (stake.won === null) {
+      // Refunded stake
+      return { status: 'refunded', color: 'text-blue-400', text: `Refunded ${stake.stakeAmount.toFixed(2)} PP` };
+    } else if (stake.won === true) {
+      // Won stake
+      return { status: 'won', color: 'text-green-400', text: `Won ${(stake.stakeAmount * stake.upside).toFixed(2)} PP` };
+    } else {
+      // Lost stake
+      return { status: 'lost', color: 'text-red-400', text: `Lost ${stake.stakeAmount.toFixed(2)} PP` };
+    }
   };
 
   const handleAvatarSave = async (newConfig: AvatarConfig) => {
@@ -161,7 +167,7 @@ const ProfilePage: React.FC = () => {
               </div>
               <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm border border-green-500/20 rounded-xl p-6 text-center">
                 <div className="text-3xl font-bold text-green-400 mb-2">
-                  {stakes.filter(s => s.resolved && s.prediction === s.market.outcome).length}
+                  {stakes.filter(s => s.resolved && s.won === true).length}
                 </div>
                 <div className="text-sm text-slate-300">Correct Predictions</div>
               </div>

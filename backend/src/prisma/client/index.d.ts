@@ -3647,6 +3647,7 @@ export namespace Prisma {
     prediction: boolean | null
     stakeAmount: number | null
     upside: number | null
+    won: boolean | null
     createdAt: Date | null
   }
 
@@ -3658,6 +3659,7 @@ export namespace Prisma {
     prediction: boolean | null
     stakeAmount: number | null
     upside: number | null
+    won: boolean | null
     createdAt: Date | null
   }
 
@@ -3669,6 +3671,7 @@ export namespace Prisma {
     prediction: number
     stakeAmount: number
     upside: number
+    won: number
     createdAt: number
     _all: number
   }
@@ -3698,6 +3701,7 @@ export namespace Prisma {
     prediction?: true
     stakeAmount?: true
     upside?: true
+    won?: true
     createdAt?: true
   }
 
@@ -3709,6 +3713,7 @@ export namespace Prisma {
     prediction?: true
     stakeAmount?: true
     upside?: true
+    won?: true
     createdAt?: true
   }
 
@@ -3720,6 +3725,7 @@ export namespace Prisma {
     prediction?: true
     stakeAmount?: true
     upside?: true
+    won?: true
     createdAt?: true
     _all?: true
   }
@@ -3818,6 +3824,7 @@ export namespace Prisma {
     prediction: boolean
     stakeAmount: number
     upside: number
+    won: boolean | null
     createdAt: Date
     _count: StakeCountAggregateOutputType | null
     _avg: StakeAvgAggregateOutputType | null
@@ -3848,6 +3855,7 @@ export namespace Prisma {
     prediction?: boolean
     stakeAmount?: boolean
     upside?: boolean
+    won?: boolean
     createdAt?: boolean
     market?: boolean | MarketDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3861,6 +3869,7 @@ export namespace Prisma {
     prediction?: boolean
     stakeAmount?: boolean
     upside?: boolean
+    won?: boolean
     createdAt?: boolean
     market?: boolean | MarketDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3874,6 +3883,7 @@ export namespace Prisma {
     prediction?: boolean
     stakeAmount?: boolean
     upside?: boolean
+    won?: boolean
     createdAt?: boolean
     market?: boolean | MarketDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3887,10 +3897,11 @@ export namespace Prisma {
     prediction?: boolean
     stakeAmount?: boolean
     upside?: boolean
+    won?: boolean
     createdAt?: boolean
   }
 
-  export type StakeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "marketId" | "resolved" | "prediction" | "stakeAmount" | "upside" | "createdAt", ExtArgs["result"]["stake"]>
+  export type StakeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "marketId" | "resolved" | "prediction" | "stakeAmount" | "upside" | "won" | "createdAt", ExtArgs["result"]["stake"]>
   export type StakeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     market?: boolean | MarketDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3918,6 +3929,7 @@ export namespace Prisma {
       prediction: boolean
       stakeAmount: number
       upside: number
+      won: boolean | null
       createdAt: Date
     }, ExtArgs["result"]["stake"]>
     composites: {}
@@ -4351,6 +4363,7 @@ export namespace Prisma {
     readonly prediction: FieldRef<"Stake", 'Boolean'>
     readonly stakeAmount: FieldRef<"Stake", 'Float'>
     readonly upside: FieldRef<"Stake", 'Float'>
+    readonly won: FieldRef<"Stake", 'Boolean'>
     readonly createdAt: FieldRef<"Stake", 'DateTime'>
   }
     
@@ -6067,6 +6080,7 @@ export namespace Prisma {
     prediction: 'prediction',
     stakeAmount: 'stakeAmount',
     upside: 'upside',
+    won: 'won',
     createdAt: 'createdAt'
   };
 
@@ -6347,6 +6361,7 @@ export namespace Prisma {
     prediction?: BoolFilter<"Stake"> | boolean
     stakeAmount?: FloatFilter<"Stake"> | number
     upside?: FloatFilter<"Stake"> | number
+    won?: BoolNullableFilter<"Stake"> | boolean | null
     createdAt?: DateTimeFilter<"Stake"> | Date | string
     market?: XOR<MarketScalarRelationFilter, MarketWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -6360,6 +6375,7 @@ export namespace Prisma {
     prediction?: SortOrder
     stakeAmount?: SortOrder
     upside?: SortOrder
+    won?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     market?: MarketOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
@@ -6376,6 +6392,7 @@ export namespace Prisma {
     prediction?: BoolFilter<"Stake"> | boolean
     stakeAmount?: FloatFilter<"Stake"> | number
     upside?: FloatFilter<"Stake"> | number
+    won?: BoolNullableFilter<"Stake"> | boolean | null
     createdAt?: DateTimeFilter<"Stake"> | Date | string
     market?: XOR<MarketScalarRelationFilter, MarketWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -6389,6 +6406,7 @@ export namespace Prisma {
     prediction?: SortOrder
     stakeAmount?: SortOrder
     upside?: SortOrder
+    won?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: StakeCountOrderByAggregateInput
     _avg?: StakeAvgOrderByAggregateInput
@@ -6408,6 +6426,7 @@ export namespace Prisma {
     prediction?: BoolWithAggregatesFilter<"Stake"> | boolean
     stakeAmount?: FloatWithAggregatesFilter<"Stake"> | number
     upside?: FloatWithAggregatesFilter<"Stake"> | number
+    won?: BoolNullableWithAggregatesFilter<"Stake"> | boolean | null
     createdAt?: DateTimeWithAggregatesFilter<"Stake"> | Date | string
   }
 
@@ -6732,6 +6751,7 @@ export namespace Prisma {
     prediction: boolean
     stakeAmount: number
     upside: number
+    won?: boolean | null
     createdAt?: Date | string
     market: MarketCreateNestedOneWithoutStakesInput
     user: UserCreateNestedOneWithoutStakesInput
@@ -6745,6 +6765,7 @@ export namespace Prisma {
     prediction: boolean
     stakeAmount: number
     upside: number
+    won?: boolean | null
     createdAt?: Date | string
   }
 
@@ -6753,6 +6774,7 @@ export namespace Prisma {
     prediction?: BoolFieldUpdateOperationsInput | boolean
     stakeAmount?: FloatFieldUpdateOperationsInput | number
     upside?: FloatFieldUpdateOperationsInput | number
+    won?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     market?: MarketUpdateOneRequiredWithoutStakesNestedInput
     user?: UserUpdateOneRequiredWithoutStakesNestedInput
@@ -6766,6 +6788,7 @@ export namespace Prisma {
     prediction?: BoolFieldUpdateOperationsInput | boolean
     stakeAmount?: FloatFieldUpdateOperationsInput | number
     upside?: FloatFieldUpdateOperationsInput | number
+    won?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -6777,6 +6800,7 @@ export namespace Prisma {
     prediction: boolean
     stakeAmount: number
     upside: number
+    won?: boolean | null
     createdAt?: Date | string
   }
 
@@ -6785,6 +6809,7 @@ export namespace Prisma {
     prediction?: BoolFieldUpdateOperationsInput | boolean
     stakeAmount?: FloatFieldUpdateOperationsInput | number
     upside?: FloatFieldUpdateOperationsInput | number
+    won?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -6796,6 +6821,7 @@ export namespace Prisma {
     prediction?: BoolFieldUpdateOperationsInput | boolean
     stakeAmount?: FloatFieldUpdateOperationsInput | number
     upside?: FloatFieldUpdateOperationsInput | number
+    won?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -7258,6 +7284,7 @@ export namespace Prisma {
     prediction?: SortOrder
     stakeAmount?: SortOrder
     upside?: SortOrder
+    won?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -7277,6 +7304,7 @@ export namespace Prisma {
     prediction?: SortOrder
     stakeAmount?: SortOrder
     upside?: SortOrder
+    won?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -7288,6 +7316,7 @@ export namespace Prisma {
     prediction?: SortOrder
     stakeAmount?: SortOrder
     upside?: SortOrder
+    won?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -7903,6 +7932,7 @@ export namespace Prisma {
     prediction: boolean
     stakeAmount: number
     upside: number
+    won?: boolean | null
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutStakesInput
   }
@@ -7914,6 +7944,7 @@ export namespace Prisma {
     prediction: boolean
     stakeAmount: number
     upside: number
+    won?: boolean | null
     createdAt?: Date | string
   }
 
@@ -7991,6 +8022,7 @@ export namespace Prisma {
     prediction?: BoolFilter<"Stake"> | boolean
     stakeAmount?: FloatFilter<"Stake"> | number
     upside?: FloatFilter<"Stake"> | number
+    won?: BoolNullableFilter<"Stake"> | boolean | null
     createdAt?: DateTimeFilter<"Stake"> | Date | string
   }
 
@@ -8163,6 +8195,7 @@ export namespace Prisma {
     prediction: boolean
     stakeAmount: number
     upside: number
+    won?: boolean | null
     createdAt?: Date | string
     market: MarketCreateNestedOneWithoutStakesInput
   }
@@ -8174,6 +8207,7 @@ export namespace Prisma {
     prediction: boolean
     stakeAmount: number
     upside: number
+    won?: boolean | null
     createdAt?: Date | string
   }
 
@@ -8209,6 +8243,7 @@ export namespace Prisma {
     prediction: boolean
     stakeAmount: number
     upside: number
+    won?: boolean | null
     createdAt?: Date | string
   }
 
@@ -8217,6 +8252,7 @@ export namespace Prisma {
     prediction?: BoolFieldUpdateOperationsInput | boolean
     stakeAmount?: FloatFieldUpdateOperationsInput | number
     upside?: FloatFieldUpdateOperationsInput | number
+    won?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutStakesNestedInput
   }
@@ -8228,6 +8264,7 @@ export namespace Prisma {
     prediction?: BoolFieldUpdateOperationsInput | boolean
     stakeAmount?: FloatFieldUpdateOperationsInput | number
     upside?: FloatFieldUpdateOperationsInput | number
+    won?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -8238,6 +8275,7 @@ export namespace Prisma {
     prediction?: BoolFieldUpdateOperationsInput | boolean
     stakeAmount?: FloatFieldUpdateOperationsInput | number
     upside?: FloatFieldUpdateOperationsInput | number
+    won?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -8248,6 +8286,7 @@ export namespace Prisma {
     prediction: boolean
     stakeAmount: number
     upside: number
+    won?: boolean | null
     createdAt?: Date | string
   }
 
@@ -8256,6 +8295,7 @@ export namespace Prisma {
     prediction?: BoolFieldUpdateOperationsInput | boolean
     stakeAmount?: FloatFieldUpdateOperationsInput | number
     upside?: FloatFieldUpdateOperationsInput | number
+    won?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     market?: MarketUpdateOneRequiredWithoutStakesNestedInput
   }
@@ -8267,6 +8307,7 @@ export namespace Prisma {
     prediction?: BoolFieldUpdateOperationsInput | boolean
     stakeAmount?: FloatFieldUpdateOperationsInput | number
     upside?: FloatFieldUpdateOperationsInput | number
+    won?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -8277,6 +8318,7 @@ export namespace Prisma {
     prediction?: BoolFieldUpdateOperationsInput | boolean
     stakeAmount?: FloatFieldUpdateOperationsInput | number
     upside?: FloatFieldUpdateOperationsInput | number
+    won?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

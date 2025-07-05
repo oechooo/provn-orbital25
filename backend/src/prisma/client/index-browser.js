@@ -154,6 +154,7 @@ exports.Prisma.StakeScalarFieldEnum = {
   prediction: 'prediction',
   stakeAmount: 'stakeAmount',
   upside: 'upside',
+  won: 'won',
   createdAt: 'createdAt'
 };
 

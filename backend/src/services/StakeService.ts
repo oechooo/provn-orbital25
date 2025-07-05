@@ -57,14 +57,19 @@ export class StakeService {
     });
     if (!stake) throw new Error('Stake not found');
 
-    // Mark the stake as resolved
+    const wasCorrect = stake.prediction === finalOutcome;
+
+    // Mark the stake as resolved and set won field
     await this.prisma.stake.update({
       where: { id: stakeId },
-      data: { resolved: true }
+      data: { 
+        resolved: true,
+        won: wasCorrect
+      }
     });
 
     // Credit user if prediction was correct
-    if (stake.prediction === finalOutcome) {
+    if (wasCorrect) {
       const winnings = stake.stakeAmount * stake.upside;
       await this.prisma.user.update({
         where: { id: stake.userId },
@@ -127,8 +132,17 @@ export class StakeService {
       where: { marketId }
     });
 
-    await this.prisma.$transaction(
-      stakes.map(stake => 
+    await this.prisma.$transaction([
+      // Mark all stakes as resolved with won = null (refunded)
+      this.prisma.stake.updateMany({
+        where: { marketId },
+        data: { 
+          resolved: true,
+          won: null
+        }
+      }),
+      // Refund the stake amounts to users
+      ...stakes.map(stake => 
         this.prisma.user.update({
           where: { id: stake.userId },
           data: {
@@ -138,7 +152,7 @@ export class StakeService {
           }
         })
       )
-    );
+    ]);
   }
 
   async resolveMarketStakes(marketId: number, outcome: boolean): Promise<void> {
@@ -147,17 +161,38 @@ export class StakeService {
     });
 
     const winningStakes = stakes.filter(stake => stake.prediction === outcome);
-    const totalStakeAmount = stakes.reduce((sum, stake) => sum + stake.stakeAmount, 0);
+    const losingStakes = stakes.filter(stake => stake.prediction !== outcome);
     
     if (winningStakes.length === 0) {
       await this.refundStakes(marketId);
       return;
     }
 
+    const totalStakeAmount = stakes.reduce((sum, stake) => sum + stake.stakeAmount, 0);
     const totalWinningAmount = winningStakes.reduce((sum, stake) => sum + stake.stakeAmount, 0);
     
-    await this.prisma.$transaction(
-      winningStakes.map(stake => {
+    await this.prisma.$transaction([
+      // Mark all stakes as resolved and set won field
+      ...winningStakes.map(stake => 
+        this.prisma.stake.update({
+          where: { id: stake.id },
+          data: { 
+            resolved: true,
+            won: true
+          }
+        })
+      ),
+      ...losingStakes.map(stake => 
+        this.prisma.stake.update({
+          where: { id: stake.id },
+          data: { 
+            resolved: true,
+            won: false
+          }
+        })
+      ),
+      // Distribute winnings to winning stakes
+      ...winningStakes.map(stake => {
         const winnings = (stake.stakeAmount / totalWinningAmount) * totalStakeAmount;
         return this.prisma.user.update({
           where: { id: stake.userId },
@@ -168,6 +203,6 @@ export class StakeService {
           }
         });
       })
-    );
+    ]);
   }
 }

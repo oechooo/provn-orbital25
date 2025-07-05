@@ -48,6 +48,7 @@ model Stake {
   prediction  Boolean
   stakeAmount Float
   upside      Float
+  won         Boolean?
   createdAt   DateTime @default(now())
   market      Market   @relation(fields: [marketId], references: [id])
   user        User     @relation(fields: [userId], references: [id])
