@@ -2451,6 +2451,7 @@ export namespace Prisma {
     sharesFalse: number
     probTrue: number
     probFalse: number
+    probHistory: number
     _all: number
   }
 
@@ -2518,6 +2519,7 @@ export namespace Prisma {
     sharesFalse?: true
     probTrue?: true
     probFalse?: true
+    probHistory?: true
     _all?: true
   }
 
@@ -2620,6 +2622,7 @@ export namespace Prisma {
     sharesFalse: number
     probTrue: number
     probFalse: number
+    probHistory: JsonValue | null
     _count: MarketCountAggregateOutputType | null
     _avg: MarketAvgAggregateOutputType | null
     _sum: MarketSumAggregateOutputType | null
@@ -2654,6 +2657,7 @@ export namespace Prisma {
     sharesFalse?: boolean
     probTrue?: boolean
     probFalse?: boolean
+    probHistory?: boolean
     article?: boolean | ArticleDefaultArgs<ExtArgs>
     stakes?: boolean | Market$stakesArgs<ExtArgs>
     _count?: boolean | MarketCountOutputTypeDefaultArgs<ExtArgs>
@@ -2672,6 +2676,7 @@ export namespace Prisma {
     sharesFalse?: boolean
     probTrue?: boolean
     probFalse?: boolean
+    probHistory?: boolean
     article?: boolean | ArticleDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["market"]>
 
@@ -2688,6 +2693,7 @@ export namespace Prisma {
     sharesFalse?: boolean
     probTrue?: boolean
     probFalse?: boolean
+    probHistory?: boolean
     article?: boolean | ArticleDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["market"]>
 
@@ -2704,9 +2710,10 @@ export namespace Prisma {
     sharesFalse?: boolean
     probTrue?: boolean
     probFalse?: boolean
+    probHistory?: boolean
   }
 
-  export type MarketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "articleId" | "closed" | "resolveCount" | "outcome" | "createdAt" | "lastResolve" | "nextResolve" | "sharesTrue" | "sharesFalse" | "probTrue" | "probFalse", ExtArgs["result"]["market"]>
+  export type MarketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "articleId" | "closed" | "resolveCount" | "outcome" | "createdAt" | "lastResolve" | "nextResolve" | "sharesTrue" | "sharesFalse" | "probTrue" | "probFalse" | "probHistory", ExtArgs["result"]["market"]>
   export type MarketInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     article?: boolean | ArticleDefaultArgs<ExtArgs>
     stakes?: boolean | Market$stakesArgs<ExtArgs>
@@ -2738,6 +2745,7 @@ export namespace Prisma {
       sharesFalse: number
       probTrue: number
       probFalse: number
+      probHistory: Prisma.JsonValue | null
     }, ExtArgs["result"]["market"]>
     composites: {}
   }
@@ -3175,6 +3183,7 @@ export namespace Prisma {
     readonly sharesFalse: FieldRef<"Market", 'Float'>
     readonly probTrue: FieldRef<"Market", 'Float'>
     readonly probFalse: FieldRef<"Market", 'Float'>
+    readonly probHistory: FieldRef<"Market", 'Json'>
   }
     
 
@@ -6066,7 +6075,8 @@ export namespace Prisma {
     sharesTrue: 'sharesTrue',
     sharesFalse: 'sharesFalse',
     probTrue: 'probTrue',
-    probFalse: 'probFalse'
+    probFalse: 'probFalse',
+    probHistory: 'probHistory'
   };
 
   export type MarketScalarFieldEnum = (typeof MarketScalarFieldEnum)[keyof typeof MarketScalarFieldEnum]
@@ -6117,12 +6127,37 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const NullsOrder: {
     first: 'first',
     last: 'last'
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+  export const QueryMode: {
+    default: 'default',
+    insensitive: 'insensitive'
+  };
+
+  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
   /**
@@ -6162,6 +6197,20 @@ export namespace Prisma {
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
   /**
    * Deep Input Types
@@ -6271,6 +6320,7 @@ export namespace Prisma {
     sharesFalse?: FloatFilter<"Market"> | number
     probTrue?: FloatFilter<"Market"> | number
     probFalse?: FloatFilter<"Market"> | number
+    probHistory?: JsonNullableFilter<"Market">
     article?: XOR<ArticleScalarRelationFilter, ArticleWhereInput>
     stakes?: StakeListRelationFilter
   }
@@ -6288,6 +6338,7 @@ export namespace Prisma {
     sharesFalse?: SortOrder
     probTrue?: SortOrder
     probFalse?: SortOrder
+    probHistory?: SortOrderInput | SortOrder
     article?: ArticleOrderByWithRelationInput
     stakes?: StakeOrderByRelationAggregateInput
   }
@@ -6308,6 +6359,7 @@ export namespace Prisma {
     sharesFalse?: FloatFilter<"Market"> | number
     probTrue?: FloatFilter<"Market"> | number
     probFalse?: FloatFilter<"Market"> | number
+    probHistory?: JsonNullableFilter<"Market">
     article?: XOR<ArticleScalarRelationFilter, ArticleWhereInput>
     stakes?: StakeListRelationFilter
   }, "id" | "articleId">
@@ -6325,6 +6377,7 @@ export namespace Prisma {
     sharesFalse?: SortOrder
     probTrue?: SortOrder
     probFalse?: SortOrder
+    probHistory?: SortOrderInput | SortOrder
     _count?: MarketCountOrderByAggregateInput
     _avg?: MarketAvgOrderByAggregateInput
     _max?: MarketMaxOrderByAggregateInput
@@ -6348,6 +6401,7 @@ export namespace Prisma {
     sharesFalse?: FloatWithAggregatesFilter<"Market"> | number
     probTrue?: FloatWithAggregatesFilter<"Market"> | number
     probFalse?: FloatWithAggregatesFilter<"Market"> | number
+    probHistory?: JsonNullableWithAggregatesFilter<"Market">
   }
 
   export type StakeWhereInput = {
@@ -6652,6 +6706,7 @@ export namespace Prisma {
     sharesFalse: number
     probTrue: number
     probFalse: number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
     article: ArticleCreateNestedOneWithoutMarketInput
     stakes?: StakeCreateNestedManyWithoutMarketInput
   }
@@ -6669,6 +6724,7 @@ export namespace Prisma {
     sharesFalse: number
     probTrue: number
     probFalse: number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
     stakes?: StakeUncheckedCreateNestedManyWithoutMarketInput
   }
 
@@ -6683,6 +6739,7 @@ export namespace Prisma {
     sharesFalse?: FloatFieldUpdateOperationsInput | number
     probTrue?: FloatFieldUpdateOperationsInput | number
     probFalse?: FloatFieldUpdateOperationsInput | number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
     article?: ArticleUpdateOneRequiredWithoutMarketNestedInput
     stakes?: StakeUpdateManyWithoutMarketNestedInput
   }
@@ -6700,6 +6757,7 @@ export namespace Prisma {
     sharesFalse?: FloatFieldUpdateOperationsInput | number
     probTrue?: FloatFieldUpdateOperationsInput | number
     probFalse?: FloatFieldUpdateOperationsInput | number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
     stakes?: StakeUncheckedUpdateManyWithoutMarketNestedInput
   }
 
@@ -6716,6 +6774,7 @@ export namespace Prisma {
     sharesFalse: number
     probTrue: number
     probFalse: number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MarketUpdateManyMutationInput = {
@@ -6729,6 +6788,7 @@ export namespace Prisma {
     sharesFalse?: FloatFieldUpdateOperationsInput | number
     probTrue?: FloatFieldUpdateOperationsInput | number
     probFalse?: FloatFieldUpdateOperationsInput | number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MarketUncheckedUpdateManyInput = {
@@ -6744,6 +6804,7 @@ export namespace Prisma {
     sharesFalse?: FloatFieldUpdateOperationsInput | number
     probTrue?: FloatFieldUpdateOperationsInput | number
     probFalse?: FloatFieldUpdateOperationsInput | number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type StakeCreateInput = {
@@ -7153,6 +7214,24 @@ export namespace Prisma {
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
   }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type ArticleScalarRelationFilter = {
     is?: ArticleWhereInput
@@ -7182,6 +7261,7 @@ export namespace Prisma {
     sharesFalse?: SortOrder
     probTrue?: SortOrder
     probFalse?: SortOrder
+    probHistory?: SortOrder
   }
 
   export type MarketAvgOrderByAggregateInput = {
@@ -7264,6 +7344,27 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type MarketScalarRelationFilter = {
@@ -7795,6 +7896,24 @@ export namespace Prisma {
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
@@ -7832,6 +7951,7 @@ export namespace Prisma {
     sharesFalse: number
     probTrue: number
     probFalse: number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
     stakes?: StakeCreateNestedManyWithoutMarketInput
   }
 
@@ -7847,6 +7967,7 @@ export namespace Prisma {
     sharesFalse: number
     probTrue: number
     probFalse: number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
     stakes?: StakeUncheckedCreateNestedManyWithoutMarketInput
   }
 
@@ -7877,6 +7998,7 @@ export namespace Prisma {
     sharesFalse?: FloatFieldUpdateOperationsInput | number
     probTrue?: FloatFieldUpdateOperationsInput | number
     probFalse?: FloatFieldUpdateOperationsInput | number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
     stakes?: StakeUpdateManyWithoutMarketNestedInput
   }
 
@@ -7892,6 +8014,7 @@ export namespace Prisma {
     sharesFalse?: FloatFieldUpdateOperationsInput | number
     probTrue?: FloatFieldUpdateOperationsInput | number
     probFalse?: FloatFieldUpdateOperationsInput | number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
     stakes?: StakeUncheckedUpdateManyWithoutMarketNestedInput
   }
 
@@ -8037,6 +8160,7 @@ export namespace Prisma {
     sharesFalse: number
     probTrue: number
     probFalse: number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
     article: ArticleCreateNestedOneWithoutMarketInput
   }
 
@@ -8053,6 +8177,7 @@ export namespace Prisma {
     sharesFalse: number
     probTrue: number
     probFalse: number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MarketCreateOrConnectWithoutStakesInput = {
@@ -8124,6 +8249,7 @@ export namespace Prisma {
     sharesFalse?: FloatFieldUpdateOperationsInput | number
     probTrue?: FloatFieldUpdateOperationsInput | number
     probFalse?: FloatFieldUpdateOperationsInput | number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
     article?: ArticleUpdateOneRequiredWithoutMarketNestedInput
   }
 
@@ -8140,6 +8266,7 @@ export namespace Prisma {
     sharesFalse?: FloatFieldUpdateOperationsInput | number
     probTrue?: FloatFieldUpdateOperationsInput | number
     probFalse?: FloatFieldUpdateOperationsInput | number
+    probHistory?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UserUpsertWithoutStakesInput = {

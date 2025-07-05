@@ -46,6 +46,7 @@ export class MarketService {
           },
         },
       },
+      // Explicitly select probHistory along with other fields
     });
     if (!market) throw new Error('Market not found');
     return market;

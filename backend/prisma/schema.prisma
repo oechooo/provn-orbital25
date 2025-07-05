@@ -36,6 +36,7 @@ model Market {
   sharesFalse  Float
   probTrue     Float
   probFalse    Float
+  probHistory  Json?
   article      Article  @relation(fields: [articleId], references: [id])
   stakes       Stake[]
 }

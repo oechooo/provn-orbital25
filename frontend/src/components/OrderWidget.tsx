@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { stakeAPI, userAPI, marketAPI } from '../services/api';
+import ProbChart from './ProbChart';
 
 interface OrderWidgetProps {
   marketId: number;
@@ -24,6 +25,7 @@ const OrderWidget: React.FC<OrderWidgetProps> = ({
   const [userPoints, setUserPoints] = useState<number | null>(null);
   const [realUpside, setRealUpside] = useState<number>(0);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [chartRefreshTrigger, setChartRefreshTrigger] = useState(0);
 
   // Calculate potential upside using backend API
   useEffect(() => {
@@ -81,6 +83,10 @@ const OrderWidget: React.FC<OrderWidgetProps> = ({
 
     try {
       await stakeAPI.createStake(marketId, stakeAmount, prediction);
+      
+      // Trigger chart refresh
+      setChartRefreshTrigger(prev => prev + 1);
+      
       onSuccess?.();
       onClose();
     } catch (err) {
@@ -101,7 +107,17 @@ const OrderWidget: React.FC<OrderWidgetProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800 rounded-xl border border-slate-600 p-6 w-full max-w-md">
+      <div className="flex gap-4 max-w-4xl w-full">
+        {/* Probability Chart */}
+        <ProbChart 
+          marketId={marketId}
+          currentProbTrue={currentProbTrue}
+          currentProbFalse={currentProbFalse}
+          refreshTrigger={chartRefreshTrigger}
+        />
+
+        {/* Order Widget */}
+        <div className="bg-slate-800 rounded-xl border border-slate-600 p-6 w-full max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold text-slate-100">
@@ -226,6 +242,7 @@ const OrderWidget: React.FC<OrderWidgetProps> = ({
           >
             {isLoading ? 'Placing...' : `Stake ${prediction ? 'TRUE' : 'FALSE'}`}
           </button>
+        </div>
         </div>
       </div>
     </div>

@@ -14,13 +14,19 @@ export class StakeService {
   
     const market = await this.prisma.market.findUnique({
       where: { id: marketId },
-      select: { probTrue: true, probFalse: true }
+      select: { probTrue: true, probFalse: true, probHistory: true }
     });
     if (!market) throw new Error('Market not found');
 
     const marketService = new MarketService(this.prisma);
     const { upside, sharesBought } = await marketService.getStakingParameters(marketId, prediction, stakeAmount);
+    
+    // Get the new probabilities after the stake
     await marketService.updateOdds(marketId, prediction, sharesBought);
+    const updatedMarket = await this.prisma.market.findUnique({
+      where: { id: marketId },
+      select: { probTrue: true, probFalse: true }
+    });
 
     // Create stake and update user's prove points atomically
     // TODO: encapsulate user logic in UserService
@@ -42,6 +48,32 @@ export class StakeService {
           provePoints: {
             decrement: stakeAmount
           }
+        }
+      });
+
+      // Update probability history
+      const currentHistory = market.probHistory as Array<{
+        timestamp: string;
+        probTrue: number;
+        probFalse: number;
+        stakeId: number;
+        prediction: boolean;
+        stakeAmount: number;
+      }> || [];
+
+      const newHistoryEntry = {
+        timestamp: new Date().toISOString(),
+        probTrue: updatedMarket!.probTrue,
+        probFalse: updatedMarket!.probFalse,
+        stakeId: stake.id,
+        prediction,
+        stakeAmount
+      };
+
+      await tx.market.update({
+        where: { id: marketId },
+        data: {
+          probHistory: [...currentHistory, newHistoryEntry]
         }
       });
 
@@ -204,5 +236,30 @@ export class StakeService {
         });
       })
     ]);
+  }
+
+  async getMarketProbabilityHistory(marketId: number): Promise<Array<{
+    timestamp: string;
+    probTrue: number;
+    probFalse: number;
+    stakeId: number;
+    prediction: boolean;
+    stakeAmount: number;
+  }> | null> {
+    const market = await this.prisma.market.findUnique({
+      where: { id: marketId },
+      select: { probHistory: true }
+    });
+
+    if (!market) throw new Error('Market not found');
+
+    return market.probHistory as Array<{
+      timestamp: string;
+      probTrue: number;
+      probFalse: number;
+      stakeId: number;
+      prediction: boolean;
+      stakeAmount: number;
+    }> || null;
   }
 }
