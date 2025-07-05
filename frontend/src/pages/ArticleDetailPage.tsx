@@ -55,7 +55,7 @@ interface ForumPost {
 
 const ArticleDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
+  const { user, updateUserPoints } = useAuth();
   const [market, setMarket] = useState<Market | null>(null);
   const [loading, setLoading] = useState(true);
   const [stakeAmount, setStakeAmount] = useState<number>(10);
@@ -235,6 +235,7 @@ const ArticleDetailPage: React.FC = () => {
     }
 
     setPlacing(true);
+    
     try {
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:3000/api/stakes', {
@@ -255,9 +256,11 @@ const ArticleDetailPage: React.FC = () => {
         throw new Error(errorData.message || 'Failed to place stake');
       }
       
-      toast.success(`Stake placed successfully! You predicted: ${prediction ? 'TRUE' : 'FALSE'}`);
+      // Show notification and update points after successful backend response
+      toast.success(`${prediction ? 'TRUE' : 'FALSE'} stake placed successfully!`);
+      updateUserPoints(user.provePoints - stakeAmount);
       
-      // Refresh market data
+      // Refresh market data to show the new stake
       await fetchMarketData(market.id);
       
       // Reset form

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { stakeAPI, userAPI, marketAPI } from '../services/api';
+import { useAuth } from '../contexts/SimpleAuthContext';
+import toast from 'react-hot-toast';
 import ProbChart from './ProbChart';
 
 interface OrderWidgetProps {
@@ -19,6 +21,7 @@ const OrderWidget: React.FC<OrderWidgetProps> = ({
   onClose,
   onSuccess
 }) => {
+  const { user, updateUserPoints } = useAuth();
   const [stakeAmount, setStakeAmount] = useState<number>(10);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
@@ -83,6 +86,14 @@ const OrderWidget: React.FC<OrderWidgetProps> = ({
 
     try {
       await stakeAPI.createStake(marketId, stakeAmount, prediction);
+      
+      // Show notification and update points after successful backend response
+      toast.success(`${prediction ? 'TRUE' : 'FALSE'} stake placed successfully!`);
+      
+      // Update user points if we have user context
+      if (user) {
+        updateUserPoints(user.provePoints - stakeAmount);
+      }
       
       // Trigger chart refresh
       setChartRefreshTrigger(prev => prev + 1);
