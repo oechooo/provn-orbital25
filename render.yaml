@@ -23,8 +23,10 @@ services:
       - provn-orbital25-api.onrender.com
 
   # Frontend Static Site
-  - type: static
+  - type: web
     name: provn-orbital25-frontend
+    env: static
+    plan: free
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
     envVars:
