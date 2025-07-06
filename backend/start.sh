@@ -1,11 +1,14 @@
 #!/bin/bash
 
-# Simple deployment test script for Render
+# Simple deployment script for Render
 echo "🔄 Generating Prisma client..."
 npx prisma generate
 
 echo "🗄️ Setting up database..."
 npx prisma db push --force-reset
 
+echo "⏳ Waiting for Prisma client to be ready..."
+sleep 3
+
 echo "✅ Starting application..."
-exec npm start
+exec node dist/index.js

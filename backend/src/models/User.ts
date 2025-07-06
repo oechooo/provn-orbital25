@@ -1,5 +1,5 @@
 // src/models/User.ts
-import { User as PrismaUser } from '../prisma/client/index';
+import { User as PrismaUser } from '@prisma/client';
 
 // Type definition that matches Prisma schema
 export type User = PrismaUser;

@@ -10,12 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCurrentUser = exports.updateUserAvatar = exports.deleteUser = exports.updateUser = exports.createUser = exports.getUserById = exports.getUsers = void 0;
-const client_1 = require("../prisma/client");
-const library_1 = require("../prisma/client/runtime/library");
+const database_1 = require("../config/database");
+const library_1 = require("@prisma/client/runtime/library");
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Using select to ensure we get the fields needed by the test
-        const users = yield client_1.prisma.user.findMany({
+        const users = yield database_1.prisma.user.findMany({
             select: {
                 id: true,
                 username: true,
@@ -44,7 +44,7 @@ const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             res.status(400).json({ message: "Invalid ID format" });
             return;
         }
-        const user = yield client_1.prisma.user.findUnique({
+        const user = yield database_1.prisma.user.findUnique({
             where: { id },
             select: {
                 id: true,
@@ -74,7 +74,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.status(400).json({ message: "Username, email, and password are required" });
             return;
         }
-        const user = yield client_1.prisma.user.create({
+        const user = yield database_1.prisma.user.create({
             data: {
                 username,
                 email,
@@ -110,14 +110,14 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             return;
         }
         // Check if user exists before updating
-        const existingUser = yield client_1.prisma.user.findUnique({
+        const existingUser = yield database_1.prisma.user.findUnique({
             where: { id }
         });
         if (!existingUser) {
             res.status(404).json({ message: "User not found" });
             return;
         }
-        const user = yield client_1.prisma.user.update({
+        const user = yield database_1.prisma.user.update({
             where: { id },
             data: req.body,
             select: {
@@ -155,14 +155,14 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             return;
         }
         // Check if user exists before deleting
-        const existingUser = yield client_1.prisma.user.findUnique({
+        const existingUser = yield database_1.prisma.user.findUnique({
             where: { id }
         });
         if (!existingUser) {
             res.status(404).json({ message: "User not found" });
             return;
         }
-        yield client_1.prisma.user.delete({
+        yield database_1.prisma.user.delete({
             where: { id }
         });
         res.status(204).send();
@@ -187,7 +187,7 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
             res.status(400).json({ message: "All avatar fields except accessories are required" });
             return;
         }
-        const user = yield client_1.prisma.user.update({
+        const user = yield database_1.prisma.user.update({
             where: { id: userId },
             data: {
                 avatarSkinColor,
@@ -228,7 +228,7 @@ const getCurrentUser = (req, res) => __awaiter(void 0, void 0, void 0, function*
             res.status(401).json({ message: "Unauthorized" });
             return;
         }
-        const user = yield client_1.prisma.user.findUnique({
+        const user = yield database_1.prisma.user.findUnique({
             where: { id: userId },
             select: {
                 id: true,

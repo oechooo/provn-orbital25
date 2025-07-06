@@ -1,4 +1,4 @@
-import { PrismaClient, Market, Stake } from '../prisma/client/index';
+import { PrismaClient, Market, Stake } from '@prisma/client';
 import { MarketWithRelations } from '../models/Market';
 import { StakeService } from './StakeService';
 

@@ -9,7 +9,6 @@
     "dev:ts": "ts-node src/index.ts",
     "build": "tsc",
     "test": "jest",
-    "postbuild": "node scripts/setupProduction.js",
     "setup:prod": "node scripts/setupProduction.js",
     "startup": "node scripts/startupScript.js"
   },

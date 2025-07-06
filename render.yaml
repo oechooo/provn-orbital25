@@ -5,7 +5,7 @@ services:
     env: node
     plan: free
     buildCommand: cd backend && npm install && npx prisma generate && npm run build
-    startCommand: cd backend && npm run startup && npm start
+    startCommand: cd backend && chmod +x start.sh && ./start.sh
     envVars:
       - key: NODE_ENV
         value: production
@@ -19,8 +19,6 @@ services:
         sync: false
       - key: FRONTEND_URL
         value: https://provn-orbital25-frontend.onrender.com
-    domains:
-      - provn-orbital25-api.onrender.com
 
   # Frontend Static Site
   - type: web
@@ -30,4 +28,4 @@ services:
     staticPublishPath: frontend/dist
     envVars:
       - key: VITE_API_URL
-        value: https://provn-orbital25-api.onrender.com
+        value: https://provn-orbital25-backend.onrender.com/api

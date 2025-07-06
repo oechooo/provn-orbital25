@@ -10,9 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getMarketByArticleId = exports.adminResolveMarket = exports.setMarketOutcome = exports.getSimpleStats = exports.getStakingParameters = exports.resolveMarket = exports.createMarket = exports.getMarketById = exports.getAllMarkets = void 0;
-const client_1 = require("../prisma/client");
+const database_1 = require("../config/database");
 const MarketService_1 = require("../services/MarketService");
-const marketService = new MarketService_1.MarketService(client_1.prisma);
+const marketService = new MarketService_1.MarketService(database_1.prisma);
 const getAllMarkets = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const markets = yield marketService.getAllMarkets();
@@ -142,10 +142,10 @@ const getStakingParameters = (req, res) => __awaiter(void 0, void 0, void 0, fun
 exports.getStakingParameters = getStakingParameters;
 const getSimpleStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const usersWithStakes = yield client_1.prisma.user.count({
+        const usersWithStakes = yield database_1.prisma.user.count({
             where: { stakes: { some: {} } }
         });
-        const activeMarkets = yield client_1.prisma.market.count({
+        const activeMarkets = yield database_1.prisma.market.count({
             where: { outcome: null }
         });
         res.json({ users: usersWithStakes, stories: activeMarkets });
@@ -168,7 +168,7 @@ const setMarketOutcome = (req, res) => __awaiter(void 0, void 0, void 0, functio
             return;
         }
         // Check if user is admin
-        const user = yield client_1.prisma.user.findUnique({
+        const user = yield database_1.prisma.user.findUnique({
             where: { id: userId },
             select: { isAdmin: true }
         });
@@ -199,7 +199,7 @@ const adminResolveMarket = (req, res) => __awaiter(void 0, void 0, void 0, funct
             return;
         }
         // Check if user is admin
-        const user = yield client_1.prisma.user.findUnique({
+        const user = yield database_1.prisma.user.findUnique({
             where: { id: userId },
             select: { isAdmin: true }
         });

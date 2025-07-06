@@ -1,6 +1,6 @@
 // services/userService.ts
 
-import { PrismaClient } from '../prisma/client/index';
+import { PrismaClient } from '@prisma/client';
 import { CreateUserInput, UpdateUserInput, UserWithoutPassword } from '../models/User';
 
 export class UserService {

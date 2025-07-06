@@ -20,6 +20,10 @@ async function startupScript() {
     
     console.log('✅ Database setup complete!');
     
+    // Wait a moment for Prisma client to be ready
+    console.log('⏳ Waiting for Prisma client to initialize...');
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
     // Run the production setup to verify everything is working
     const { setupProduction } = require('./setupProduction');
     await setupProduction();

@@ -54,7 +54,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resetPassword = exports.requestPasswordReset = exports.updateProfile = exports.getProfile = exports.login = exports.register = void 0;
-const client_1 = require("../prisma/client");
+const database_1 = require("../config/database");
 const jwt = __importStar(require("jsonwebtoken"));
 const bcrypt = __importStar(require("bcrypt"));
 const crypto = __importStar(require("crypto"));
@@ -100,7 +100,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const saltRounds = 10;
         const hashedPassword = yield bcrypt.hash(password, saltRounds);
         // Create user
-        const user = yield client_1.prisma.user.create({
+        const user = yield database_1.prisma.user.create({
             data: {
                 username: trimmedUsername,
                 email: trimmedEmail,
@@ -171,7 +171,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         // Find user by username or email
-        const user = yield client_1.prisma.user.findFirst({
+        const user = yield database_1.prisma.user.findFirst({
             where: {
                 OR: [
                     { username: username.trim() },
@@ -228,7 +228,7 @@ const getProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.status(401).json({ message: "Authentication required" });
             return;
         }
-        const user = yield client_1.prisma.user.findUnique({
+        const user = yield database_1.prisma.user.findUnique({
             where: { id: userId },
             select: {
                 id: true,
@@ -271,7 +271,7 @@ const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             updateData.username = username;
         if (email)
             updateData.email = email;
-        const user = yield client_1.prisma.user.update({
+        const user = yield database_1.prisma.user.update({
             where: { id: userId },
             data: updateData,
             select: {
@@ -316,7 +316,7 @@ const requestPasswordReset = (req, res) => __awaiter(void 0, void 0, void 0, fun
             res.status(400).json({ message: 'Email is required' });
             return;
         }
-        const user = yield client_1.prisma.user.findUnique({
+        const user = yield database_1.prisma.user.findUnique({
             where: { email }
         });
         if (!user) {
@@ -328,7 +328,7 @@ const requestPasswordReset = (req, res) => __awaiter(void 0, void 0, void 0, fun
         const resetToken = crypto.randomBytes(32).toString('hex');
         const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
         // Save reset token to user (we'll add these fields to schema)
-        yield client_1.prisma.user.update({
+        yield database_1.prisma.user.update({
             where: { id: user.id },
             data: {
                 resetToken,
@@ -363,7 +363,7 @@ const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             return;
         }
         // Find user with valid reset token
-        const user = yield client_1.prisma.user.findFirst({
+        const user = yield database_1.prisma.user.findFirst({
             where: {
                 resetToken: token,
                 resetTokenExpiry: {
@@ -378,7 +378,7 @@ const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         // Hash new password
         const hashedPassword = yield bcrypt.hash(newPassword, 12);
         // Update user password and clear reset token
-        yield client_1.prisma.user.update({
+        yield database_1.prisma.user.update({
             where: { id: user.id },
             data: {
                 password: hashedPassword,

@@ -10,9 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserStats = exports.getStakeStats = exports.getMarketStakes = exports.getUserStakes = exports.createStake = void 0;
-const client_1 = require("../prisma/client");
+const database_1 = require("../config/database");
 const StakeService_1 = require("../services/StakeService");
-const stakeService = new StakeService_1.StakeService(client_1.prisma);
+const stakeService = new StakeService_1.StakeService(database_1.prisma);
 // Custom Request interface to include user info from auth middleware
 const createStake = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -118,7 +118,7 @@ const getUserStats = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             return;
         }
         // Calculate user statistics
-        const stakes = yield client_1.prisma.stake.findMany({
+        const stakes = yield database_1.prisma.stake.findMany({
             where: {
                 userId: parseInt(userId)
             },

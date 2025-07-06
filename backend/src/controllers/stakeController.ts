@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { prisma } from '../prisma/client';
+import { prisma } from '../config/database';
 import { StakeService } from '../services/StakeService';
 import { AuthRequest } from '../middleware/auth';
 

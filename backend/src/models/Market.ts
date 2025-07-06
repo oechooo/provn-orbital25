@@ -1,4 +1,4 @@
-import { Market, Article } from '../prisma/client/index';
+import { Market, Article } from '@prisma/client';
 import { StakeWithUser } from './Stake';
 
 export type MarketWithRelations = Market & {

@@ -1,5 +1,5 @@
 import { app } from "./app";
-import { prisma } from "./prisma/client";
+import { prisma } from "./config/database";
 
 // Example: API route to fetch articles
 app.get("/api/articles", async (req, res) => {

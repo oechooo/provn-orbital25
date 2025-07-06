@@ -13,12 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserArticles = exports.createUserArticle = exports.getCategories = exports.refreshArticles = exports.getArticleById = exports.getArticles = void 0;
-const client_1 = require("../prisma/client");
+const database_1 = require("../config/database");
 const ArticleService_1 = require("../services/ArticleService");
 const MarketService_1 = require("../services/MarketService");
 const axios_1 = __importDefault(require("axios"));
-const articleService = new ArticleService_1.ArticleService(client_1.prisma);
-const marketService = new MarketService_1.MarketService(client_1.prisma);
+const articleService = new ArticleService_1.ArticleService(database_1.prisma);
+const marketService = new MarketService_1.MarketService(database_1.prisma);
 const getArticles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { category, limit = 10, offset = 0 } = req.query;
