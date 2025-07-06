@@ -36,7 +36,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // Apply CORS if available
 if (cors) {
-  app.use(cors());
+  app.use(cors({
+    origin: [
+      'http://localhost:5173',
+      'https://provn-orbital25-frontend.onrender.com',
+      process.env.FRONTEND_URL
+    ].filter(Boolean),
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
 }
 
 // Routes
@@ -53,8 +62,29 @@ app.use('/api/articles', articleRoutes);
 console.log('Article routes registered');
 
 // Simple health check route
-app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'OK', message: 'Server is running' });
+app.get('/health', async (req: Request, res: Response) => {
+  try {
+    // Import prisma here to avoid circular imports
+    const { prisma } = await import('./config/database');
+    
+    // Quick database health check
+    await prisma.$queryRaw`SELECT 1`;
+    
+    res.status(200).json({ 
+      status: 'OK', 
+      message: 'Server is running',
+      database: 'Connected',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development'
+    });
+  } catch (error) {
+    console.error('Health check failed:', error);
+    res.status(503).json({ 
+      status: 'ERROR', 
+      message: 'Server is running but database is unavailable',
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // Global error handler

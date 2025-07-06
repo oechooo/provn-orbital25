@@ -1,0 +1,32 @@
+services:
+  # Backend API Service
+  - type: web
+    name: provn-orbital25-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install && npx prisma generate && npm run build
+    startCommand: cd backend && npm run startup && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: file:./dev.db
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 10000
+      - key: NEWS_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        value: https://provn-orbital25-frontend.onrender.com
+    domains:
+      - provn-orbital25-api.onrender.com
+
+  # Frontend Static Site
+  - type: static
+    name: provn-orbital25-frontend
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://provn-orbital25-api.onrender.com
