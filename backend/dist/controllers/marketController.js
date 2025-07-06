@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSimpleStats = exports.getStakingParameters = exports.resolveMarket = exports.createMarket = exports.getMarketById = exports.getAllMarkets = void 0;
+exports.getMarketByArticleId = exports.adminResolveMarket = exports.setMarketOutcome = exports.getSimpleStats = exports.getStakingParameters = exports.resolveMarket = exports.createMarket = exports.getMarketById = exports.getAllMarkets = void 0;
 const client_1 = require("../prisma/client");
 const MarketService_1 = require("../services/MarketService");
 const marketService = new MarketService_1.MarketService(client_1.prisma);
@@ -156,4 +156,81 @@ const getSimpleStats = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getSimpleStats = getSimpleStats;
+// Admin functions
+const setMarketOutcome = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const { id } = req.params;
+        const { outcome } = req.body;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+        if (!userId) {
+            res.status(401).json({ message: 'User not authenticated' });
+            return;
+        }
+        // Check if user is admin
+        const user = yield client_1.prisma.user.findUnique({
+            where: { id: userId },
+            select: { isAdmin: true }
+        });
+        if (!(user === null || user === void 0 ? void 0 : user.isAdmin)) {
+            res.status(403).json({ message: 'Admin access required' });
+            return;
+        }
+        if (outcome !== null && typeof outcome !== 'boolean') {
+            res.status(400).json({ message: 'Outcome must be true, false, or null' });
+            return;
+        }
+        yield marketService.setMarketOutcome(parseInt(id), outcome);
+        res.json({ message: 'Market outcome set successfully' });
+    }
+    catch (error) {
+        console.error('Set market outcome error:', error);
+        res.status(500).json({ message: 'Error setting market outcome' });
+    }
+});
+exports.setMarketOutcome = setMarketOutcome;
+const adminResolveMarket = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const { id } = req.params;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+        if (!userId) {
+            res.status(401).json({ message: 'User not authenticated' });
+            return;
+        }
+        // Check if user is admin
+        const user = yield client_1.prisma.user.findUnique({
+            where: { id: userId },
+            select: { isAdmin: true }
+        });
+        if (!(user === null || user === void 0 ? void 0 : user.isAdmin)) {
+            res.status(403).json({ message: 'Admin access required' });
+            return;
+        }
+        // Use the existing resolveMarket function
+        yield marketService.resolveMarket(parseInt(id));
+        res.json({ message: 'Market resolved successfully' });
+    }
+    catch (error) {
+        console.error('Admin resolve market error:', error);
+        res.status(500).json({ message: 'Error resolving market' });
+    }
+});
+exports.adminResolveMarket = adminResolveMarket;
+const getMarketByArticleId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { articleId } = req.params;
+        const market = yield marketService.getMarketByArticleId(parseInt(articleId));
+        if (!market) {
+            res.status(404).json({ message: 'Market not found for this article' });
+            return;
+        }
+        res.json({ market });
+    }
+    catch (error) {
+        console.error('Get market by article ID error:', error);
+        res.status(500).json({ message: 'Error fetching market' });
+    }
+});
+exports.getMarketByArticleId = getMarketByArticleId;
 //# sourceMappingURL=marketController.js.map

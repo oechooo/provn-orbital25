@@ -122,7 +122,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(500).json({ message: "Authentication service unavailable" });
             return;
         }
-        const token = jwt.sign({ userId: user.id, username: user.username }, secret, { expiresIn: '24h' });
+        const token = jwt.sign({ userId: user.id, username: user.username }, secret);
         res.status(201).json({
             message: "User registered successfully",
             token,
@@ -204,7 +204,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(500).json({ message: "Authentication service unavailable" });
             return;
         }
-        const token = jwt.sign({ userId: user.id, username: user.username }, secret, { expiresIn: '24h' });
+        const token = jwt.sign({ userId: user.id, username: user.username }, secret);
         // Return user info without password
         const { password: _ } = user, userWithoutPassword = __rest(user, ["password"]);
         res.json({
@@ -234,6 +234,7 @@ const getProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 id: true,
                 username: true,
                 email: true,
+                isAdmin: true,
                 provePoints: true,
                 createdAt: true,
                 updatedAt: true
@@ -277,6 +278,7 @@ const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 id: true,
                 username: true,
                 email: true,
+                isAdmin: true,
                 provePoints: true,
                 createdAt: true,
                 updatedAt: true

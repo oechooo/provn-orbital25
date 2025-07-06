@@ -57,6 +57,7 @@ class MarketService {
                         },
                     },
                 },
+                // Explicitly select probHistory along with other fields
             });
             if (!market)
                 throw new Error('Market not found');
@@ -133,6 +134,29 @@ class MarketService {
                     },
                 },
             });
+        });
+    }
+    getMarketByArticleId(articleId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const market = yield this.prisma.market.findUnique({
+                where: { articleId },
+                include: {
+                    article: true,
+                    stakes: {
+                        include: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    username: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+            if (!market)
+                throw new Error('Market not found for this article');
+            return market;
         });
     }
     listMarkets() {
@@ -313,6 +337,20 @@ class MarketService {
                 data: {
                     probTrue,
                     probFalse,
+                },
+            });
+        });
+    }
+    // Admin functions
+    setMarketOutcome(marketId, outcome) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const market = yield this.getMarketById(marketId);
+            if (!market)
+                throw new Error('Market not found');
+            yield this.prisma.market.update({
+                where: { id: marketId },
+                data: {
+                    outcome: outcome,
                 },
             });
         });

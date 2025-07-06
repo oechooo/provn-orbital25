@@ -136,6 +136,20 @@ class ArticleService {
                 .sort();
         });
     }
+    // Get articles by user ID
+    getArticlesByUserId(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.prisma.article.findMany({
+                where: { userId },
+                include: {
+                    market: true
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                }
+            });
+        });
+    }
 }
 exports.ArticleService = ArticleService;
 //# sourceMappingURL=ArticleService.js.map

@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCurrentUser = exports.updateUserAvatar = exports.deleteUser = exports.updateUser = exports.createUser = exports.getUserById = exports.getUsers = void 0;
 const client_1 = require("../prisma/client");
-const library_1 = require("@prisma/client/runtime/library");
+const library_1 = require("../prisma/client/runtime/library");
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Using select to ensure we get the fields needed by the test
@@ -203,10 +203,16 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 email: true,
                 provePoints: true,
                 createdAt: true,
-                updatedAt: true
+                updatedAt: true,
+                avatarSkinColor: true,
+                avatarHairColor: true,
+                avatarHair: true,
+                avatarEyes: true,
+                avatarMouth: true,
+                avatarAccessories: true
             }
         });
-        res.json({ message: "Avatar updated successfully", user });
+        res.json(Object.assign({ message: "Avatar updated successfully!" }, user));
     }
     catch (error) {
         console.error('Error updating avatar:', error);

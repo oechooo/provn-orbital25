@@ -11,8 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.closeDatabase = exports.initDatabase = exports.prisma = void 0;
 // src/config/database.ts
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+const index_1 = require("../prisma/client/index");
+const prisma = new index_1.PrismaClient();
 exports.prisma = prisma;
 // Database initialization function
 const initDatabase = () => __awaiter(void 0, void 0, void 0, function* () {

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCategories = exports.refreshArticles = exports.getArticleById = exports.getArticles = void 0;
+exports.getUserArticles = exports.createUserArticle = exports.getCategories = exports.refreshArticles = exports.getArticleById = exports.getArticles = void 0;
 const client_1 = require("../prisma/client");
 const ArticleService_1 = require("../services/ArticleService");
 const MarketService_1 = require("../services/MarketService");
@@ -143,4 +143,87 @@ const getCategories = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.getCategories = getCategories;
+const createUserArticle = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    try {
+        const { title, content, urlToImage, category } = req.body;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+        if (!userId) {
+            res.status(401).json({ message: 'Authentication required' });
+            return;
+        }
+        if (!title) {
+            res.status(400).json({ message: 'Title is required' });
+            return;
+        }
+        // Generate a unique URL for user-created articles
+        const articleUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/article/user-${Date.now()}`;
+        // Generate description from first 20 words of content
+        let description = undefined;
+        if (content && content.trim()) {
+            const words = content.trim().split(/\s+/);
+            if (words.length > 20) {
+                description = words.slice(0, 20).join(' ') + '...';
+            }
+            else {
+                description = content.trim();
+            }
+        }
+        // Create the article
+        const newArticle = yield articleService.createArticle({
+            sourceName: 'User Submitted',
+            author: ((_b = req.user) === null || _b === void 0 ? void 0 : _b.username) || 'Anonymous',
+            title,
+            description,
+            url: articleUrl,
+            urlToImage: urlToImage || undefined,
+            publishedAt: new Date(),
+            content: content || undefined,
+            category: category || 'general',
+            userId: userId, // Add the userId to associate with the user
+        });
+        // Create a market for the user-submitted article
+        try {
+            const market = yield marketService.createMarket(newArticle.id);
+            console.log(`📊 Created market ${market.id} for user article ${newArticle.id}`);
+        }
+        catch (marketError) {
+            console.error(`❌ Error creating market for user article ${newArticle.id}:`, marketError.message);
+        }
+        res.status(201).json({
+            message: 'Article created successfully',
+            article: newArticle
+        });
+    }
+    catch (error) {
+        console.error('Create user article error:', error);
+        if (error.code === 'P2002') {
+            res.status(409).json({ message: 'Article with this URL already exists' });
+        }
+        else {
+            res.status(500).json({ message: 'Error creating article' });
+        }
+    }
+});
+exports.createUserArticle = createUserArticle;
+const getUserArticles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+        if (!userId) {
+            res.status(401).json({ message: 'Authentication required' });
+            return;
+        }
+        const articles = yield articleService.getArticlesByUserId(userId);
+        res.json({
+            articles,
+            total: articles.length
+        });
+    }
+    catch (error) {
+        console.error('Get user articles error:', error);
+        res.status(500).json({ message: 'Error fetching user articles' });
+    }
+});
+exports.getUserArticles = getUserArticles;
 //# sourceMappingURL=articleController.js.map

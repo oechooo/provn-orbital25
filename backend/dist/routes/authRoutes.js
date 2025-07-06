@@ -13,6 +13,7 @@ catch (e) {
     console.error('Auth controller loading error:', e);
 }
 const authController_1 = require("../controllers/authController");
+const userController_1 = require("../controllers/userController");
 const auth_1 = require("../middleware/auth");
 const router = express_1.default.Router();
 console.log('Setting up auth routes...');
@@ -31,5 +32,6 @@ console.log('Auth routes setup complete');
 // Protected routes (require authentication)
 router.get('/profile', auth_1.auth, authController_1.getProfile);
 router.put('/profile', auth_1.auth, authController_1.updateProfile);
+router.put('/update-avatar', auth_1.auth, userController_1.updateUserAvatar);
 exports.default = router;
 //# sourceMappingURL=authRoutes.js.map
