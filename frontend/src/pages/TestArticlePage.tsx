@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
 const TestArticlePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<any>(null);
@@ -15,7 +17,7 @@ const TestArticlePage: React.FC = () => {
         
         console.log('Fetching data for article:', id);
         
-        const response = await fetch(`http://localhost:3000/api/markets/by-article/${id}`);
+        const response = await fetch(`${API_BASE_URL}/markets/by-article/${id}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

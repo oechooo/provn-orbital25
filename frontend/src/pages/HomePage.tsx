@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/SimpleAuthContext';
 import { articleAPI, marketAPI } from '../services/api';
 import MarketCard from '../components/MarketCard';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 import toast from 'react-hot-toast';
 
 const HomePage: React.FC = () => {
@@ -23,7 +25,7 @@ const HomePage: React.FC = () => {
       
       // Fetch simple stats
       try {
-        const statsResponse = await fetch('http://localhost:3000/api/markets/simple-stats');
+        const statsResponse = await fetch(`${API_BASE_URL}/markets/simple-stats`);
         if (statsResponse.ok) {
           const stats = await statsResponse.json();
           console.log('Simple stats:', stats); // Debug log

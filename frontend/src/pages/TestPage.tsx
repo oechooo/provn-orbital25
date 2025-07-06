@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
 const TestPage: React.FC = () => {
   const [markets, setMarkets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +15,7 @@ const TestPage: React.FC = () => {
   const fetchMarkets = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/markets');
+      const response = await fetch(`${API_BASE_URL}/markets`);
       const data = await response.json();
       console.log('Markets data:', data);
       setMarkets(data.markets || []);

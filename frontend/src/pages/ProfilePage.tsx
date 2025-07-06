@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/SimpleAuthContext';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 import { stakeAPI } from '../services/api';
 import ProtectedRoute from '../components/ProtectedRoute';
 import Avatar from '../components/Avatar';
@@ -82,7 +84,7 @@ const ProfilePage: React.FC = () => {
       // Fetch stakes and articles in parallel
       const [stakesResponse, articlesResponse] = await Promise.all([
         stakeAPI.getUserStakes(),
-        fetch('http://localhost:3000/api/articles/user', {
+        fetch(`${API_BASE_URL}/articles/user`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/SimpleAuthContext';
 import toast from 'react-hot-toast';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
 const ArticleCreationPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -51,7 +53,7 @@ const ArticleCreationPage = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:3000/api/articles/create', {
+      const response = await fetch(`${API_BASE_URL}/articles/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

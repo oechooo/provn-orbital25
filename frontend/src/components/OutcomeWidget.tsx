@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
 interface OutcomeWidgetProps {
   marketId: number;
   currentOutcome: boolean | null;
@@ -21,7 +23,7 @@ const OutcomeWidget: React.FC<OutcomeWidgetProps> = ({
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/api/markets/${marketId}/set-outcome`, {
+      const response = await fetch(`${API_BASE_URL}/markets/${marketId}/set-outcome`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

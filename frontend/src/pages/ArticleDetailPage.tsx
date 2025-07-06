@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/SimpleAuthContext';
 import toast from 'react-hot-toast';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
 interface Article {
   id: number;
   title: string;
@@ -160,7 +162,7 @@ const ArticleDetailPage: React.FC = () => {
       
       // First try to fetch by article ID
       try {
-        response = await fetch(`http://localhost:3000/api/markets/by-article/${idParam}`, {
+        response = await fetch(`${API_BASE_URL}/markets/by-article/${idParam}`, {
           signal: controller.signal,
           headers: {
             'Accept': 'application/json',
@@ -178,7 +180,7 @@ const ArticleDetailPage: React.FC = () => {
       
       // If article ID fetch failed, try by market ID
       if (!data || !data.market) {
-        response = await fetch(`http://localhost:3000/api/markets/${idParam}`, {
+        response = await fetch(`${API_BASE_URL}/markets/${idParam}`, {
           signal: controller.signal,
           headers: {
             'Accept': 'application/json',
@@ -238,7 +240,7 @@ const ArticleDetailPage: React.FC = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/stakes', {
+      const response = await fetch(`${API_BASE_URL}/stakes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
