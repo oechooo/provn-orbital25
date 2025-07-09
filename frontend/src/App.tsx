@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/SimpleAuthContext';
 import Navbar from './components/Navbar';
+import WalkthroughTour from './components/WalkthroughTourSimple';
 import HomePage from './pages/HomePage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
 import ArticleCreationPage from './pages/ArticleCreationPage';
@@ -53,6 +54,7 @@ function App() {
             </div>
           </footer>
         </div>
+        <WalkthroughTour />
         <Toaster 
           position="bottom-right"
           toastOptions={{

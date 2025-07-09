@@ -32,28 +32,43 @@ const HomePage: React.FC = () => {
           setSimpleStats(stats);
         } else {
           console.error('Stats API error:', statsResponse.status);
+          // Set default stats if API fails
+          setSimpleStats({ users: 0, stories: 0 });
         }
       } catch (statsError) {
         console.error('Error fetching simple stats:', statsError);
+        // Set default stats if API fails
+        setSimpleStats({ users: 0, stories: 0 });
       }
       
       // Fetch all markets with their articles
-      const marketsResponse = await marketAPI.getMarkets();
-      const allMarkets = marketsResponse.markets || [];
-      
-      // Set first 6 markets for display
-      setMarkets(allMarkets.slice(0, 6));
-      
-      // Calculate stats
-      const marketStatsData = {
-        totalMarkets: allMarkets.length,
-        activeMarkets: allMarkets.filter((m: any) => !m.resolved).length,
-        totalStakes: allMarkets.reduce((sum: number, m: any) => sum + (m.stakes?.length || 0), 0),
-      };
-      setMarketStats(marketStatsData);
+      try {
+        const marketsResponse = await marketAPI.getMarkets();
+        const allMarkets = marketsResponse.markets || [];
+        
+        // Set first 6 markets for display
+        setMarkets(allMarkets.slice(0, 6));
+        
+        // Calculate stats
+        const marketStatsData = {
+          totalMarkets: allMarkets.length,
+          activeMarkets: allMarkets.filter((m: any) => !m.resolved).length,
+          totalStakes: allMarkets.reduce((sum: number, m: any) => sum + (m.stakes?.length || 0), 0),
+        };
+        setMarketStats(marketStatsData);
+      } catch (error) {
+        console.error('Error fetching markets:', error);
+        // Set empty markets and default stats if API fails
+        setMarkets([]);
+        setMarketStats({
+          totalMarkets: 0,
+          activeMarkets: 0,
+          totalStakes: 0
+        });
+      }
     } catch (error) {
       console.error('Error fetching home data:', error);
-      toast.error('Failed to load market data');
+      toast.error('Failed to load market data - running in offline mode');
     } finally {
       setLoading(false);
     }
