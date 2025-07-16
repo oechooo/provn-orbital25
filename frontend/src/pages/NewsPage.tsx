@@ -242,13 +242,14 @@ const NewsPage: React.FC = () => {
           )}
 
           {/* Articles Feed - Reddit-like UI */}
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mx-auto" data-tour="article-list">
             <div className="flex flex-col gap-4 w-full">
-              {articles.map((article) => (
+              {articles.map((article, index) => (
                 <ArticleCard
                   key={article.id}
                   article={article}
                   formatDate={formatDate}
+                  data-tour={index === 0 ? "article-card" : undefined}
                 />
               ))}
             </div>

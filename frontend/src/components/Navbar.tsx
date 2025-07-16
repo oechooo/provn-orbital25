@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/SimpleAuthContext';
+import { useTour } from '../contexts/TourContext';
 import Avatar from './Avatar';
 import { AvatarConfig, DEFAULT_AVATAR_CONFIG } from '../utils/avatar';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useAuth();
+  const { startTour } = useTour();
 
   // Get current avatar config from user or use default
   const getCurrentAvatarConfig = (): AvatarConfig => {
@@ -24,7 +26,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-lg border-b border-white/20">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-lg border-b border-white/20" data-tour="navbar">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex">
@@ -37,12 +39,24 @@ const Navbar = () => {
               <Link 
                 to="/news" 
                 className="text-white/70 hover:text-white px-3 py-2 rounded-xl hover:bg-white/10 text-sm font-medium transition-all duration-300"
+                data-tour="news-link"
               >
                 News
               </Link>
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
+            {/* Help/Tutorial Button */}
+            <button
+              onClick={startTour}
+              className="p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 group"
+              title="Start Tutorial"
+            >
+              <svg className="w-5 h-5 text-white/70 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+            
             {user && (
               <>
                 <Link
@@ -79,7 +93,7 @@ const Navbar = () => {
                   <span className="text-sm font-medium text-white">
                     {user.username}
                   </span>
-                  <span className="text-xs text-cyan-300">
+                  <span className="text-xs text-cyan-300 pp-display" data-tour="prove-points">
                     {user.provePoints.toFixed(2)} PP
                   </span>
                 </div>
@@ -135,6 +149,21 @@ const Navbar = () => {
             >
               News
             </Link>
+            
+            {/* Help/Tutorial Button - Mobile */}
+            <button
+              onClick={() => {
+                startTour();
+                setIsMenuOpen(false);
+              }}
+              className="flex items-center space-x-2 w-full px-3 py-2 rounded-md text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Tutorial</span>
+            </button>
+            
             {user && (
               <Link 
                 to="/create-article" 

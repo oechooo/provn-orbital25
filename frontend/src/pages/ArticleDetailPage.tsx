@@ -3,8 +3,6 @@ import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/SimpleAuthContext';
 import toast from 'react-hot-toast';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-
 interface Article {
   id: number;
   title: string;
@@ -57,7 +55,7 @@ interface ForumPost {
 
 const ArticleDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { user, updateUserPoints } = useAuth();
+  const { user } = useAuth();
   const [market, setMarket] = useState<Market | null>(null);
   const [loading, setLoading] = useState(true);
   const [stakeAmount, setStakeAmount] = useState<number>(10);
@@ -149,7 +147,7 @@ const ArticleDetailPage: React.FC = () => {
     }
   }, [id]);
 
-  const fetchMarketData = async (idParam: number) => {
+  const fetchMarketData = async (marketId: number) => {
     try {
       setLoading(true);
       
@@ -157,47 +155,21 @@ const ArticleDetailPage: React.FC = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
-      let response: Response | undefined;
-      let data: any;
-      
-      // First try to fetch by article ID
-      try {
-        response = await fetch(`${API_BASE_URL}/markets/by-article/${idParam}`, {
-          signal: controller.signal,
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (response.ok) {
-          data = await response.json();
+      const response = await fetch(`http://localhost:3000/api/markets/${marketId}`, {
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
         }
-      } catch (error) {
-        console.log('Failed to fetch by article ID, trying by market ID...');
-        response = undefined;
-      }
-      
-      // If article ID fetch failed, try by market ID
-      if (!data || !data.market) {
-        response = await fetch(`${API_BASE_URL}/markets/${idParam}`, {
-          signal: controller.signal,
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (response.ok) {
-          data = await response.json();
-        }
-      }
+      });
       
       clearTimeout(timeoutId);
       
-      if (!response || !response.ok) {
-        throw new Error(`HTTP error! status: ${response?.status || 'unknown'}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
+      const data = await response.json();
       
       if (data && data.market) {
         setMarket(data.market);
@@ -237,10 +209,9 @@ const ArticleDetailPage: React.FC = () => {
     }
 
     setPlacing(true);
-    
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/stakes`, {
+      const response = await fetch('http://localhost:3000/api/stakes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -258,11 +229,9 @@ const ArticleDetailPage: React.FC = () => {
         throw new Error(errorData.message || 'Failed to place stake');
       }
       
-      // Show notification and update points after successful backend response
-      toast.success(`${prediction ? 'TRUE' : 'FALSE'} stake placed successfully!`);
-      updateUserPoints(user.provePoints - stakeAmount);
+      toast.success(`Stake placed successfully! You predicted: ${prediction ? 'TRUE' : 'FALSE'}`);
       
-      // Refresh market data to show the new stake
+      // Refresh market data
       await fetchMarketData(market.id);
       
       // Reset form
@@ -367,7 +336,7 @@ const ArticleDetailPage: React.FC = () => {
     }
 
     const userStake = market?.stakes.find(stake => stake.userId === user.id);
-    const stakeAmount = userStake ? userStake.stakeAmount : 0;
+    const stakeAmount = userStake ? userStake.amount : 0;
 
     const newForumPost: ForumPost = {
       id: Date.now(),
@@ -452,26 +421,8 @@ const ArticleDetailPage: React.FC = () => {
   }
 
   const { article } = market;
-  const totalStakes = market.stakes?.length || 0;
-  const totalVolume = market.stakes?.reduce((sum, stake) => sum + (stake.stakeAmount || 0), 0) || 0;
-
-  // Safety check for article
-  if (!article) {
-    console.error('No article found in market data:', market);
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="glass-card p-8 text-center">
-            <h1 className="text-3xl font-bold text-white mb-4">Article Data Error</h1>
-            <p className="text-slate-300 mb-6">There was an issue loading the article data.</p>
-            <Link to="/dashboard" className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors">
-              Back to Dashboard
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const totalStakes = market.stakes.length;
+  const totalVolume = market.stakes.reduce((sum, stake) => sum + stake.stakeAmount, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -493,7 +444,7 @@ const ArticleDetailPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Main Article Content */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2" data-tour="article-content">
             <div className="glass-card p-8">
               
               {/* Article Header */}
@@ -566,27 +517,25 @@ const ArticleDetailPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Read Full Article - only show for external articles */}
-              {article.sourceName !== 'User Submitted' && (
-                <div className="border-t border-slate-700 pt-6">
-                  <a 
-                    href={article.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200"
-                  >
-                    Read Full Article at {article.sourceName}
-                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  </a>
-                </div>
-              )}
+              {/* Read Full Article */}
+              <div className="border-t border-slate-700 pt-6">
+                <a 
+                  href={article.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200"
+                >
+                  Read Full Article at {article.sourceName}
+                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
 
           {/* Market Information Sidebar */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1" data-tour="prediction-interface">
             <div className="glass-card p-6 sticky top-6">
               
               {/* Market Status */}
@@ -739,7 +688,7 @@ const ArticleDetailPage: React.FC = () => {
                 <div className="flex justify-between items-center mt-3">
                   <div className="text-sm text-slate-400">
                     {user.provePoints > 0 && market?.stakes.find(stake => stake.userId === user.id) && (
-                      <span>Your stake: {market.stakes.find(stake => stake.userId === user.id)?.stakeAmount.toFixed(2)} PP</span>
+                      <span>Your stake: {market.stakes.find(stake => stake.userId === user.id)?.amount.toFixed(2)} PP</span>
                     )}
                   </div>
                   <button

@@ -1,8 +1,10 @@
+import { useRef } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/SimpleAuthContext';
+import { TourProvider } from './contexts/TourContext';
 import Navbar from './components/Navbar';
-import WalkthroughTour from './components/WalkthroughTourSimple';
+import WalkthroughTour, { WalkthroughTourRef } from './components/WalkthroughTourSimple';
 import HomePage from './pages/HomePage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
 import ArticleCreationPage from './pages/ArticleCreationPage';
@@ -18,9 +20,16 @@ import TestArticlePage from './pages/TestArticlePage';
 
 
 function App() {
+  const walkthroughRef = useRef<WalkthroughTourRef>(null);
+  
+  const startTour = () => {
+    walkthroughRef.current?.startTour();
+  };
+
   return (
     <AuthProvider>
-      <BrowserRouter>        <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <TourProvider startTour={startTour}>
+        <BrowserRouter>        <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
           <Navbar />
           <main className="flex-grow pt-20"> {/* Added pt-20 to account for fixed navbar */}
             <Routes>
@@ -54,7 +63,7 @@ function App() {
             </div>
           </footer>
         </div>
-        <WalkthroughTour />
+        <WalkthroughTour ref={walkthroughRef} />
         <Toaster 
           position="bottom-right"
           toastOptions={{
@@ -65,7 +74,8 @@ function App() {
             },
           }}
         />
-      </BrowserRouter>
+        </BrowserRouter>
+      </TourProvider>
     </AuthProvider>
   );
 }

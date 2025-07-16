@@ -12,9 +12,16 @@ interface ArticleCardProps {
   formatDate: (dateString: string) => string;
   defaultImage?: string;
   onArticleUpdate?: (updatedArticle: ArticleWithMarket) => void;
+  'data-tour'?: string;
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultImage = '/default-news.png', onArticleUpdate }) => {
+const ArticleCard: React.FC<ArticleCardProps> = ({ 
+  article, 
+  formatDate, 
+  defaultImage = '/default-news.png', 
+  onArticleUpdate,
+  'data-tour': dataTour 
+}) => {
   const imageUrl = article.urlToImage || defaultImage;
   const [showOrderWidget, setShowOrderWidget] = useState(false);
   const [selectedPrediction, setSelectedPrediction] = useState<boolean>(true);
@@ -126,8 +133,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
 
   return (
     <div
-      className="w-full relative flex flex-col bg-slate-900/80 border border-slate-700 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-200 overflow-hidden"
+      className="w-full relative flex flex-col bg-slate-900/80 border border-slate-700 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-200 overflow-hidden market-card"
       style={{ maxWidth: '100%' }}
+      data-tour={dataTour}
     >
       {/* Admin Menu - Kebab */}
       {user?.isAdmin && (
@@ -199,7 +207,8 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, formatDate, defaultI
             </div>
             <Link
               to={`/article/${currentArticle.id}`}
-              className="block text-lg md:text-xl font-bold text-slate-100 hover:text-pink-400 transition-colors leading-snug mb-1"
+              className="block text-lg md:text-xl font-bold text-slate-100 hover:text-pink-400 transition-colors leading-snug mb-1 article-link"
+              data-tour="article-link"
             >
               {currentArticle.title}
             </Link>
