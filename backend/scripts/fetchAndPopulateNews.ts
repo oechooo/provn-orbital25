@@ -126,24 +126,50 @@ async function populateMarketWithStakes(marketId: number, botUserId: number) {
 }
 
 async function fetchAndPopulateArticles() {
-  console.log('Starting fetchAndPopulateNews.ts script...');
-  console.log('Fetching fresh news articles, creating markets, and populating with bot stakes...\n');
+  console.log('🚀 Starting fetchAndPopulateNews.ts script...');
+  console.log('📰 Fetching fresh news articles, creating markets, and populating with bot stakes...\n');
   
+  // Debug: Environment check
+  console.log('🔍 Checking environment variables...');
   const API_KEY = process.env.NEWS_API_KEY;
   
   if (!API_KEY) {
-    console.error('NEWS_API_KEY not found in environment variables');
+    console.error('❌ NEWS_API_KEY not found in environment variables');
+    console.log('Available env vars:', Object.keys(process.env).filter(key => key.includes('NEWS')));
     return;
   }
   
-  console.log('API Key found, proceeding with fetch...');
+  console.log('✅ API Key found, length:', API_KEY.length);
+  console.log('🔑 API Key preview:', API_KEY.substring(0, 8) + '...');
+  
+  // Debug: Database connection
+  console.log('\n🔍 Testing database connection...');
+  try {
+    await prisma.$connect();
+    console.log('✅ Database connection successful');
+    
+    // Check existing data
+    const existingArticles = await prisma.article.count();
+    const existingMarkets = await prisma.market.count();
+    const existingStakes = await prisma.stake.count();
+    console.log(`📊 Current DB state: ${existingArticles} articles, ${existingMarkets} markets, ${existingStakes} stakes`);
+  } catch (dbError: any) {
+    console.error('❌ Database connection failed:', dbError.message);
+    return;
+  }
   
   // Create or get bot user
+  console.log('\n🤖 Setting up bot user...');
   const bot = await createOrGetBot();
+  console.log(`✅ Bot ready: ${bot.username} (ID: ${bot.id}, PP: ${bot.provePoints})`);
   
   const CATEGORIES = ["business", "entertainment", "health", "science", "sports", "technology"];
   const QUERIES = 2; // Reduced from 5 to 2 to limit memory usage
   const fromDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(); // 24H ago
+  
+  console.log(`\n📅 Fetching articles from: ${fromDate}`);
+  console.log(`🔢 Articles per category: ${QUERIES}`);
+  console.log(`📂 Categories: ${CATEGORIES.join(', ')}\n`);
 
   try {
     let totalArticlesProcessed = 0;
@@ -152,8 +178,9 @@ async function fetchAndPopulateArticles() {
     let totalStakesCreated = 0;
     
     for (const category of CATEGORIES) {
-      console.log(`\nProcessing category: ${category.toUpperCase()}`);
+      console.log(`\n🏷️  ===== PROCESSING CATEGORY: ${category.toUpperCase()} =====`);
       const url = `https://newsapi.org/v2/top-headlines?apiKey=${API_KEY}&category=${category}&from=${fromDate}&pageSize=${QUERIES}&page=1`;
+      console.log(`🌐 Request URL: ${url.replace(API_KEY, 'API_KEY_HIDDEN')}`);
       
       let articles = [];
       let retryCount = 0;
@@ -161,6 +188,8 @@ async function fetchAndPopulateArticles() {
       
       while (retryCount < maxRetries) {
         try {
+          console.log(`📡 Attempt ${retryCount + 1}/${maxRetries} - Making API request...`);
+          
           // Add proper headers to avoid Cloudflare blocking
           const response = await axios.get(url, {
             headers: {
@@ -175,8 +204,23 @@ async function fetchAndPopulateArticles() {
             timeout: 10000, // 10 second timeout
           });
           
-          articles = response.data.articles;
-          console.log(`✅ Successfully fetched ${articles.length} articles for ${category}`);
+          console.log(`✅ API Response Status: ${response.status} ${response.statusText}`);
+          console.log(`📊 Response Data Keys: ${Object.keys(response.data).join(', ')}`);
+          
+          if (response.data.articles) {
+            articles = response.data.articles;
+            console.log(`📰 Successfully fetched ${articles.length} articles for ${category}`);
+            console.log(`📈 Total available articles: ${response.data.totalResults || 'unknown'}`);
+            
+            // Log first article title for verification
+            if (articles.length > 0) {
+              console.log(`📝 First article: "${(articles[0] as any).title?.substring(0, 50)}..."`);
+            }
+          } else {
+            console.log(`⚠️  No 'articles' property in response for ${category}`);
+            console.log(`📋 Response data:`, JSON.stringify(response.data, null, 2));
+          }
+          
           break; // Success, exit retry loop
           
         } catch (error: any) {
@@ -195,13 +239,17 @@ async function fetchAndPopulateArticles() {
       }
       
       if (articles.length === 0) {
-        console.log(`⚠️ No articles fetched for ${category}, skipping...`);
+        console.log(`⚠️  No articles fetched for ${category}, skipping category...`);
         continue;
       }
+
+      console.log(`\n📊 Processing ${articles.length} articles for ${category}...`);
 
       for (let i = 0; i < articles.length; i++) {
         const article = articles[i];
         totalArticlesProcessed++;
+        
+        console.log(`\n📄 Processing article ${i + 1}/${articles.length} (Total processed: ${totalArticlesProcessed})`);
         
         // Add delay between articles to prevent memory spikes
         if (i > 0) {
@@ -218,11 +266,16 @@ async function fetchAndPopulateArticles() {
           publishedAt,
           content,
         } = article as any; // Add type assertion to fix TypeScript issues
+        
+        console.log(`📝 Article title: "${title?.substring(0, 60)}..."`);
+        console.log(`🏢 Source: ${source?.name || 'Unknown'}`);
+        console.log(`🔗 URL: ${url?.substring(0, 50)}...`);
 
         try {
+          console.log(`💾 Creating article in database...`);
           const newArticle = await prisma.article.create({
             data: {
-              sourceName: source.name ?? 'Unknown',
+              sourceName: source?.name ?? 'Unknown',
               author: author ?? null,
               title,
               description: description ?? null,
@@ -233,11 +286,12 @@ async function fetchAndPopulateArticles() {
               category,
             },
           });
-          console.log(`Added article: ${title.substring(0, 60)}...`);
+          console.log(`✅ Article created with ID: ${newArticle.id}`);
           totalArticlesCreated++;
           
           // Create market for the new article
           try {
+            console.log(`🏪 Creating market for article ${newArticle.id}...`);
             const market = await prisma.market.create({
               data: {
                 articleId: newArticle.id,
@@ -251,11 +305,11 @@ async function fetchAndPopulateArticles() {
                 closed: false
               }
             });
-            console.log(`Created market ${market.id} for article ${newArticle.id}`);
+            console.log(`✅ Market created with ID: ${market.id}`);
             totalMarketsCreated++;
             
             // Populate market with bot stakes
-            console.log(`Populating market ${market.id} with bot stakes...`);
+            console.log(`🎲 Populating market ${market.id} with bot stakes...`);
             const stakesCountBefore = await prisma.stake.count({ where: { marketId: market.id } });
             
             await populateMarketWithStakes(market.id, bot.id);
@@ -263,23 +317,29 @@ async function fetchAndPopulateArticles() {
             const stakesCountAfter = await prisma.stake.count({ where: { marketId: market.id } });
             const stakesAdded = stakesCountAfter - stakesCountBefore;
             totalStakesCreated += stakesAdded;
+            console.log(`✅ Added ${stakesAdded} stakes to market ${market.id}`);
             
             // Show final market state
             const updatedMarket = await prisma.market.findUnique({
               where: { id: market.id }
             });
             if (updatedMarket) {
-              console.log(`Final probabilities: TRUE ${(updatedMarket.probTrue * 100).toFixed(1)}%, FALSE ${(updatedMarket.probFalse * 100).toFixed(1)}%`);
+              console.log(`📊 Final probabilities: TRUE ${(updatedMarket.probTrue * 100).toFixed(1)}%, FALSE ${(updatedMarket.probFalse * 100).toFixed(1)}%`);
             }
             
           } catch (marketErr: any) {
-            console.error(`Error creating/populating market for article ${newArticle.id}:`, marketErr.message);
+            console.error(`❌ Error creating/populating market for article ${newArticle.id}:`);
+            console.error(`   Error: ${marketErr.message}`);
+            console.error(`   Stack: ${marketErr.stack?.substring(0, 200)}...`);
           }
         } catch (err: any) {
           if (err.code === 'P2002') {
-            console.log(`Skipping duplicate article: ${title.substring(0, 60)}...`);
+            console.log(`⚠️  Skipping duplicate article: "${title?.substring(0, 60)}..."`);
           } else {
-            console.error(`Error inserting article: ${title.substring(0, 60)}...`, err.message);
+            console.error(`❌ Error inserting article: "${title?.substring(0, 60)}..."`);
+            console.error(`   Error code: ${err.code}`);
+            console.error(`   Error message: ${err.message}`);
+            console.error(`   Stack: ${err.stack?.substring(0, 200)}...`);
           }
         }
       }
@@ -295,24 +355,42 @@ async function fetchAndPopulateArticles() {
     // Get final bot status
     const finalBot = await prisma.user.findUnique({ where: { id: bot.id } });
     
-    console.log(`\nProcess complete!`);
-    console.log('\nSUMMARY:');
-    console.log(`Total articles processed: ${totalArticlesProcessed}`);
-    console.log(`New articles created: ${totalArticlesCreated}`);
-    console.log(`Markets created: ${totalMarketsCreated}`);
-    console.log(`Bot stakes created: ${totalStakesCreated}`);
-    console.log(`Bot PP remaining: ${finalBot?.provePoints || 0}`);
-    console.log(`Duplicate articles skipped: ${totalArticlesProcessed - totalArticlesCreated}`);
+    console.log(`\n🎉 PROCESS COMPLETE!`);
+    console.log('\n📊 FINAL SUMMARY:');
+    console.log(`   📰 Total articles processed: ${totalArticlesProcessed}`);
+    console.log(`   ✅ New articles created: ${totalArticlesCreated}`);
+    console.log(`   🏪 Markets created: ${totalMarketsCreated}`);
+    console.log(`   🎲 Bot stakes created: ${totalStakesCreated}`);
+    console.log(`   💰 Bot PP remaining: ${finalBot?.provePoints || 0}`);
+    console.log(`   ⚠️  Duplicate articles skipped: ${totalArticlesProcessed - totalArticlesCreated}`);
+    console.log(`   🤖 Bot final status: ${finalBot?.username} (ID: ${finalBot?.id})`);
     
-  } catch (err) {
-    console.error('Failed to fetch and populate news:', err);
+    if (totalArticlesCreated === 0) {
+      console.log(`\n⚠️  WARNING: No articles were created! This could indicate:`);
+      console.log(`   - All articles were duplicates`);
+      console.log(`   - Database connection issues`);
+      console.log(`   - Data validation errors`);
+      console.log(`   - API returned empty/invalid data`);
+    }
+    
+  } catch (err: any) {
+    console.error('\n❌ FATAL ERROR in fetchAndPopulateArticles:');
+    console.error(`   Message: ${err.message}`);
+    console.error(`   Stack: ${err.stack}`);
+    
+    if (err.response) {
+      console.error(`   HTTP Status: ${err.response.status}`);
+      console.error(`   Response: ${JSON.stringify(err.response.data).substring(0, 500)}...`);
+    }
     
     // If NewsAPI fails completely, create some mock articles for testing
-    console.log('\n⚠️ NewsAPI failed, creating mock articles for testing...');
+    console.log('\n⚠️  NewsAPI failed, creating mock articles for testing...');
     await createMockArticles();
     
   } finally {
+    console.log('\n🔌 Disconnecting from database...');
     await prisma.$disconnect();
+    console.log('✅ Database disconnected');
   }
 }
 
