@@ -10,7 +10,8 @@
     "build": "tsc",
     "test": "jest",
     "setup:prod": "node scripts/setupProduction.js",
-    "startup": "node scripts/startupScript.js"
+    "startup": "node scripts/startupScript.js",
+    "populate:news": "ts-node scripts/fetchAndPopulateNews.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.7.0",

@@ -5,21 +5,35 @@ import { UserService } from './services/UserService';
 import { ArticleService } from './services/ArticleService';
 import { MarketService } from './services/MarketService';
 import { StakeService } from './services/StakeService';
+import { StartupService } from './services/StartupService';
 
 // Initialize core services
 const userService = new UserService(prisma);
 const articleService = new ArticleService(prisma);
 const marketService = new MarketService(prisma);
 const stakeService = new StakeService(prisma);
+const startupService = new StartupService(prisma);
 
 const port = process.env.PORT || 3000;
 
 initDatabase()
-  .then(() => {
-    console.log('✅ Database connected');
+  .then(async () => {
+    console.log('Database connected');
+    
+    // Start the server first
     const server = app.listen(port, () => {
-      console.log(`✅ Server running at http://localhost:${port}`);
-      console.log(`ℹ️ Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`Server running at http://localhost:${port}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+
+    // Run startup tasks asynchronously after server starts
+    // This ensures the server is available even if startup tasks take time
+    setImmediate(async () => {
+      try {
+        await startupService.runStartupTasks();
+      } catch (error) {
+        console.error('Startup tasks failed, but server is still running:', error);
+      }
     });
 
     process.on('SIGTERM', () => {
@@ -30,6 +44,6 @@ initDatabase()
     });
   })
   .catch((error) => {
-    console.error('❌ Failed to initialize database:', error);
+    console.error('Failed to initialize database:', error);
     process.exit(1);
   });
