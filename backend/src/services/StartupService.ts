@@ -63,10 +63,14 @@ export class StartupService {
   }
 
   private async runNewsPopulation(): Promise<void> {
-    console.log('Executing fetchAndPopulateNews script...');
+    // Determine which script to use based on environment
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+    const scriptName = isProduction ? 'mockAndPopulateNews.ts' : 'fetchAndPopulateNews.ts';
+    
+    console.log(`Executing ${scriptName} script (Environment: ${isProduction ? 'production' : 'development'})...`);
     
     try {
-      await this.runOriginalScript();
+      await this.runScript(scriptName);
       console.log('News population completed successfully');
     } catch (error: any) {
       console.error('News population failed:', error.message);
@@ -74,7 +78,7 @@ export class StartupService {
     }
   }
 
-  private async runOriginalScript(): Promise<void> {
+  private async runScript(scriptName: string): Promise<void> {
     const path = require('path');
     const fs = require('fs');
     
@@ -82,9 +86,10 @@ export class StartupService {
     
     // Determine the correct script path
     const scriptDir = path.join(__dirname, '../../scripts');
-    const tsScriptPath = path.join(scriptDir, 'fetchAndPopulateNews.ts');
+    const tsScriptPath = path.join(scriptDir, scriptName);
     
     console.log(`[NEWS] Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`[NEWS] Script: ${scriptName}`);
     console.log(`[NEWS] Script path: ${tsScriptPath}`);
     
     // Check file existence
