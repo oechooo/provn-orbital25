@@ -50,7 +50,7 @@ export default function RegisterPage() {
       
       if (result.success) {
         toast.success('Registration successful! Welcome to Provn.io!');
-        navigate('/dashboard');
+        navigate('/news');
       } else {
         toast.error(result.message || 'Registration failed. Please try again.');
       }

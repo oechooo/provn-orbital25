@@ -138,7 +138,7 @@ const WalkthroughTour = forwardRef<WalkthroughTourRef>((_props, ref) => {
   const steps = [
     {
       title: 'Welcome to Provn.io! 🎉',
-      content: 'Welcome to the future of news verification! Provn.io uses prediction markets to help determine the truth of news stories. Let\'s take a quick tour!',
+      content: 'Welcome to the future of news verification! Provn.io uses prediction markets to help determine the truth of news stories. Let\'s take a quick tour! Please get a coffee while we load the tour, it may take up to 3 minutes for our backend to come fully online.',
       icon: '🎉',
       page: null,
       highlight: null,
