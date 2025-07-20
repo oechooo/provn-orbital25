@@ -166,6 +166,10 @@ async function fetchAndPopulateArticles() {
         } = article;
 
         try {
+          // Deduct 12 hours from the published date to adjust for timezone differences between ET and GMT+8
+          const originalPublishedAt = new Date(publishedAt);
+          const adjustedPublishedAt = new Date(originalPublishedAt.getTime() - 12 * 60 * 60 * 1000); 
+          
           const newArticle = await prisma.article.create({
             data: {
               sourceName: source.name ?? 'Unknown',
@@ -174,7 +178,7 @@ async function fetchAndPopulateArticles() {
               description: description ?? null,
               url,
               urlToImage: urlToImage ?? null,
-              publishedAt: new Date(publishedAt),
+              publishedAt: adjustedPublishedAt,
               content: content ?? null,
               category,
             },

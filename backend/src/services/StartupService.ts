@@ -45,15 +45,22 @@ export class StartupService {
 
   private async shouldPopulateNews(): Promise<boolean> {
     try {
-      // Check if we have any articles from the last 24 hours
+      const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+      
+      // In development, be more aggressive about fetching fresh news
+      // Check for articles from the last 4 hours instead of 24 hours
+      const timeWindow = isProduction ? 24 * 60 * 60 * 1000 : 4 * 60 * 60 * 1000; // 24h vs 4h
+      
+      // Check if we have any articles from the specified time window
       const recentArticles = await this.prisma.article.count({
         where: {
           createdAt: {
-            gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
+            gte: new Date(Date.now() - timeWindow)
           }
         }
       });
 
+      console.log(`Found ${recentArticles} articles from last ${isProduction ? '24' : '4'} hours`);
       return recentArticles === 0;
     } catch (error) {
       console.error('Error checking if news population is needed:', error);
@@ -64,7 +71,11 @@ export class StartupService {
 
   private async runNewsPopulation(): Promise<void> {
     // Determine which script to use based on environment
+    // In development (local), we want real news from NewsAPI
+    // In production (Render), we want mock news to avoid API costs
     const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+    
+    // Force real news in development for better testing
     const scriptName = isProduction ? 'mockAndPopulateNews.ts' : 'fetchAndPopulateNews.ts';
     
     console.log(`Executing ${scriptName} script (Environment: ${isProduction ? 'production' : 'development'})...`);

@@ -249,14 +249,21 @@ const ArticleDetailPage: React.FC = () => {
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone: 'Asia/Singapore', // GMT+8
+      timeZoneName: 'short'
     });
   };
 
   const getTimeSince = (dateString: string) => {
     const now = new Date();
     const published = new Date(dateString);
-    const diffMs = now.getTime() - published.getTime();
+    
+    // Convert both dates to GMT+8 for consistent calculation
+    const nowGMT8 = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+    const publishedGMT8 = new Date(published.toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+    
+    const diffMs = nowGMT8.getTime() - publishedGMT8.getTime();
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffHours / 24);
     

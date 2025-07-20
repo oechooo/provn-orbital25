@@ -11,7 +11,8 @@
     "test": "jest",
     "setup:prod": "node scripts/setupProduction.js",
     "startup": "node scripts/startupScript.js",
-    "populate:news": "ts-node scripts/fetchAndPopulateNews.ts"
+    "populate:news": "ts-node scripts/fetchAndPopulateNews.ts",
+    "clear:news": "node scripts/clearAndRefreshNews.js"
   },
   "dependencies": {
     "@prisma/client": "^6.7.0",

@@ -198,7 +198,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
                 {capitalizeCategory(currentArticle.category || 'News')}
               </span>
               <span className="text-xs text-slate-500">•</span>
-              <span className="text-xs text-slate-400">{formatDate(currentArticle.publishedAt)}</span>
+              <span className="text-xs text-slate-400">
+                {formatDate(currentArticle.publishedAt)} GMT+8
+              </span>
               <span className="text-xs text-slate-500">•</span>
               <span className="text-xs text-slate-400">
                 {currentArticle.sourceName || 'Unknown Source'}
@@ -274,7 +276,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
               <div className="text-xs text-slate-400 flex-1">
                 {currentArticle.market?.nextResolve && (
                   <span>
-                    Market resolves on {new Date(currentArticle.market.nextResolve).toLocaleDateString()} at {new Date(currentArticle.market.nextResolve).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    Market resolves on {new Date(currentArticle.market.nextResolve).toLocaleDateString()} at {new Date(currentArticle.market.nextResolve).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' })}
                   </span>
                 )}
               </div>

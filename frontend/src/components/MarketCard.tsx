@@ -69,7 +69,9 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, onStakeSuccess }) => {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone: 'Asia/Singapore', // GMT+8
+      timeZoneName: 'short'
     });
   };
 
