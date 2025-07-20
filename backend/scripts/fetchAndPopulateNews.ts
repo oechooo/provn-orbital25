@@ -18,16 +18,69 @@ console.log('🚀 SCRIPT ENTRY POINT REACHED');
 console.log('📍 Current working directory:', process.cwd());
 console.log('🕐 Script start time:', new Date().toISOString());
 
-import axios from 'axios';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import * as dotenv from 'dotenv';
-import { MarketService } from '../src/services/MarketService';
-import { StakeService } from '../src/services/StakeService';
+try {
+  console.log('📦 Loading axios...');
+  var axios = require('axios');
+  console.log('✅ axios loaded');
+} catch (err) {
+  throw new Error(`FATAL: Failed to load axios: ${err.message}`);
+}
 
-dotenv.config();
+try {
+  console.log('📦 Loading PrismaClient...');
+  var { PrismaClient } = require('@prisma/client');
+  console.log('✅ PrismaClient loaded');
+} catch (err) {
+  throw new Error(`FATAL: Failed to load PrismaClient: ${err.message}`);
+}
 
-const prisma = new PrismaClient();
+try {
+  console.log('📦 Loading bcrypt...');
+  var bcrypt = require('bcrypt');
+  console.log('✅ bcrypt loaded');
+} catch (err) {
+  throw new Error(`FATAL: Failed to load bcrypt: ${err.message}`);
+}
+
+try {
+  console.log('📦 Loading dotenv...');
+  var dotenv = require('dotenv');
+  console.log('✅ dotenv loaded');
+} catch (err) {
+  throw new Error(`FATAL: Failed to load dotenv: ${err.message}`);
+}
+
+try {
+  console.log('📦 Loading MarketService...');
+  var { MarketService } = require('../src/services/MarketService');
+  console.log('✅ MarketService loaded');
+} catch (err) {
+  throw new Error(`FATAL: Failed to load MarketService: ${err.message}`);
+}
+
+try {
+  console.log('📦 Loading StakeService...');
+  var { StakeService } = require('../src/services/StakeService');
+  console.log('✅ StakeService loaded');
+} catch (err) {
+  throw new Error(`FATAL: Failed to load StakeService: ${err.message}`);
+}
+
+try {
+  console.log('⚙️ Configuring dotenv...');
+  dotenv.config();
+  console.log('✅ dotenv configured');
+} catch (err) {
+  throw new Error(`FATAL: Failed to configure dotenv: ${err.message}`);
+}
+
+try {
+  console.log('🗄️ Initializing Prisma Client...');
+  var prisma = new PrismaClient();
+  console.log('✅ Prisma Client initialized');
+} catch (err) {
+  throw new Error(`FATAL: Failed to initialize Prisma Client: ${err.message}`);
+}
 
 // Bot configuration
 const BOT_CONFIG = {
@@ -44,90 +97,102 @@ const BOT_CONFIG = {
 };
 
 async function createOrGetBot() {
-  console.log('Setting up market bot...');
-  
-  // Check if bot already exists
-  const existingBot = await prisma.user.findUnique({
-    where: { email: BOT_CONFIG.email }
-  });
+  try {
+    console.log('Setting up market bot...');
+    
+    // Check if bot already exists
+    console.log('🔍 Checking for existing bot...');
+    const existingBot = await prisma.user.findUnique({
+      where: { email: BOT_CONFIG.email }
+    });
 
-  if (existingBot) {
-    console.log(`Bot user already exists: ${existingBot.username} (${existingBot.provePoints} PP)`);
-    
-    // Top up bot's prove points if running low
-    if (existingBot.provePoints < 1000) {
-      await prisma.user.update({
-        where: { id: existingBot.id },
-        data: { provePoints: BOT_CONFIG.initialProvePoints }
-      });
-      console.log(`Topped up bot's prove points to ${BOT_CONFIG.initialProvePoints}`);
+    if (existingBot) {
+      console.log(`Bot user already exists: ${existingBot.username} (${existingBot.provePoints} PP)`);
+      
+      // Top up bot's prove points if running low
+      if (existingBot.provePoints < 1000) {
+        console.log('💰 Topping up bot prove points...');
+        await prisma.user.update({
+          where: { id: existingBot.id },
+          data: { provePoints: BOT_CONFIG.initialProvePoints }
+        });
+        console.log(`Topped up bot's prove points to ${BOT_CONFIG.initialProvePoints}`);
+      }
+      
+      return existingBot;
     }
+
+    // Create new bot user
+    console.log('🤖 Creating new bot user...');
+    const hashedPassword = await bcrypt.hash(BOT_CONFIG.password, 10);
     
-    return existingBot;
+    const bot = await prisma.user.create({
+      data: {
+        username: BOT_CONFIG.username,
+        email: BOT_CONFIG.email,
+        password: hashedPassword,
+        provePoints: BOT_CONFIG.initialProvePoints,
+        avatarSkinColor: '9ca3af',
+        avatarHairColor: '374151',
+        avatarHair: 'short01',
+        avatarEyes: 'variant01',
+        avatarMouth: 'variant01',
+        avatarAccessories: 'none'
+      }
+    });
+
+    console.log(`🎉 Created bot user: ${bot.username} with ${bot.provePoints} PP`);
+    return bot;
+  } catch (error: any) {
+    throw new Error(`FATAL: Failed to create or get bot user: ${error.message}. Stack: ${error.stack}`);
   }
-
-  // Create new bot user
-  const hashedPassword = await bcrypt.hash(BOT_CONFIG.password, 10);
-  
-  const bot = await prisma.user.create({
-    data: {
-      username: BOT_CONFIG.username,
-      email: BOT_CONFIG.email,
-      password: hashedPassword,
-      provePoints: BOT_CONFIG.initialProvePoints,
-      avatarSkinColor: '9ca3af',
-      avatarHairColor: '374151',
-      avatarHair: 'short01',
-      avatarEyes: 'variant01',
-      avatarMouth: 'variant01',
-      avatarAccessories: 'none'
-    }
-  });
-
-  console.log(`🎉 Created bot user: ${bot.username} with ${bot.provePoints} PP`);
-  return bot;
 }
 
 async function populateMarketWithStakes(marketId: number, botUserId: number) {
-  const marketService = new MarketService(prisma);
-  const stakeService = new StakeService(prisma);
-  
-  // Check memory usage before creating stakes
-  const memUsage = process.memoryUsage().heapUsed / 1024 / 1024;
-  if (memUsage > 400) { // If using more than 400MB, reduce stakes
-    console.log(`   High memory usage (${Math.round(memUsage)}MB), reducing stakes for market ${marketId}`);
-    return; // Skip stake creation to prevent memory issues
-  }
-  
-  // Get number of stakes to create for this market
-  const numStakes = Math.floor(Math.random() * 
-    (BOT_CONFIG.stakes.stakesPerMarket[1] - BOT_CONFIG.stakes.stakesPerMarket[0] + 1)) + 
-    BOT_CONFIG.stakes.stakesPerMarket[0];
-  
-  console.log(`   Creating ${numStakes} stakes for market ${marketId}...`);
-  
-  for (let i = 0; i < numStakes; i++) {
-    try {
-      // Random stake amount
-      const stakeAmount = Math.floor(Math.random() * 
-        (BOT_CONFIG.stakes.maxAmount - BOT_CONFIG.stakes.minAmount + 1)) + 
-        BOT_CONFIG.stakes.minAmount;
-      
-      // Random prediction (true/false)
-      const prediction = Math.random() > 0.5;
-      
-      // Add some delay between stakes to make it more realistic
-      if (i > 0) {
-        await new Promise(resolve => setTimeout(resolve, Math.random() * 50));
-      }
-      
-      const stake = await stakeService.createStake(botUserId, marketId, prediction, stakeAmount);
-      console.log(`     Stake ${i + 1}: ${stakeAmount} PP on ${prediction ? 'TRUE' : 'FALSE'} (ID: ${stake.id})`);
-      
-    } catch (error: any) {
-      console.error(`     Failed to create stake ${i + 1}:`, error.message);
-      break; // Stop if bot runs out of points or other error
+  try {
+    console.log(`🎲 Starting stake population for market ${marketId}...`);
+    const marketService = new MarketService(prisma);
+    const stakeService = new StakeService(prisma);
+    
+    // Check memory usage before creating stakes
+    const memUsage = process.memoryUsage().heapUsed / 1024 / 1024;
+    if (memUsage > 400) { // If using more than 400MB, reduce stakes
+      console.log(`   High memory usage (${Math.round(memUsage)}MB), reducing stakes for market ${marketId}`);
+      return; // Skip stake creation to prevent memory issues
     }
+    
+    // Get number of stakes to create for this market
+    const numStakes = Math.floor(Math.random() * 
+      (BOT_CONFIG.stakes.stakesPerMarket[1] - BOT_CONFIG.stakes.stakesPerMarket[0] + 1)) + 
+      BOT_CONFIG.stakes.stakesPerMarket[0];
+    
+    console.log(`   Creating ${numStakes} stakes for market ${marketId}...`);
+    
+    for (let i = 0; i < numStakes; i++) {
+      try {
+        // Random stake amount
+        const stakeAmount = Math.floor(Math.random() * 
+          (BOT_CONFIG.stakes.maxAmount - BOT_CONFIG.stakes.minAmount + 1)) + 
+          BOT_CONFIG.stakes.minAmount;
+        
+        // Random prediction (true/false)
+        const prediction = Math.random() > 0.5;
+        
+        // Add some delay between stakes to make it more realistic
+        if (i > 0) {
+          await new Promise(resolve => setTimeout(resolve, Math.random() * 50));
+        }
+        
+        const stake = await stakeService.createStake(botUserId, marketId, prediction, stakeAmount);
+        console.log(`     Stake ${i + 1}: ${stakeAmount} PP on ${prediction ? 'TRUE' : 'FALSE'} (ID: ${stake.id})`);
+        
+      } catch (error: any) {
+        console.error(`     Failed to create stake ${i + 1}:`, error.message);
+        throw new Error(`STAKE_ERROR: Failed to create stake ${i + 1} for market ${marketId}: ${error.message}`);
+      }
+    }
+  } catch (error: any) {
+    throw new Error(`FATAL: Failed to populate market ${marketId} with stakes: ${error.message}. Stack: ${error.stack}`);
   }
 }
 
@@ -147,9 +212,11 @@ async function fetchAndPopulateArticles() {
   const API_KEY = process.env.NEWS_API_KEY;
   
   if (!API_KEY) {
-    console.error('❌ NEWS_API_KEY not found in environment variables');
-    console.log('Available env vars:', Object.keys(process.env).filter(key => key.includes('NEWS')));
-    return;
+    throw new Error('FATAL: NEWS_API_KEY not found in environment variables. Available env vars: ' + Object.keys(process.env).filter(key => key.includes('NEWS')).join(', '));
+  }
+  
+  if (API_KEY.length < 10) {
+    throw new Error(`FATAL: NEWS_API_KEY appears invalid (too short: ${API_KEY.length} chars)`);
   }
   
   console.log('✅ API Key found, length:', API_KEY.length);
@@ -167,13 +234,17 @@ async function fetchAndPopulateArticles() {
     const existingStakes = await prisma.stake.count();
     console.log(`📊 Current DB state: ${existingArticles} articles, ${existingMarkets} markets, ${existingStakes} stakes`);
   } catch (dbError: any) {
-    console.error('❌ Database connection failed:', dbError.message);
-    return;
+    throw new Error(`FATAL: Database connection failed: ${dbError.message}. Stack: ${dbError.stack}`);
   }
   
   // Create or get bot user
   console.log('\n🤖 Setting up bot user...');
-  const bot = await createOrGetBot();
+  let bot;
+  try {
+    bot = await createOrGetBot();
+  } catch (error: any) {
+    throw new Error(`FATAL: Bot setup failed: ${error.message}`);
+  }
   console.log(`✅ Bot ready: ${bot.username} (ID: ${bot.id}, PP: ${bot.provePoints})`);
   
   const CATEGORIES = ["business", "entertainment", "health", "science", "sports", "technology"];
@@ -203,6 +274,10 @@ async function fetchAndPopulateArticles() {
         try {
           console.log(`📡 Attempt ${retryCount + 1}/${maxRetries} - Making API request...`);
           
+          if (!API_KEY) {
+            throw new Error('API_KEY is undefined at request time');
+          }
+          
           // Add proper headers to avoid Cloudflare blocking
           const response = await axios.get(url, {
             headers: {
@@ -217,6 +292,14 @@ async function fetchAndPopulateArticles() {
             timeout: 10000, // 10 second timeout
           });
           
+          if (!response) {
+            throw new Error('Response is null/undefined');
+          }
+          
+          if (!response.data) {
+            throw new Error('Response.data is null/undefined');
+          }
+          
           console.log(`✅ API Response Status: ${response.status} ${response.statusText}`);
           console.log(`📊 Response Data Keys: ${Object.keys(response.data).join(', ')}`);
           
@@ -227,7 +310,11 @@ async function fetchAndPopulateArticles() {
             
             // Log first article title for verification
             if (articles.length > 0) {
-              console.log(`📝 First article: "${(articles[0] as any).title?.substring(0, 50)}..."`);
+              const firstArticle = articles[0] as any;
+              if (!firstArticle) {
+                throw new Error('First article is null/undefined');
+              }
+              console.log(`📝 First article: "${firstArticle.title?.substring(0, 50)}..."`);
             }
           } else {
             console.log(`⚠️  No 'articles' property in response for ${category}`);
@@ -238,15 +325,20 @@ async function fetchAndPopulateArticles() {
           
         } catch (error: any) {
           retryCount++;
-          console.error(`❌ Attempt ${retryCount} failed for ${category}:`, error.response?.status || error.message);
+          const errorMessage = error.response?.status || error.message || 'Unknown error';
+          console.error(`❌ Attempt ${retryCount} failed for ${category}:`, errorMessage);
+          
+          if (error.response) {
+            console.error(`HTTP Status: ${error.response.status}`);
+            console.error(`Response data: ${JSON.stringify(error.response.data).substring(0, 200)}...`);
+          }
           
           if (retryCount < maxRetries) {
             const delay = retryCount * 2000; // 2s, 4s, 6s delays
             console.log(`⏳ Retrying in ${delay/1000} seconds...`);
             await new Promise(resolve => setTimeout(resolve, delay));
           } else {
-            console.error(`❌ Failed to fetch ${category} after ${maxRetries} attempts, skipping...`);
-            continue; // Skip this category and move to next
+            throw new Error(`API_FETCH_ERROR: Failed to fetch ${category} after ${maxRetries} attempts. Last error: ${errorMessage}`);
           }
         }
       }
@@ -286,6 +378,15 @@ async function fetchAndPopulateArticles() {
 
         try {
           console.log(`💾 Creating article in database...`);
+          
+          if (!title) {
+            throw new Error('Article title is missing');
+          }
+          
+          if (!url) {
+            throw new Error('Article URL is missing');
+          }
+          
           const newArticle = await prisma.article.create({
             data: {
               sourceName: source?.name ?? 'Unknown',
@@ -299,6 +400,11 @@ async function fetchAndPopulateArticles() {
               category,
             },
           });
+          
+          if (!newArticle || !newArticle.id) {
+            throw new Error('Article creation returned null or missing ID');
+          }
+          
           console.log(`✅ Article created with ID: ${newArticle.id}`);
           totalArticlesCreated++;
           
@@ -318,6 +424,11 @@ async function fetchAndPopulateArticles() {
                 closed: false
               }
             });
+            
+            if (!market || !market.id) {
+              throw new Error('Market creation returned null or missing ID');
+            }
+            
             console.log(`✅ Market created with ID: ${market.id}`);
             totalMarketsCreated++;
             
@@ -325,7 +436,11 @@ async function fetchAndPopulateArticles() {
             console.log(`🎲 Populating market ${market.id} with bot stakes...`);
             const stakesCountBefore = await prisma.stake.count({ where: { marketId: market.id } });
             
-            await populateMarketWithStakes(market.id, bot.id);
+            try {
+              await populateMarketWithStakes(market.id, bot.id);
+            } catch (stakeError: any) {
+              throw new Error(`Stake population failed: ${stakeError.message}`);
+            }
             
             const stakesCountAfter = await prisma.stake.count({ where: { marketId: market.id } });
             const stakesAdded = stakesCountAfter - stakesCountBefore;
@@ -341,18 +456,13 @@ async function fetchAndPopulateArticles() {
             }
             
           } catch (marketErr: any) {
-            console.error(`❌ Error creating/populating market for article ${newArticle.id}:`);
-            console.error(`   Error: ${marketErr.message}`);
-            console.error(`   Stack: ${marketErr.stack?.substring(0, 200)}...`);
+            throw new Error(`MARKET_ERROR: Failed to create/populate market for article ${newArticle.id}: ${marketErr.message}. Stack: ${marketErr.stack}`);
           }
         } catch (err: any) {
           if (err.code === 'P2002') {
             console.log(`⚠️  Skipping duplicate article: "${title?.substring(0, 60)}..."`);
           } else {
-            console.error(`❌ Error inserting article: "${title?.substring(0, 60)}..."`);
-            console.error(`   Error code: ${err.code}`);
-            console.error(`   Error message: ${err.message}`);
-            console.error(`   Stack: ${err.stack?.substring(0, 200)}...`);
+            throw new Error(`ARTICLE_ERROR: Failed to create article "${title?.substring(0, 60)}...". Error code: ${err.code}, Message: ${err.message}, Stack: ${err.stack}`);
           }
         }
       }
