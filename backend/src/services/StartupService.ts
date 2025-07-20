@@ -15,6 +15,15 @@ export class StartupService {
       return;
     }
     
+    // Check memory limit
+    const memUsage = process.memoryUsage().heapUsed / 1024 / 1024;
+    console.log(`Current memory usage: ${Math.round(memUsage)}MB`);
+    
+    if (memUsage > 300) {
+      console.log('High memory usage detected, skipping news population to prevent out-of-memory error');
+      return;
+    }
+    
     try {
       // Check if we should run the news population
       const shouldPopulateNews = await this.shouldPopulateNews();
@@ -296,15 +305,15 @@ export class StartupService {
   }
 
   private setupProcessHandlers(childProcess: any, resolve: () => void, reject: (error: Error) => void, strategy: string = 'UNKNOWN'): void {
-    let output = '';
-    let errorOutput = '';
+    // Don't accumulate all output in memory - just stream it
+    let hasErrors = false;
+    let lastErrorSnippet = '';
 
     console.log(`[NEWS] Setting up process handlers for ${strategy} strategy`);
 
     childProcess.stdout.on('data', (data: Buffer) => {
       const message = data.toString();
-      output += message;
-      // Stream output to console with prefix
+      // Stream output to console with prefix (don't store in memory)
       message.split('\n').forEach(line => {
         if (line.trim()) {
           console.log(`[NEWS ${strategy}] ${line}`);
@@ -314,7 +323,9 @@ export class StartupService {
 
     childProcess.stderr.on('data', (data: Buffer) => {
       const message = data.toString();
-      errorOutput += message;
+      hasErrors = true;
+      // Only keep the last error snippet, not all errors
+      lastErrorSnippet = message.slice(-500); // Keep only last 500 chars
       message.split('\n').forEach(line => {
         if (line.trim()) {
           console.error(`[NEWS ${strategy} ERROR] ${line}`);
@@ -324,16 +335,14 @@ export class StartupService {
 
     childProcess.on('close', (code: number) => {
       console.log(`[NEWS ${strategy}] Process closed with exit code: ${code}`);
-      console.log(`[NEWS ${strategy}] Total output length: ${output.length} characters`);
-      console.log(`[NEWS ${strategy}] Total error output length: ${errorOutput.length} characters`);
       
       if (code === 0) {
         console.log(`[NEWS ${strategy}] ✅ Execution completed successfully`);
         resolve();
       } else {
         console.log(`[NEWS ${strategy}] ❌ Execution failed`);
-        console.log(`[NEWS ${strategy}] Error details: ${errorOutput || 'No error details available'}`);
-        reject(new Error(`${strategy} script exited with code ${code}. Error: ${errorOutput || 'Unknown error'}`));
+        console.log(`[NEWS ${strategy}] Error details: ${hasErrors ? lastErrorSnippet : 'No error details available'}`);
+        reject(new Error(`${strategy} script exited with code ${code}. Error: ${hasErrors ? lastErrorSnippet : 'Unknown error'}`));
       }
     });
 
@@ -342,9 +351,9 @@ export class StartupService {
       reject(error);
     });
 
-    // Set a timeout to prevent hanging (5 minutes)
+    // Set a timeout to prevent hanging (3 minutes instead of 5)
     const timeout = setTimeout(() => {
-      console.log(`[NEWS ${strategy}] ❌ Execution timed out after 5 minutes`);
+      console.log(`[NEWS ${strategy}] ❌ Execution timed out after 3 minutes`);
       childProcess.kill('SIGTERM');
       
       // If SIGTERM doesn't work, use SIGKILL after 5 seconds
@@ -355,8 +364,8 @@ export class StartupService {
         }
       }, 5000);
       
-      reject(new Error(`${strategy} script execution timed out after 5 minutes`));
-    }, 5 * 60 * 1000);
+      reject(new Error(`${strategy} script execution timed out after 3 minutes`));
+    }, 3 * 60 * 1000); // 3 minutes instead of 5
 
     childProcess.on('close', () => {
       clearTimeout(timeout);

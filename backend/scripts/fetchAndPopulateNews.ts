@@ -33,7 +33,7 @@ const BOT_CONFIG = {
     minAmount: 10,
     maxAmount: 100,
     probabilityRange: [0.3, 0.7], // Bot will create stakes that move probability to this range
-    stakesPerMarket: [30, 50] // Random number of stakes per market
+    stakesPerMarket: [8, 15] // Reduced from [30, 50] to prevent memory issues
   }
 };
 
@@ -86,6 +86,13 @@ async function populateMarketWithStakes(marketId: number, botUserId: number) {
   const marketService = new MarketService(prisma);
   const stakeService = new StakeService(prisma);
   
+  // Check memory usage before creating stakes
+  const memUsage = process.memoryUsage().heapUsed / 1024 / 1024;
+  if (memUsage > 400) { // If using more than 400MB, reduce stakes
+    console.log(`   High memory usage (${Math.round(memUsage)}MB), reducing stakes for market ${marketId}`);
+    return; // Skip stake creation to prevent memory issues
+  }
+  
   // Get number of stakes to create for this market
   const numStakes = Math.floor(Math.random() * 
     (BOT_CONFIG.stakes.stakesPerMarket[1] - BOT_CONFIG.stakes.stakesPerMarket[0] + 1)) + 
@@ -135,7 +142,7 @@ async function fetchAndPopulateArticles() {
   const bot = await createOrGetBot();
   
   const CATEGORIES = ["business", "entertainment", "health", "science", "sports", "technology"];
-  const QUERIES = 5;
+  const QUERIES = 2; // Reduced from 5 to 2 to limit memory usage
   const fromDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(); // 24H ago
 
   try {
@@ -152,8 +159,15 @@ async function fetchAndPopulateArticles() {
       
       console.log(`Found ${articles.length} articles for ${category}`);
 
-      for (const article of articles) {
+      for (let i = 0; i < articles.length; i++) {
+        const article = articles[i];
         totalArticlesProcessed++;
+        
+        // Add delay between articles to prevent memory spikes
+        if (i > 0) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        
         const {
           source,
           author,
@@ -229,6 +243,13 @@ async function fetchAndPopulateArticles() {
           }
         }
       }
+      
+      // Force garbage collection after each category (if available)
+      if (global.gc) {
+        global.gc();
+      }
+      
+      console.log(`Completed processing ${category} - Articles: ${articles.length}, Memory usage: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
     }
 
     // Get final bot status
