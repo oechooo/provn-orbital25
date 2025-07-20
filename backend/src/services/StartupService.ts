@@ -78,210 +78,26 @@ export class StartupService {
     const path = require('path');
     const fs = require('fs');
     
-    console.log('[NEWS] ========== SCRIPT EXECUTION DEBUG INFO ==========');
+    console.log('[NEWS] ========== SCRIPT EXECUTION ==========');
     
-    // Determine the correct script path and execution method
-    const isProduction = process.env.NODE_ENV === 'production';
+    // Determine the correct script path
     const scriptDir = path.join(__dirname, '../../scripts');
     const tsScriptPath = path.join(scriptDir, 'fetchAndPopulateNews.ts');
-    const jsScriptPath = path.join(scriptDir, 'fetchAndPopulateNews.js');
     
-    console.log(`[NEWS] Environment: ${isProduction ? 'production' : 'development'}`);
-    console.log(`[NEWS] Current working directory: ${process.cwd()}`);
-    console.log(`[NEWS] __dirname: ${__dirname}`);
-    console.log(`[NEWS] Script directory: ${scriptDir}`);
-    console.log(`[NEWS] TypeScript script path: ${tsScriptPath}`);
-    console.log(`[NEWS] JavaScript script path: ${jsScriptPath}`);
+    console.log(`[NEWS] Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`[NEWS] Script path: ${tsScriptPath}`);
     
     // Check file existence
     const tsExists = fs.existsSync(tsScriptPath);
-    const jsExists = fs.existsSync(jsScriptPath);
     console.log(`[NEWS] TypeScript file exists: ${tsExists}`);
-    console.log(`[NEWS] JavaScript file exists: ${jsExists}`);
-    
-    // List directory contents for debugging
-    try {
-      const dirContents = fs.readdirSync(scriptDir);
-      console.log(`[NEWS] Scripts directory contents: ${dirContents.join(', ')}`);
-    } catch (error) {
-      console.log(`[NEWS] ERROR: Could not read scripts directory: ${error}`);
-    }
-    
-    // Check environment variables
-    console.log(`[NEWS] NEWS_API_KEY exists: ${!!process.env.NEWS_API_KEY}`);
-    console.log(`[NEWS] DATABASE_URL exists: ${!!process.env.DATABASE_URL}`);
-    
-    // Check if required tools are available
-    try {
-      require('child_process').execSync('node --version', { stdio: 'pipe' });
-      console.log('[NEWS] Node.js is available');
-    } catch (error) {
-      console.log(`[NEWS] ERROR: Node.js not available: ${error}`);
-    }
-    
-    try {
-      require('child_process').execSync('npx --version', { stdio: 'pipe' });
-      console.log('[NEWS] npx is available');
-    } catch (error) {
-      console.log(`[NEWS] ERROR: npx not available: ${error}`);
-    }
-    
-    try {
-      require('child_process').execSync('npx tsc --version', { stdio: 'pipe' });
-      console.log('[NEWS] TypeScript compiler is available');
-    } catch (error) {
-      console.log(`[NEWS] WARNING: TypeScript compiler not available: ${error}`);
-    }
-    
-    try {
-      require('child_process').execSync('npx ts-node --version', { stdio: 'pipe' });
-      console.log('[NEWS] ts-node is available');
-    } catch (error) {
-      console.log(`[NEWS] WARNING: ts-node not available: ${error}`);
-    }
-    
-    console.log('[NEWS] ================================================');
     
     if (!tsExists) {
       throw new Error(`TypeScript script not found at: ${tsScriptPath}`);
     }
     
-    if (isProduction) {
-      console.log('[NEWS] Attempting production execution strategy...');
-      await this.runInProduction(tsScriptPath, jsScriptPath);
-    } else {
-      console.log('[NEWS] Attempting development execution strategy...');
-      await this.runInDevelopment(tsScriptPath);
-    }
-  }
-
-  private async runInProduction(tsScriptPath: string, jsScriptPath: string): Promise<void> {
-    const fs = require('fs');
-    
-    console.log('[NEWS] ========== PRODUCTION EXECUTION STRATEGY ==========');
-    console.log('[NEWS] Step 1: Attempting TypeScript compilation...');
-    
-    // First, try to compile the TypeScript file to JavaScript
-    try {
-      console.log('[NEWS] Starting TypeScript compilation process...');
-      await this.compileTypeScript(tsScriptPath, jsScriptPath);
-      console.log('[NEWS] ✅ TypeScript compilation successful');
-      
-      // Check if the compiled file actually exists
-      if (fs.existsSync(jsScriptPath)) {
-        console.log('[NEWS] ✅ Compiled JavaScript file confirmed to exist');
-        console.log('[NEWS] Step 2: Running compiled JavaScript script...');
-        return await this.runCompiledScript(jsScriptPath);
-      } else {
-        console.log('[NEWS] ❌ Compiled JavaScript file not found after compilation');
-        throw new Error('Compilation succeeded but output file not found');
-      }
-      
-    } catch (compileError: any) {
-      console.log(`[NEWS] ❌ TypeScript compilation failed: ${compileError.message}`);
-      console.log('[NEWS] Step 2 (Fallback): Attempting ts-node execution...');
-      return await this.runWithTsNode(tsScriptPath);
-    }
-  }
-
-  private async runInDevelopment(tsScriptPath: string): Promise<void> {
-    console.log('[NEWS] ========== DEVELOPMENT EXECUTION STRATEGY ==========');
-    console.log('[NEWS] Using ts-node for direct TypeScript execution...');
-    return await this.runWithTsNode(tsScriptPath);
-  }
-
-  private async compileTypeScript(tsPath: string, jsPath: string): Promise<void> {
-    const { spawn } = require('child_process');
-    const path = require('path');
-    
-    console.log(`[NEWS] Compilation input: ${tsPath}`);
-    console.log(`[NEWS] Compilation output: ${jsPath}`);
-    console.log(`[NEWS] Output directory: ${path.dirname(jsPath)}`);
-    
-    return new Promise((resolve, reject) => {
-      const args = [
-        'tsc', 
-        tsPath, 
-        '--outDir', path.dirname(jsPath), 
-        '--target', 'es2020', 
-        '--module', 'commonjs',
-        '--moduleResolution', 'node',
-        '--allowSyntheticDefaultImports',
-        '--esModuleInterop'
-      ];
-      
-      console.log(`[NEWS] Executing: npx ${args.join(' ')}`);
-      
-      const childProcess = spawn('npx', args, {
-        stdio: 'pipe',
-        shell: true
-      });
-
-      let stdout = '';
-      let stderr = '';
-      
-      childProcess.stdout.on('data', (data: Buffer) => {
-        const message = data.toString();
-        stdout += message;
-        console.log(`[NEWS COMPILE STDOUT] ${message.trim()}`);
-      });
-      
-      childProcess.stderr.on('data', (data: Buffer) => {
-        const message = data.toString();
-        stderr += message;
-        console.log(`[NEWS COMPILE STDERR] ${message.trim()}`);
-      });
-
-      childProcess.on('close', (code: number) => {
-        console.log(`[NEWS] Compilation process exited with code: ${code}`);
-        console.log(`[NEWS] STDOUT: ${stdout || '(empty)'}`);
-        console.log(`[NEWS] STDERR: ${stderr || '(empty)'}`);
-        
-        if (code === 0) {
-          console.log('[NEWS] ✅ Compilation process completed successfully');
-          resolve();
-        } else {
-          console.log(`[NEWS] ❌ Compilation process failed with code ${code}`);
-          reject(new Error(`TypeScript compilation failed with code ${code}: ${stderr}`));
-        }
-      });
-
-      childProcess.on('error', (error: Error) => {
-        console.log(`[NEWS] ❌ Compilation process error: ${error.message}`);
-        reject(error);
-      });
-
-      // 60 second timeout for compilation
-      const timeout = setTimeout(() => {
-        console.log('[NEWS] ❌ Compilation timed out after 60 seconds');
-        childProcess.kill();
-        reject(new Error('TypeScript compilation timed out'));
-      }, 60000);
-      
-      childProcess.on('close', () => {
-        clearTimeout(timeout);
-      });
-    });
-  }
-
-  private async runCompiledScript(jsPath: string): Promise<void> {
-    const { spawn } = require('child_process');
-    
-    console.log('[NEWS] ========== COMPILED SCRIPT EXECUTION ==========');
-    console.log(`[NEWS] Executing compiled JavaScript: ${jsPath}`);
-    console.log(`[NEWS] Command: node ${jsPath}`);
-    
-    return new Promise((resolve, reject) => {
-      const childProcess = spawn('node', [jsPath], {
-        stdio: 'pipe',
-        shell: true,
-        env: { ...process.env }, // Pass all environment variables
-        cwd: require('path').dirname(jsPath) // Set working directory to script location
-      });
-
-      console.log(`[NEWS] Process spawned with PID: ${childProcess.pid}`);
-      this.setupProcessHandlers(childProcess, resolve, reject, 'COMPILED');
-    });
+    // Use simplified ts-node strategy for all environments (it's the most reliable)
+    console.log('[NEWS] Using ts-node execution strategy...');
+    await this.runWithTsNode(tsScriptPath);
   }
 
   private async runWithTsNode(tsPath: string): Promise<void> {
