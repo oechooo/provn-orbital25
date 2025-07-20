@@ -12,6 +12,12 @@
 // - Run manually: npm run populate:news
 // - Or directly: npx ts-node scripts/fetchAndPopulateNews.ts
 
+// Force immediate output without buffering
+process.stdout.write('\n=== FETCHANDPOPULATE SCRIPT STARTING ===\n');
+console.log('🚀 SCRIPT ENTRY POINT REACHED');
+console.log('📍 Current working directory:', process.cwd());
+console.log('🕐 Script start time:', new Date().toISOString());
+
 import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
@@ -126,8 +132,15 @@ async function populateMarketWithStakes(marketId: number, botUserId: number) {
 }
 
 async function fetchAndPopulateArticles() {
+  // Force output to be visible immediately
+  process.stdout.write('\n🚀 FETCHANDPOPULATE FUNCTION CALLED\n');
   console.log('🚀 Starting fetchAndPopulateNews.ts script...');
   console.log('📰 Fetching fresh news articles, creating markets, and populating with bot stakes...\n');
+  
+  // Flush output immediately
+  if (typeof process.stdout.write === 'function') {
+    process.stdout.write('');
+  }
   
   // Debug: Environment check
   console.log('🔍 Checking environment variables...');
@@ -164,7 +177,7 @@ async function fetchAndPopulateArticles() {
   console.log(`✅ Bot ready: ${bot.username} (ID: ${bot.id}, PP: ${bot.provePoints})`);
   
   const CATEGORIES = ["business", "entertainment", "health", "science", "sports", "technology"];
-  const QUERIES = 2; // Reduced from 5 to 2 to limit memory usage
+  const QUERIES = 1; // Reduced from 5 to 1 to limit memory usage
   const fromDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(); // 24H ago
   
   console.log(`\n📅 Fetching articles from: ${fromDate}`);
@@ -469,4 +482,22 @@ async function createMockArticles() {
   console.log(`\n🎯 Mock data summary: Created ${totalCreated} articles with markets`);
 }
 
-fetchAndPopulateArticles();
+// Wrapper to ensure output is visible and errors are caught
+async function runScript() {
+  try {
+    process.stdout.write('\n=== SCRIPT WRAPPER STARTING ===\n');
+    console.log('🔄 About to call fetchAndPopulateArticles...');
+    await fetchAndPopulateArticles();
+    console.log('✅ fetchAndPopulateArticles completed successfully');
+    process.stdout.write('=== SCRIPT WRAPPER COMPLETED ===\n');
+  } catch (error: any) {
+    console.error('❌ CRITICAL ERROR in script wrapper:');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    process.stdout.write('=== SCRIPT WRAPPER FAILED ===\n');
+    process.exit(1);
+  }
+}
+
+// Call the wrapper instead of the function directly
+runScript();
