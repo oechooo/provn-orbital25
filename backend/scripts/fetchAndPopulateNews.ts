@@ -22,7 +22,7 @@ try {
   console.log('📦 Loading axios...');
   var axios = require('axios');
   console.log('✅ axios loaded');
-} catch (err) {
+} catch (err: any) {
   throw new Error(`FATAL: Failed to load axios: ${err.message}`);
 }
 
@@ -30,7 +30,7 @@ try {
   console.log('📦 Loading PrismaClient...');
   var { PrismaClient } = require('@prisma/client');
   console.log('✅ PrismaClient loaded');
-} catch (err) {
+} catch (err: any) {
   throw new Error(`FATAL: Failed to load PrismaClient: ${err.message}`);
 }
 
@@ -38,7 +38,7 @@ try {
   console.log('📦 Loading bcrypt...');
   var bcrypt = require('bcrypt');
   console.log('✅ bcrypt loaded');
-} catch (err) {
+} catch (err: any) {
   throw new Error(`FATAL: Failed to load bcrypt: ${err.message}`);
 }
 
@@ -46,7 +46,7 @@ try {
   console.log('📦 Loading dotenv...');
   var dotenv = require('dotenv');
   console.log('✅ dotenv loaded');
-} catch (err) {
+} catch (err: any) {
   throw new Error(`FATAL: Failed to load dotenv: ${err.message}`);
 }
 
@@ -54,7 +54,7 @@ try {
   console.log('📦 Loading MarketService...');
   var { MarketService } = require('../src/services/MarketService');
   console.log('✅ MarketService loaded');
-} catch (err) {
+} catch (err: any) {
   throw new Error(`FATAL: Failed to load MarketService: ${err.message}`);
 }
 
@@ -62,7 +62,7 @@ try {
   console.log('📦 Loading StakeService...');
   var { StakeService } = require('../src/services/StakeService');
   console.log('✅ StakeService loaded');
-} catch (err) {
+} catch (err: any) {
   throw new Error(`FATAL: Failed to load StakeService: ${err.message}`);
 }
 
@@ -70,7 +70,7 @@ try {
   console.log('⚙️ Configuring dotenv...');
   dotenv.config();
   console.log('✅ dotenv configured');
-} catch (err) {
+} catch (err: any) {
   throw new Error(`FATAL: Failed to configure dotenv: ${err.message}`);
 }
 
@@ -78,7 +78,7 @@ try {
   console.log('🗄️ Initializing Prisma Client...');
   var prisma = new PrismaClient();
   console.log('✅ Prisma Client initialized');
-} catch (err) {
+} catch (err: any) {
   throw new Error(`FATAL: Failed to initialize Prisma Client: ${err.message}`);
 }
 
