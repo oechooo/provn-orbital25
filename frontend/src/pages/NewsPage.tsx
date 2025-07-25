@@ -191,13 +191,30 @@ const NewsPage: React.FC = () => {
                 <label className="block text-sm font-semibold text-slate-300 mb-3">
                   Search
                 </label>
-                <input
-                  type="text"
-                  value={filters.search}
-                  onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                  placeholder="Search articles..."
-                  className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600/50 text-white placeholder-slate-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all duration-200 backdrop-blur-sm"
-                />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <input
+                    type="text"
+                    value={filters.search}
+                    onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                    placeholder="Search headlines, content, sources..."
+                    className="w-full pl-10 pr-10 py-3 bg-slate-800/60 border border-slate-600/50 text-white placeholder-slate-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all duration-200 backdrop-blur-sm hover:bg-slate-800/80"
+                  />
+                  {filters.search && (
+                    <button
+                      onClick={() => setFilters({ ...filters, search: '' })}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200 transition-colors"
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-3">
@@ -244,12 +261,11 @@ const NewsPage: React.FC = () => {
           {/* Articles Feed - Reddit-like UI */}
           <div className="max-w-7xl mx-auto" data-tour="article-list">
             <div className="flex flex-col gap-4 w-full">
-              {articles.map((article, index) => (
+              {articles.map((article) => (
                 <ArticleCard
                   key={article.id}
                   article={article}
                   formatDate={formatDate}
-                  data-tour={index === 0 ? "article-card" : undefined}
                 />
               ))}
             </div>

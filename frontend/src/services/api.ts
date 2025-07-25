@@ -185,7 +185,7 @@ export const userAPI = {
   },
 
   // Update user avatar
-  updateAvatar: (userId: number, avatarData: {
+  updateAvatar: (avatarData: {
     avatarSkinColor: string;
     avatarHairColor: string;
     avatarHair: string;
@@ -193,7 +193,7 @@ export const userAPI = {
     avatarMouth: string;
     avatarAccessories: string;
   }) => {
-    return apiRequest(`/users/${userId}/avatar`, {
+    return apiRequest(`/auth/update-avatar`, {
       method: 'PUT',
       body: JSON.stringify(avatarData),
     });

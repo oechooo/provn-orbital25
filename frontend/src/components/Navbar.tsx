@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/SimpleAuthContext';
-import { useTour } from '../contexts/TourContext';
 import Avatar from './Avatar';
 import { AvatarConfig, DEFAULT_AVATAR_CONFIG } from '../utils/avatar';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useAuth();
-  const { startTour } = useTour();
 
   // Get current avatar config from user or use default
   const getCurrentAvatarConfig = (): AvatarConfig => {
@@ -39,7 +37,6 @@ const Navbar = () => {
               <Link 
                 to="/news" 
                 className="text-white/70 hover:text-white px-3 py-2 rounded-xl hover:bg-white/10 text-sm font-medium transition-all duration-300"
-                data-tour="news-link"
               >
                 News
               </Link>
@@ -48,7 +45,11 @@ const Navbar = () => {
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
             {/* Help/Tutorial Button */}
             <button
-              onClick={startTour}
+              onClick={() => {
+                if ((window as any).startProvnTour) {
+                  (window as any).startProvnTour();
+                }
+              }}
               className="p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 group"
               title="Start Tutorial"
             >
@@ -153,7 +154,9 @@ const Navbar = () => {
             {/* Help/Tutorial Button - Mobile */}
             <button
               onClick={() => {
-                startTour();
+                if ((window as any).startProvnTour) {
+                  (window as any).startProvnTour();
+                }
                 setIsMenuOpen(false);
               }}
               className="flex items-center space-x-2 w-full px-3 py-2 rounded-md text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300"

@@ -74,6 +74,11 @@ model User {
   avatarEyes        String    @default("variant01")
   avatarMouth       String    @default("variant01")
   avatarAccessories String    @default("none")
+  // Track purchased avatar items (JSON arrays of item names)
+  purchasedHair     String    @default("[]")
+  purchasedEyes     String    @default("[]")
+  purchasedMouth    String    @default("[]")
+  purchasedAccessories String @default("[]")
   stakes            Stake[]
   articles          Article[]
   comments          Comment[]

@@ -18,12 +18,54 @@ export const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
   accessories: 'none'
 };
 
-// PP requirements for premium avatar features
+// PP requirements for premium avatar features - diverse pricing based on rarity/complexity
 export const AVATAR_REQUIREMENTS = {
-  hairStyle: 50, // PP required to unlock premium hair styles
-  eyes: 30,      // PP required to unlock premium eye styles
-  mouth: 30,     // PP required to unlock premium mouth styles
-  accessories: 100 // PP required to unlock premium accessories
+  // Hair styles with varied pricing (15-80 PP based on complexity and style)
+  hairStyle: {
+    curlyShortHair: 25,
+    straightHair: 30,
+    curlyBob: 35,
+    wavyBob: 40,
+    bunHair: 45,
+    braids: 60,
+    froBun: 50,
+    bangs: 35,
+    bowlCutHair: 20,
+    halfShavedHead: 70,
+    mohawk: 80,
+    shavedHead: 15
+  },
+  // Eye styles with varied pricing (20-40 PP)
+  eyes: {
+    angry: 20,
+    cheery: 25,
+    confused: 20,
+    sad: 20,
+    sleepy: 25,
+    starstruck: 40,
+    winking: 35
+  },
+  // Mouth styles with varied pricing (20-50 PP)
+  mouth: {
+    openedSmile: 20,
+    gapSmile: 25,
+    awkwardSmile: 30,
+    kawaii: 50,
+    braces: 35,
+    openSad: 25,
+    unimpressed: 30
+  },
+  // Accessories with varied pricing (30-100 PP based on rarity)
+  accessories: {
+    catEars: 60,
+    clownNose: 40,
+    faceMask: 30,
+    glasses: 45,
+    mustache: 35,
+    sailormoonCrown: 100,
+    sleepMask: 50,
+    sunglasses: 55
+  }
 };
 
 export const AVATAR_OPTIONS = {

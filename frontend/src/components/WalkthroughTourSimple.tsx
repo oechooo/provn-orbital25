@@ -1,223 +1,102 @@
-import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/SimpleAuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-export interface WalkthroughTourRef {
-  startTour: () => void;
-}
-
-const WalkthroughTour = forwardRef<WalkthroughTourRef>((_props, ref) => {
+const WalkthroughTour: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
-  const [modalPosition, setModalPosition] = useState<any>({
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)'
-  });
+  const [modalPosition, setModalPosition] = useState({ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' });
 
-  // Function to calculate modal position based on highlighted element
-  const calculateModalPosition = (elementSelector: string | null): any => {
-    if (!elementSelector) {
-      return {
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)'
-      };
-    }
-
-    const element = document.querySelector(elementSelector);
-    if (!element) {
-      return {
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)'
-      };
-    }
-
-    const rect = element.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
-    // Special handling for news page elements
-    if (elementSelector.includes('article-list') || elementSelector.includes('article-card')) {
-      // For news page, position modal in a corner that doesn't obstruct content
-      if (viewportWidth > 768) {
-        return {
-          top: '10%',
-          right: '5%',
-          transform: 'none',
-          maxWidth: '280px'
-        };
-      } else {
-        return {
-          top: '10%',
-          left: '5%',
-          transform: 'none',
-          maxWidth: '250px'
-        };
-      }
-    }
-
-    // Special handling for article content
-    if (elementSelector.includes('article-content')) {
-      // Position modal on the right side for article content
-      if (viewportWidth > 768) {
-        return {
-          top: '20%',
-          right: '5%',
-          transform: 'none',
-          maxWidth: '300px'
-        };
-      } else {
-        return {
-          top: '10%',
-          left: '5%',
-          transform: 'none',
-          maxWidth: '280px'
-        };
-      }
-    }
-
-    // Special handling for prediction interface
-    if (elementSelector.includes('prediction-interface')) {
-      // Position modal on the left side for prediction interface
-      if (viewportWidth > 768) {
-        return {
-          top: '20%',
-          left: '5%',
-          transform: 'none',
-          maxWidth: '300px'
-        };
-      } else {
-        return {
-          top: '10%',
-          left: '5%',
-          transform: 'none',
-          maxWidth: '280px'
-        };
-      }
-    }
-
-    // Special handling for ProvePoints
-    if (elementSelector.includes('prove-points')) {
-      return {
-        top: rect.bottom + 20 + 'px',
-        right: '10%',
-        transform: 'none'
-      };
-    }
-
-    // Default positioning logic
-    let position: any = {};
-
-    // Determine vertical position
-    if (rect.top > viewportHeight / 2) {
-      // Element is in bottom half, position modal above
-      position.bottom = (viewportHeight - rect.top + 20) + 'px';
-    } else {
-      // Element is in top half, position modal below
-      position.top = (rect.bottom + 20) + 'px';
-    }
-
-    // Determine horizontal position
-    if (rect.left > viewportWidth / 2) {
-      // Element is in right half, position modal to the left
-      position.right = (viewportWidth - rect.right + 20) + 'px';
-    } else {
-      // Element is in left half, position modal to the right
-      position.left = (rect.left + 20) + 'px';
-    }
-
-    return position;
+  // Add function to manually start tour
+  const startTour = () => {
+    setIsVisible(true);
+    setCurrentStep(0);
   };
+
+  // Make the startTour function available globally
+  useEffect(() => {
+    (window as any).startProvnTour = startTour;
+    return () => {
+      delete (window as any).startProvnTour;
+    };
+  }, []);
 
   const steps = [
     {
-      title: 'Welcome to Provn.io! 🎉',
-      content: 'Welcome to the future of news verification! Provn.io uses prediction markets to help determine the truth of news stories. Let\'s take a quick tour! Please get a coffee while we load the tour, it may take up to 3 minutes for our backend to come fully online.',
-      icon: '🎉',
-      page: null,
+      title: 'Welcome to Provn.io!',
+      content: 'Welcome to the future of news verification! Let\'s take a guided tour of how Provn.io works. This interactive tour will show you the actual pages and features!',
+      icon: '🌟',
+      page: '/',
       highlight: null,
       action: null
     },
     {
-      title: 'Navigation Bar',
-      content: 'This is your main navigation. From here you can access News, Login, and your Profile. Let\'s start by exploring the news!',
-      icon: '🧭',
-      page: null,
+      title: 'Your Homepage',
+      content: 'This is your homepage! Here you can see the latest news and get an overview of Provn.io. Notice the navigation bar at the top.',
+      icon: '🏠',
+      page: '/',
       highlight: '[data-tour="navbar"]',
       action: null
     },
     {
-      title: 'Let\'s Explore News',
-      content: 'Click on "News" to see the latest articles where you can make predictions and earn ProvePoints!',
+      title: 'Explore News',
+      content: 'Let\'s check out the news section where you can see all available articles for prediction! Click "Next" to navigate there now.',
       icon: '📰',
       page: '/news',
-      highlight: '[data-tour="news-link"]',
+      highlight: null,
       action: () => navigate('/news')
     },
     {
-      title: 'Article Feed',
-      content: 'Here you can see all the latest news articles. Each article has prediction markets where you can bet on whether the story is true or false!',
-      icon: '📋',
-      page: null,
+      title: 'The News Page',
+      content: 'Welcome to the news page! Here you can see all the articles available for predictions. Each article shows its title, description, and most importantly - the market confidence percentages.',
+      icon: '📊',
+      page: '/news',
       highlight: '[data-tour="article-list"]',
       action: null
     },
     {
-      title: 'Article Cards',
-      content: 'Each card shows a news article with its headline, source, and current prediction percentages. Click on any article to make predictions!',
-      icon: '📄',
-      page: null,
+      title: 'Understanding Articles',
+      content: 'Each article card shows market confidence with TRUE/FALSE percentages. Higher percentages mean more community confidence. Notice how each article has prediction markets attached!',
+      icon: '�',
+      page: '/news',
       highlight: '[data-tour="article-card"]',
       action: null
     },
     {
-      title: 'Interacting with News',
-      content: 'Now let\'s open an article to see the full content! You can read the complete story, check the source details, and see all the information you need to make an informed prediction.',
-      icon: '🤝',
-      page: null,
-      highlight: '[data-tour="article-card"]',
-      action: () => {
-        // Find the first article card and click it to open the article page
-        const firstArticleCard = document.querySelector('[data-tour="article-card"]') as HTMLElement;
-        if (firstArticleCard) {
-          const link = firstArticleCard.querySelector('a') || firstArticleCard.closest('a');
-          if (link) {
-            (link as HTMLAnchorElement).click();
-          }
-        }
-      }
+      title: 'Visit an Article',
+      content: 'Now let\'s visit an actual article to see how predictions work! Click "Next" and we\'ll take you to a real article page.',
+      icon: '🎯',
+      page: '/news',
+      highlight: '[data-tour="article-link"]',
+      action: () => navigate('/article/34')
     },
     {
-      title: 'Reading the Article',
-      content: 'Perfect! Here you can read the full article content, check the source details, and gather all the information you need to make an informed prediction. Take your time to understand the story before making your decision.',
-      icon: '📖',
-      page: null,
+      title: 'Article Detail Page',
+      content: 'Here\'s where the magic happens! This is a real article detail page. You can read the full article, see the current market probabilities, and place your own predictions using ProvePoints.',
+      icon: '🔍',
+      page: '/article/34',
       highlight: '[data-tour="article-content"]',
       action: null
     },
     {
       title: 'Making Predictions',
-      content: 'Now that you\'ve read the article, scroll down to see the prediction interface. Here you can stake your ProvePoints on TRUE or FALSE outcomes based on your analysis of the story.',
-      icon: '🎯',
-      page: null,
+      content: 'See the prediction interface on the right? This is where you can stake ProvePoints on whether you think this news will prove TRUE or FALSE. The market updates in real-time based on community predictions!',
+      icon: '💎',
+      page: '/article/34',
       highlight: '[data-tour="prediction-interface"]',
       action: null
     },
     {
       title: 'ProvePoints System',
-      content: user 
-        ? 'Your ProvePoints (PP) are shown in the top right. That\'s your currency for making predictions. You start with 100 PP!'
-        : 'To see your ProvePoints balance and make predictions, you need to be logged in. Would you like to sign up now to start earning and spending ProvePoints?',
-      icon: '💰',
+      content: 'Your ProvePoints (PP) are shown in the top right. That\'s your currency for making predictions. You start with 100 PP! If you\'re not logged in, you\'ll see the login button instead.',
+      icon: '�',
       page: null,
-      highlight: user ? '[data-tour="prove-points"]' : '[data-tour="login-button"]',
-      action: user ? null : () => navigate('/login')
+      highlight: '[data-tour="prove-points"]',
+      action: null
     },
     {
       title: 'Your Profile',
@@ -229,15 +108,15 @@ const WalkthroughTour = forwardRef<WalkthroughTourRef>((_props, ref) => {
     },
     {
       title: 'Track Your Success',
-      content: 'In your profile, you can see your prediction history, total earnings, and customize your avatar. Keep making smart predictions to climb the leaderboard!',
+      content: 'In your profile, you can see your prediction history, customize your avatar, and track your PP earnings! This is your personal dashboard for success.',
       icon: '🏆',
-      page: null,
-      highlight: null,
+      page: '/profile',
+      highlight: '.avatar-section',
       action: null
     },
     {
       title: 'Ready to Start!',
-      content: 'You\'re all set! Start exploring articles, make your first predictions, and earn ProvePoints. Good luck and happy predicting!',
+      content: 'You\'ve completed the tour! You\'ve seen the news page, visited an actual article, and learned how predictions work. Ready to start making your own predictions and earning ProvePoints?',
       icon: '🚀',
       page: null,
       highlight: null,
@@ -245,66 +124,36 @@ const WalkthroughTour = forwardRef<WalkthroughTourRef>((_props, ref) => {
     }
   ];
 
-  // Expose startTour method to parent components
-  useImperativeHandle(ref, () => ({
-    startTour: () => {
+  useEffect(() => {
+    // Show the walkthrough for new users (not logged in) or if they haven't seen it
+    const hasSeenTour = localStorage.getItem('provn-tour-seen');
+    const isHomePage = window.location.pathname === '/';
+    
+    if (!user && isHomePage && !hasSeenTour) {
       setIsVisible(true);
       setCurrentStep(0);
     }
-  }));
-
-  useEffect(() => {
-    // Show the walkthrough when visiting home page
-    if (location.pathname === '/' && !localStorage.getItem('provn-tour-seen')) {
-      setIsVisible(true);
-      setCurrentStep(0);
-    }
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (isVisible && steps[currentStep]) {
-      const currentStepData = steps[currentStep];
-      setHighlightedElement(currentStepData.highlight);
-      
-      // Navigate to the required page if specified
-      if (currentStepData.page && location.pathname !== currentStepData.page) {
-        // Don't navigate immediately, let user click next to navigate
-      }
-      
-      // Calculate modal position based on highlighted element
-      try {
-        const newPosition = calculateModalPosition(currentStepData.highlight);
-        setModalPosition(newPosition);
-      } catch (error) {
-        console.warn('Error calculating modal position:', error);
-        // Use default position if calculation fails
-        setModalPosition({ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' });
-      }
-    }
-  }, [currentStep, isVisible, location.pathname]);
+  }, [user]);
 
   const nextStep = () => {
-    if (currentStep >= steps.length) {
-      console.warn('Attempted to go beyond last step, completing tour');
-      completeTour();
-      return;
-    }
-    
-    const currentStepData = steps[currentStep];
-    
     if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
+      const nextStepIndex = currentStep + 1;
+      const nextStepData = steps[nextStepIndex];
       
-      // Execute action after updating step (with small delay for better UX)
-      if (currentStepData.action) {
-        setTimeout(() => {
-          try {
-            currentStepData.action?.();
-          } catch (error) {
-            console.warn('Error executing step action:', error);
-          }
-        }, 500);
+      // Execute action if present
+      if (nextStepData.action) {
+        nextStepData.action();
       }
+      
+      // Navigate to page if specified
+      if (nextStepData.page && nextStepData.page !== location.pathname) {
+        navigate(nextStepData.page);
+      }
+      
+      // Set highlight element
+      setHighlightedElement(nextStepData.highlight);
+      
+      setCurrentStep(nextStepIndex);
     } else {
       completeTour();
     }
@@ -312,6 +161,7 @@ const WalkthroughTour = forwardRef<WalkthroughTourRef>((_props, ref) => {
 
   const completeTour = () => {
     setIsVisible(false);
+    setHighlightedElement(null);
     localStorage.setItem('provn-tour-seen', 'true');
   };
 
@@ -319,104 +169,233 @@ const WalkthroughTour = forwardRef<WalkthroughTourRef>((_props, ref) => {
     completeTour();
   };
 
-  if (!isVisible) return null;
+  const goToPreviousStep = () => {
+    if (currentStep > 0) {
+      const prevStepIndex = currentStep - 1;
+      const prevStepData = steps[prevStepIndex];
+      
+      // Navigate to previous page if specified
+      if (prevStepData.page && prevStepData.page !== location.pathname) {
+        navigate(prevStepData.page);
+      }
+      
+      // Set highlight element
+      setHighlightedElement(prevStepData.highlight);
+      
+      setCurrentStep(prevStepIndex);
+    }
+  };
 
-  const currentStepData = steps[currentStep];
+  // Calculate optimal modal position based on highlighted element
+  const calculateModalPosition = (elementSelector: string | null) => {
+    if (!elementSelector) {
+      return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
+    }
+
+    try {
+      const element = document.querySelector(elementSelector);
+      if (!element) {
+        return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
+      }
+
+      const rect = element.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const modalWidth = 500; // Approximate modal width
+      const modalHeight = 400; // Approximate modal height
+
+      // Determine best position - avoid overlapping with highlighted element
+      let position = { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
+
+      // Check if element is in the center - move modal to side
+      if (rect.left > modalWidth && rect.right < viewportWidth - modalWidth) {
+        // Element is centered horizontally - position modal to the side
+        if (rect.left > viewportWidth / 2) {
+          // Element is on right side - position modal on left
+          position = {
+            top: '50%',
+            left: '20%',
+            transform: 'translate(-50%, -50%)'
+          };
+        } else {
+          // Element is on left side - position modal on right
+          position = {
+            top: '50%',
+            left: '80%',
+            transform: 'translate(-50%, -50%)'
+          };
+        }
+      } else if (rect.top > modalHeight) {
+        // Element is in lower part - position modal at top
+        position = {
+          top: '20%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)'
+        };
+      } else if (rect.bottom < viewportHeight - modalHeight) {
+        // Element is in upper part - position modal at bottom
+        position = {
+          top: '80%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)'
+        };
+      } else if (rect.left > modalWidth) {
+        // Element is on right - position modal on left
+        position = {
+          top: '50%',
+          left: '25%',
+          transform: 'translate(-50%, -50%)'
+        };
+      } else if (rect.right < viewportWidth - modalWidth) {
+        // Element is on left - position modal on right
+        position = {
+          top: '50%',
+          left: '75%',
+          transform: 'translate(-50%, -50%)'
+        };
+      }
+
+      return position;
+    } catch (error) {
+      console.warn('Error calculating modal position:', error);
+      return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
+    }
+  };
+
+  // Update modal position when highlighted element changes
+  useEffect(() => {
+    const updatePosition = () => {
+      const newPosition = calculateModalPosition(highlightedElement);
+      setModalPosition(newPosition);
+    };
+
+    // Update position immediately
+    updatePosition();
+
+    // Update position on window resize
+    window.addEventListener('resize', updatePosition);
+    
+    // Small delay to ensure DOM is updated
+    const timeoutId = setTimeout(updatePosition, 100);
+
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      clearTimeout(timeoutId);
+    };
+  }, [highlightedElement]);
+
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <>
-      {/* Backdrop - very light, no blur to avoid obscuring content */}
-      <div className="fixed inset-0 bg-black/5 z-40" />
+      {/* Subtle overlay that doesn't completely block content */}
+      <div className="fixed inset-0 bg-black/20 backdrop-blur-[1px] z-50 pointer-events-none" />
       
-      {/* Highlight element */}
+      {/* Enhanced spotlight effect for highlighted elements */}
       {highlightedElement && (
-        <style>
-          {`
-            ${highlightedElement} {
-              position: relative !important;
-              z-index: 45 !important;
-              box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.8), 0 0 20px rgba(168, 85, 247, 0.3) !important;
-              border-radius: 8px !important;
-              animation: tour-pulse 2s infinite;
-            }
-            @keyframes tour-pulse {
-              0%, 100% { box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.8), 0 0 20px rgba(168, 85, 247, 0.3); }
-              50% { box-shadow: 0 0 0 2px rgba(168, 85, 247, 1), 0 0 25px rgba(168, 85, 247, 0.5); }
-            }
-          `}
-        </style>
+        <div className="fixed inset-0 pointer-events-none z-50">
+          <div className="absolute inset-0">
+            {/* This creates a prominent "spotlight" effect on the highlighted element */}
+            <style>{`
+              ${highlightedElement} {
+                position: relative !important;
+                z-index: 51 !important;
+                box-shadow: 0 0 0 4px rgba(168, 85, 247, 1), 0 0 30px rgba(168, 85, 247, 0.8), 0 0 60px rgba(168, 85, 247, 0.4) !important;
+                border-radius: 12px !important;
+                animation: pulse-highlight 2s infinite !important;
+                background-color: rgba(255, 255, 255, 0.1) !important;
+                backdrop-filter: blur(0px) !important;
+              }
+              
+              @keyframes pulse-highlight {
+                0%, 100% { 
+                  box-shadow: 0 0 0 4px rgba(168, 85, 247, 1), 0 0 30px rgba(168, 85, 247, 0.8), 0 0 60px rgba(168, 85, 247, 0.4);
+                  transform: scale(1);
+                }
+                50% { 
+                  box-shadow: 0 0 0 8px rgba(168, 85, 247, 1), 0 0 40px rgba(168, 85, 247, 1), 0 0 80px rgba(168, 85, 247, 0.6);
+                  transform: scale(1.02);
+                }
+              }
+            `}</style>
+          </div>
+        </div>
       )}
       
-      {/* Tour Modal with dynamic positioning */}
-      <div 
-        className="fixed z-50 pointer-events-none"
-        style={{
-          ...modalPosition,
-          maxWidth: modalPosition.maxWidth || '20rem'
-        }}
-      >
-        <div className="bg-white/95 backdrop-blur-lg border border-white/20 rounded-xl shadow-2xl p-6 mx-4 pointer-events-auto">
+      {/* Tour Modal */}
+      <div className="fixed inset-0 z-50 pointer-events-none">
+        <div 
+          className="absolute bg-white/95 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 max-w-md w-auto mx-4 pointer-events-auto transition-all duration-300 ease-out"
+          style={modalPosition}
+        >
           <div className="space-y-4">
             {/* Header */}
-            <div className="flex items-start justify-between">
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl">{currentStepData.icon}</span>
-                <h3 className="text-lg font-bold text-gray-900">
-                  {currentStepData.title}
-                </h3>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="text-3xl">{steps[currentStep].icon}</div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  {steps[currentStep].title}
+                </h2>
               </div>
               <button
                 onClick={skipTour}
-                className="text-gray-400 hover:text-gray-600 text-xs font-medium"
+                className="text-gray-500 hover:text-gray-700 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                ✕
+                Skip
               </button>
             </div>
             
             {/* Content */}
-            <p className="text-gray-700 text-sm leading-relaxed">
-              {currentStepData.content}
-            </p>
+            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4">
+              <p className="text-gray-700 text-base leading-relaxed">
+                {steps[currentStep].content}
+              </p>
+              
+              {/* Show current page indicator */}
+              {steps[currentStep].page && (
+                <div className="mt-3 text-xs text-purple-600 font-medium">
+                  📍 Currently on: {steps[currentStep].page === '/' ? 'Homepage' : steps[currentStep].page.replace('/', '').charAt(0).toUpperCase() + steps[currentStep].page.slice(2)}
+                </div>
+              )}
+            </div>
             
             {/* Progress */}
-            <div className="flex items-center justify-between">
-              <div className="flex space-x-1">
-                {steps.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-2 h-2 rounded-full transition-colors ${
-                      index === currentStep
-                        ? 'bg-purple-500'
-                        : index < currentStep
-                        ? 'bg-purple-300'
-                        : 'bg-gray-300'
-                    }`}
-                  />
-                ))}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs text-gray-600">
+                <span>Step {currentStep + 1} of {steps.length}</span>
+                <span>{Math.round(((currentStep + 1) / steps.length) * 100)}% Complete</span>
               </div>
-              <span className="text-xs text-gray-500">
-                {currentStep + 1} / {steps.length}
-              </span>
+              
+              {/* Progress Bar */}
+              <div className="w-full bg-gray-200 rounded-full h-1.5">
+                <div 
+                  className="bg-gradient-to-r from-purple-500 to-blue-500 h-1.5 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+                />
+              </div>
             </div>
             
             {/* Actions */}
             <div className="flex justify-between items-center pt-2">
-              {currentStep > 0 ? (
-                <button
-                  onClick={() => setCurrentStep(currentStep - 1)}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 font-medium"
-                >
-                  Back
-                </button>
-              ) : (
-                <div />
-              )}
+              <button
+                onClick={goToPreviousStep}
+                disabled={currentStep === 0}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-30 disabled:cursor-not-allowed font-medium rounded-lg hover:bg-gray-100 transition-all duration-200 text-sm"
+              >
+                ← Back
+              </button>
               
               <button
                 onClick={nextStep}
-                className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium rounded-lg transition-colors"
+                className={`px-6 py-2 font-bold rounded-lg transition-all duration-300 text-sm ${
+                  currentStep === steps.length - 1
+                    ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
+                    : 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white'
+                }`}
               >
-                {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
+                {currentStep === steps.length - 1 ? '🚀 Start!' : 'Next →'}
               </button>
             </div>
           </div>
@@ -424,8 +403,6 @@ const WalkthroughTour = forwardRef<WalkthroughTourRef>((_props, ref) => {
       </div>
     </>
   );
-});
-
-WalkthroughTour.displayName = 'WalkthroughTour';
+};
 
 export default WalkthroughTour;

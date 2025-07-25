@@ -286,7 +286,7 @@ const HomePage: React.FC = () => {
         <div className="mt-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-white mb-4">How It Works</h2>
-            <p className="text-lg text-slate-300 mb-6">Simple steps to start verifying news</p>
+            <p className="text-lg text-slate-300">Simple steps to start verifying news</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

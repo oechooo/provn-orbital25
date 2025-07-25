@@ -45,7 +45,13 @@ const AvatarEditorPage: React.FC = () => {
 
     setIsLoading(true);
     try {
-      await userAPI.updateAvatar(user.id, {
+      console.log('=== AVATAR UPDATE DEBUG ===');
+      console.log('User before update:', user);
+      console.log('Avatar config:', avatarConfig);
+      console.log('Total requirement calculated:', totalRequirement);
+      console.log('Can afford:', canAfford);
+      
+      const response = await userAPI.updateAvatar({
         avatarSkinColor: avatarConfig.skinColor,
         avatarHairColor: avatarConfig.hairColor,
         avatarHair: avatarConfig.hair,
@@ -54,17 +60,22 @@ const AvatarEditorPage: React.FC = () => {
         avatarAccessories: avatarConfig.accessories
       });
       
-      // Update the user context with new avatar data
+      console.log('Response from server:', response);
+      
+      // Update the user context with response data (includes updated PP balance)
       updateUser({
         avatarSkinColor: avatarConfig.skinColor,
         avatarHairColor: avatarConfig.hairColor,
         avatarHair: avatarConfig.hair,
         avatarEyes: avatarConfig.eyes,
         avatarMouth: avatarConfig.mouth,
-        avatarAccessories: avatarConfig.accessories
+        avatarAccessories: avatarConfig.accessories,
+        provePoints: response.provePoints // Use server's updated balance
       });
       
-      toast.success('Avatar updated successfully!');
+      console.log('User after updateUser call should have PP:', response.provePoints);
+      
+      toast.success(response.message || 'Avatar updated successfully!');
       // Stay in the shop instead of navigating away
     } catch (error) {
       console.error('Error updating avatar:', error);
@@ -78,34 +89,31 @@ const AvatarEditorPage: React.FC = () => {
     setAvatarConfig(prev => ({ ...prev, [key]: value }));
   };
 
-  // Check if user has premium features
-  const hasPremiumHair = user?.avatarHair && user.avatarHair !== 'shortHair'; // shortHair is default
-  const hasPremiumEyes = user?.avatarEyes && user.avatarEyes !== 'normal'; // normal is default
-  const hasPremiumMouth = user?.avatarMouth && user.avatarMouth !== 'teethSmile'; // teethSmile is default
-  const hasPremiumAccessories = user?.avatarAccessories && user.avatarAccessories !== 'none'; // none is default
-
   // Calculate total PP requirement for premium features
   const calculateRequirement = () => {
     let requirement = 0;
     
-    // Hair style requirement (if selecting premium hair and user doesn't already have premium hair access)
-    if (avatarConfig.hair !== user?.avatarHair && !hasPremiumHair && avatarConfig.hair !== 'shortHair') {
-      requirement += AVATAR_REQUIREMENTS.hairStyle;
+    // Charge for any premium item they haven't currently equipped (meaning they haven't purchased it yet)
+    // Users pay for each individual premium item, not category access
+    
+    // Hair style requirement
+    if (avatarConfig.hair !== user?.avatarHair && avatarConfig.hair !== 'shortHair') {
+      requirement += AVATAR_REQUIREMENTS.hairStyle[avatarConfig.hair as keyof typeof AVATAR_REQUIREMENTS.hairStyle] || 50;
     }
     
-    // Eyes requirement (if selecting premium eyes and user doesn't already have premium eyes access)
-    if (avatarConfig.eyes !== user?.avatarEyes && !hasPremiumEyes && avatarConfig.eyes !== 'normal') {
-      requirement += AVATAR_REQUIREMENTS.eyes;
+    // Eyes requirement
+    if (avatarConfig.eyes !== user?.avatarEyes && avatarConfig.eyes !== 'normal') {
+      requirement += AVATAR_REQUIREMENTS.eyes[avatarConfig.eyes as keyof typeof AVATAR_REQUIREMENTS.eyes] || 30;
     }
     
-    // Mouth requirement (if selecting premium mouth and user doesn't already have premium mouth access)
-    if (avatarConfig.mouth !== user?.avatarMouth && !hasPremiumMouth && avatarConfig.mouth !== 'teethSmile') {
-      requirement += AVATAR_REQUIREMENTS.mouth;
+    // Mouth requirement
+    if (avatarConfig.mouth !== user?.avatarMouth && avatarConfig.mouth !== 'teethSmile') {
+      requirement += AVATAR_REQUIREMENTS.mouth[avatarConfig.mouth as keyof typeof AVATAR_REQUIREMENTS.mouth] || 30;
     }
     
-    // Accessories requirement (if selecting premium accessories and user doesn't already have premium accessories access)
-    if (avatarConfig.accessories !== user?.avatarAccessories && !hasPremiumAccessories && avatarConfig.accessories !== 'none') {
-      requirement += AVATAR_REQUIREMENTS.accessories;
+    // Accessories requirement
+    if (avatarConfig.accessories !== user?.avatarAccessories && avatarConfig.accessories !== 'none') {
+      requirement += AVATAR_REQUIREMENTS.accessories[avatarConfig.accessories as keyof typeof AVATAR_REQUIREMENTS.accessories] || 100;
     }
     
     return requirement;
@@ -113,6 +121,22 @@ const AvatarEditorPage: React.FC = () => {
 
   const totalRequirement = calculateRequirement();
   const canAfford = (user?.provePoints || 0) >= totalRequirement;
+
+  // Helper function to get individual pricing for items
+  const getItemCost = (category: string, value: string): number => {
+    switch (category) {
+      case 'hair':
+        return AVATAR_REQUIREMENTS.hairStyle[value as keyof typeof AVATAR_REQUIREMENTS.hairStyle] || 50;
+      case 'eyes':
+        return AVATAR_REQUIREMENTS.eyes[value as keyof typeof AVATAR_REQUIREMENTS.eyes] || 30;
+      case 'mouth':
+        return AVATAR_REQUIREMENTS.mouth[value as keyof typeof AVATAR_REQUIREMENTS.mouth] || 30;
+      case 'accessories':
+        return AVATAR_REQUIREMENTS.accessories[value as keyof typeof AVATAR_REQUIREMENTS.accessories] || 100;
+      default:
+        return 0;
+    }
+  };
 
   // Check if an option is premium
   const isPremiumOption = (category: string, value: string) => {
@@ -130,17 +154,17 @@ const AvatarEditorPage: React.FC = () => {
     }
   };
 
-  // Check if user already owns a premium option
+  // Check if user already owns a premium option (simpler check - they own it if they currently have it equipped)
   const ownsOption = (category: string, value: string) => {
     switch (category) {
       case 'hair':
-        return hasPremiumHair && user?.avatarHair === value;
+        return user?.avatarHair === value;
       case 'eyes':
-        return hasPremiumEyes && user?.avatarEyes === value;
+        return user?.avatarEyes === value;
       case 'mouth':
-        return hasPremiumMouth && user?.avatarMouth === value;
+        return user?.avatarMouth === value;
       case 'accessories':
-        return hasPremiumAccessories && user?.avatarAccessories === value;
+        return user?.avatarAccessories === value;
       default:
         return false;
     }
@@ -311,7 +335,7 @@ const AvatarEditorPage: React.FC = () => {
                               <span>{option.label}</span>
                               {isPremium && !isOwned && (
                                 <div className="flex items-center gap-1">
-                                  <span className="text-xs text-yellow-400">{AVATAR_REQUIREMENTS.hairStyle} PP</span>
+                                  <span className="text-xs text-yellow-400">{getItemCost('hair', option.value)} PP</span>
                                   <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                   </svg>
@@ -349,7 +373,7 @@ const AvatarEditorPage: React.FC = () => {
                               <span>{option.label}</span>
                               {isPremium && !isOwned && (
                                 <div className="flex items-center gap-1">
-                                  <span className="text-xs text-yellow-400">{AVATAR_REQUIREMENTS.eyes} PP</span>
+                                  <span className="text-xs text-yellow-400">{getItemCost('eyes', option.value)} PP</span>
                                   <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                   </svg>
@@ -387,7 +411,7 @@ const AvatarEditorPage: React.FC = () => {
                               <span>{option.label}</span>
                               {isPremium && !isOwned && (
                                 <div className="flex items-center gap-1">
-                                  <span className="text-xs text-yellow-400">{AVATAR_REQUIREMENTS.mouth} PP</span>
+                                  <span className="text-xs text-yellow-400">{getItemCost('mouth', option.value)} PP</span>
                                   <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                   </svg>
@@ -425,7 +449,7 @@ const AvatarEditorPage: React.FC = () => {
                               <span>{option.label}</span>
                               {isPremium && !isOwned && (
                                 <div className="flex items-center gap-1">
-                                  <span className="text-xs text-yellow-400">{AVATAR_REQUIREMENTS.accessories} PP</span>
+                                  <span className="text-xs text-yellow-400">{getItemCost('accessories', option.value)} PP</span>
                                   <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                   </svg>
