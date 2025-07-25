@@ -230,3 +230,46 @@ export const authAPI = {
     });
   },
 };
+
+// Comment API functions
+export const commentAPI = {
+  // Get comments for an article
+  getCommentsByArticleId: (articleId: number) => {
+    return apiRequest(`/comments/article/${articleId}`);
+  },
+
+  // Create a new comment
+  createComment: (articleId: number, content: string, parentId?: number) => {
+    return apiRequest('/comments', {
+      method: 'POST',
+      body: JSON.stringify({ 
+        articleId, 
+        content, 
+        ...(parentId && { parentId })
+      }),
+    });
+  },
+
+  // Vote on a comment
+  voteOnComment: (commentId: number, voteType: 'like' | 'dislike') => {
+    return apiRequest(`/comments/${commentId}/vote`, {
+      method: 'POST',
+      body: JSON.stringify({ voteType }),
+    });
+  },
+
+  // Update a comment
+  updateComment: (commentId: number, content: string) => {
+    return apiRequest(`/comments/${commentId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ content }),
+    });
+  },
+
+  // Delete a comment
+  deleteComment: (commentId: number) => {
+    return apiRequest(`/comments/${commentId}`, {
+      method: 'DELETE',
+    });
+  },
+};

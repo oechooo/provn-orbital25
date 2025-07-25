@@ -28,6 +28,10 @@ console.log('Loading article routes...');
 import articleRoutes from './routes/articleRoutes';
 console.log('Article routes loaded successfully');
 
+console.log('Loading comment routes...');
+import commentRoutes from './routes/commentRoutes';
+console.log('Comment routes loaded successfully');
+
 // Create Express app
 export const app: Express = express();
 
@@ -62,6 +66,8 @@ app.use('/api/markets', marketRoutes);
 console.log('Market routes registered');
 app.use('/api/articles', articleRoutes);
 console.log('Article routes registered');
+app.use('/api/comments', commentRoutes);
+console.log('Comment routes registered');
 
 // Simple health check route
 app.get('/health', async (req: Request, res: Response) => {

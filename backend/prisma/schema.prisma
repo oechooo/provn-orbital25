@@ -21,7 +21,8 @@ model Article {
   category    String?
   userId      Int?
   market      Market?
-  user        User?    @relation(fields: [userId], references: [id])
+  user        User?     @relation(fields: [userId], references: [id])
+  comments    Comment[]
 }
 
 model Market {
@@ -75,4 +76,35 @@ model User {
   avatarAccessories String    @default("none")
   stakes            Stake[]
   articles          Article[]
+  comments          Comment[]
+  commentVotes      CommentVote[]
+}
+
+model Comment {
+  id          Int           @id @default(autoincrement())
+  content     String
+  articleId   Int
+  userId      Int
+  parentId    Int?          // For replies - null means top-level comment
+  likes       Int           @default(0)
+  dislikes    Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  article     Article       @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent      Comment?      @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     Comment[]     @relation("CommentReplies")
+  votes       CommentVote[]
+}
+
+model CommentVote {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  commentId Int
+  voteType  String   // 'like' or 'dislike'
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, commentId]) // User can only vote once per comment
 }

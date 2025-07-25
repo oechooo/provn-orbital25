@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/SimpleAuthContext';
+import { commentAPI } from '../services/api';
+import Avatar from '../components/Avatar';
 import toast from 'react-hot-toast';
 
 interface Article {
@@ -29,28 +31,50 @@ interface Market {
   stakes: any[];
 }
 
+interface CommentUser {
+  id: number;
+  username: string;
+  avatarSkinColor: string;
+  avatarHairColor: string;
+  avatarHair: string;
+  avatarEyes: string;
+  avatarMouth: string;
+  avatarAccessories: string;
+}
+
 interface ForumReply {
   id: number;
   content: string;
-  author: string;
-  authorId: number;
+  userId: number;
+  parentId: number | null;
   createdAt: string;
+  updatedAt: string;
   likes: number;
   dislikes: number;
   userVote?: 'like' | 'dislike' | null;
+  user: CommentUser;
+  replies?: ForumReply[];
+  _count?: {
+    replies: number;
+  };
 }
 
 interface ForumPost {
   id: number;
   content: string;
-  author: string;
-  authorId: number;
-  stakeAmount: number;
+  articleId: number;
+  userId: number;
+  parentId: number | null;
   createdAt: string;
+  updatedAt: string;
   likes: number;
   dislikes: number;
   userVote?: 'like' | 'dislike' | null;
+  user: CommentUser;
   replies: ForumReply[];
+  _count?: {
+    replies: number;
+  };
 }
 
 const ArticleDetailPage: React.FC = () => {
@@ -63,83 +87,23 @@ const ArticleDetailPage: React.FC = () => {
   const [placing, setPlacing] = useState(false);
   const [forumPosts, setForumPosts] = useState<ForumPost[]>([]);
   const [newPost, setNewPost] = useState('');
-  const [replyingTo, setReplyingTo] = useState<number | null>(null);
-  const [newReply, setNewReply] = useState('');
 
-  // Placeholder forum data
+  // Load comments from API
   useEffect(() => {
-    const placeholderPosts: ForumPost[] = [
-      {
-        id: 1,
-        content: "test post",
-        author: "placeholder1",
-        authorId: 1,
-        stakeAmount: 25.00,
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-        likes: 12,
-        dislikes: 3,
-        userVote: null,
-        replies: [
-          {
-            id: 1,
-            content: "test reply",
-            author: "placeholder2",
-            authorId: 2,
-            createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
-            likes: 5,
-            dislikes: 0,
-            userVote: null
-          },
-          {
-            id: 2,
-            content: "test reply",
-            author: "placeholder3",
-            authorId: 3,
-            createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
-            likes: 3,
-            dislikes: 1,
-            userVote: null
-          }
-        ]
-      },
-      {
-        id: 2,
-        content: "test post",
-        author: "placeholder4",
-        authorId: 4,
-        stakeAmount: 15.00,
-        createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
-        likes: 8,
-        dislikes: 7,
-        userVote: null,
-        replies: [
-          {
-            id: 3,
-            content: "test reply",
-            author: "placeholder5",
-            authorId: 5,
-            createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), // 3 hours ago
-            likes: 6,
-            dislikes: 1,
-            userVote: null
-          }
-        ]
-      },
-      {
-        id: 3,
-        content: "test post",
-        author: "placeholder6",
-        authorId: 6,
-        stakeAmount: 9.00,
-        createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
-        likes: 4,
-        dislikes: 2,
-        userVote: null,
-        replies: []
-      }
-    ];
-    setForumPosts(placeholderPosts);
-  }, []);
+    if (id) {
+      fetchComments(parseInt(id));
+    }
+  }, [id]);
+
+  const fetchComments = async (articleId: number) => {
+    try {
+      const response = await commentAPI.getCommentsByArticleId(articleId);
+      setForumPosts(response.comments);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+      toast.error('Failed to load comments');
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -171,7 +135,14 @@ const ArticleDetailPage: React.FC = () => {
       
       const data = await response.json();
       
+      console.log('Market data received:', data); // Debug log
+      
       if (data && data.market) {
+        // Ensure stakes is always an array
+        if (!data.market.stakes) {
+          data.market.stakes = [];
+        }
+        console.log('Stakes array:', data.market.stakes); // Debug log
         setMarket(data.market);
       } else {
         throw new Error('No market data in response');
@@ -276,62 +247,142 @@ const ArticleDetailPage: React.FC = () => {
     }
   };
 
-  const handleVote = (postId: number, voteType: 'like' | 'dislike', isReply: boolean = false, replyId?: number) => {
+  const handleVote = async (commentId: number, voteType: 'like' | 'dislike') => {
     if (!user) {
       toast.error('Please sign in to vote');
       return;
     }
 
-    setForumPosts(prev => prev.map(post => {
-      if (post.id === postId && !isReply) {
-        const currentVote = post.userVote;
-        const newVote = currentVote === voteType ? null : voteType;
-        
-        let newLikes = post.likes;
-        let newDislikes = post.dislikes;
-        
-        // Remove previous vote
-        if (currentVote === 'like') newLikes--;
-        if (currentVote === 'dislike') newDislikes--;
-        
-        // Add new vote
-        if (newVote === 'like') newLikes++;
-        if (newVote === 'dislike') newDislikes++;
-        
-        return { ...post, likes: newLikes, dislikes: newDislikes, userVote: newVote };
-      }
+    try {
+      const result = await commentAPI.voteOnComment(commentId, voteType);
       
-      if (isReply && replyId) {
-        return {
-          ...post,
-          replies: post.replies.map(reply => {
-            if (reply.id === replyId) {
-              const currentVote = reply.userVote;
-              const newVote = currentVote === voteType ? null : voteType;
-              
-              let newLikes = reply.likes;
-              let newDislikes = reply.dislikes;
-              
-              // Remove previous vote
-              if (currentVote === 'like') newLikes--;
-              if (currentVote === 'dislike') newDislikes--;
-              
-              // Add new vote
-              if (newVote === 'like') newLikes++;
-              if (newVote === 'dislike') newDislikes++;
-              
-              return { ...reply, likes: newLikes, dislikes: newDislikes, userVote: newVote };
-            }
-            return reply;
-          })
-        };
-      }
+      // Update local state recursively
+      const updateCommentVote = (comments: ForumPost[]): ForumPost[] => {
+        return comments.map(post => {
+          if (post.id === commentId) {
+            return { 
+              ...post, 
+              likes: result.likes,
+              dislikes: result.dislikes,
+              userVote: result.userVote
+            };
+          }
+          
+          if (post.replies && post.replies.length > 0) {
+            const updateRepliesVote = (replies: ForumReply[]): ForumReply[] => {
+              return replies.map(reply => {
+                if (reply.id === commentId) {
+                  return { 
+                    ...reply, 
+                    likes: result.likes,
+                    dislikes: result.dislikes,
+                    userVote: result.userVote
+                  };
+                }
+                
+                if (reply.replies && reply.replies.length > 0) {
+                  return {
+                    ...reply,
+                    replies: updateRepliesVote(reply.replies)
+                  };
+                }
+                
+                return reply;
+              });
+            };
+            
+            return {
+              ...post,
+              replies: updateRepliesVote(post.replies)
+            };
+          }
+          
+          return post;
+        });
+      };
       
-      return post;
-    }));
+      setForumPosts(updateCommentVote);
+    } catch (error) {
+      console.error('Error voting on comment:', error);
+      toast.error('Failed to vote on comment');
+    }
   };
 
-  const handleSubmitPost = () => {
+  const handleSubmitReply = async (parentId: number, content: string) => {
+    if (!user || !id) {
+      toast.error('Please sign in to reply');
+      return;
+    }
+
+    try {
+      const response = await commentAPI.createComment(parseInt(id), content, parentId);
+      
+      // Add user data to the new reply for immediate display
+      const newForumReply: ForumReply = {
+        ...response.comment,
+        user: {
+          id: user.id,
+          username: user.username,
+          avatarSkinColor: user.avatarSkinColor || 'fdbcb4',
+          avatarHairColor: user.avatarHairColor || '724133',
+          avatarHair: user.avatarHair || 'short01',
+          avatarEyes: user.avatarEyes || 'variant01',
+          avatarMouth: user.avatarMouth || 'variant01',
+          avatarAccessories: user.avatarAccessories || 'none',
+        },
+        replies: [],
+        userVote: null
+      };
+
+      // Update local state recursively
+      const addReplyToComments = (comments: ForumPost[]): ForumPost[] => {
+        return comments.map(post => {
+          if (post.id === parentId) {
+            return { 
+              ...post, 
+              replies: [...post.replies, newForumReply] 
+            };
+          }
+          
+          if (post.replies && post.replies.length > 0) {
+            const addReplyToReplies = (replies: ForumReply[]): ForumReply[] => {
+              return replies.map(reply => {
+                if (reply.id === parentId) {
+                  return {
+                    ...reply,
+                    replies: reply.replies ? [...reply.replies, newForumReply] : [newForumReply]
+                  };
+                }
+                
+                if (reply.replies && reply.replies.length > 0) {
+                  return {
+                    ...reply,
+                    replies: addReplyToReplies(reply.replies)
+                  };
+                }
+                
+                return reply;
+              });
+            };
+            
+            return {
+              ...post,
+              replies: addReplyToReplies(post.replies)
+            };
+          }
+          
+          return post;
+        });
+      };
+      
+      setForumPosts(addReplyToComments);
+    } catch (error) {
+      console.error('Error posting reply:', error);
+      throw error; // Re-throw so the Comment component can handle it
+    }
+  };
+
+  const handleSubmitPost = async () => {
     if (!user) {
       toast.error('Please sign in to post');
       return;
@@ -342,58 +393,260 @@ const ArticleDetailPage: React.FC = () => {
       return;
     }
 
-    const userStake = market?.stakes.find(stake => stake.userId === user.id);
-    const stakeAmount = userStake ? userStake.amount : 0;
+    if (!id) {
+      toast.error('Article ID not found');
+      return;
+    }
 
-    const newForumPost: ForumPost = {
-      id: Date.now(),
-      content: newPost.trim(),
-      author: user.username,
-      authorId: user.id,
-      stakeAmount: stakeAmount,
-      createdAt: new Date().toISOString(),
-      likes: 0,
-      dislikes: 0,
-      userVote: null,
-      replies: []
-    };
+    try {
+      const response = await commentAPI.createComment(parseInt(id), newPost.trim());
+      
+      // Add user data to the new comment for immediate display
+      const newComment: ForumPost = {
+        ...response.comment,
+        user: {
+          id: user.id,
+          username: user.username,
+          avatarSkinColor: user.avatarSkinColor || 'fdbcb4',
+          avatarHairColor: user.avatarHairColor || '724133',
+          avatarHair: user.avatarHair || 'short01',
+          avatarEyes: user.avatarEyes || 'variant01',
+          avatarMouth: user.avatarMouth || 'variant01',
+          avatarAccessories: user.avatarAccessories || 'none',
+        },
+        replies: [],
+        userVote: null
+      };
 
-    setForumPosts(prev => [newForumPost, ...prev]);
-    setNewPost('');
-    toast.success('Post added successfully!');
+      setForumPosts(prev => [newComment, ...prev]);
+      setNewPost('');
+      toast.success('Comment posted successfully!');
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      toast.error('Failed to post comment');
+    }
   };
 
-  const handleSubmitReply = (postId: number) => {
-    if (!user) {
-      toast.error('Please sign in to reply');
-      return;
+  // Helper function to get user's biggest stake info for the current market
+  const getUserStakeInfo = (userId: number): { amount: number; prediction: boolean | null } => {
+    if (!market || !market.stakes || !Array.isArray(market.stakes)) return { amount: 0, prediction: null };
+    try {
+      // Find all stakes by this user on this market
+      const userStakes = market.stakes.filter(stake => stake && stake.userId === userId);
+      
+      if (userStakes.length === 0) return { amount: 0, prediction: null };
+      
+      // Find the biggest stake
+      const biggestStake = userStakes.reduce((max, stake) => {
+        const stakeAmount = stake?.amount || stake?.stakeAmount || 0;
+        return stakeAmount > (max?.amount || max?.stakeAmount || 0) ? stake : max;
+      }, userStakes[0]);
+      
+      return {
+        amount: biggestStake?.amount || biggestStake?.stakeAmount || 0,
+        prediction: biggestStake?.prediction
+      };
+    } catch (error) {
+      console.error('Error getting user stake info:', error);
+      return { amount: 0, prediction: null };
     }
-    
-    if (!newReply.trim()) {
-      toast.error('Please enter a reply');
-      return;
-    }
+  };
 
-    const newForumReply: ForumReply = {
-      id: Date.now(),
-      content: newReply.trim(),
-      author: user.username,
-      authorId: user.id,
-      createdAt: new Date().toISOString(),
-      likes: 0,
-      dislikes: 0,
-      userVote: null
+  // Helper function to convert user data to avatar config
+  const getUserAvatarConfig = (user: CommentUser) => {
+    return {
+      skinColor: user.avatarSkinColor || 'efcc9f',
+      hairColor: user.avatarHairColor || '71472d',
+      hair: user.avatarHair || 'shortHair',
+      eyes: user.avatarEyes || 'normal',
+      mouth: user.avatarMouth || 'teethSmile',
+      accessories: user.avatarAccessories || 'none'
+    };
+  };
+
+  // Recursive Comment Component
+  const Comment: React.FC<{
+    comment: ForumPost | ForumReply;
+    depth?: number;
+    onVote: (commentId: number, voteType: 'like' | 'dislike') => void;
+    onReply: (commentId: number, content: string) => void;
+  }> = ({ comment, depth = 0, onVote, onReply }) => {
+    const [isReplying, setIsReplying] = useState(false);
+    const [replyContent, setReplyContent] = useState('');
+    const maxDepth = 5; // Limit nesting depth to prevent infinite nesting
+    const isNested = depth > 0;
+    const canReply = depth < maxDepth;
+
+    const handleSubmitReply = async () => {
+      if (!replyContent.trim()) return;
+      
+      try {
+        await onReply(comment.id, replyContent.trim());
+        setReplyContent('');
+        setIsReplying(false);
+        toast.success('Reply posted successfully!');
+      } catch (error) {
+        console.error('Error posting reply:', error);
+        toast.error('Failed to post reply');
+      }
     };
 
-    setForumPosts(prev => prev.map(post => 
-      post.id === postId 
-        ? { ...post, replies: [...post.replies, newForumReply] }
-        : post
-    ));
-    
-    setNewReply('');
-    setReplyingTo(null);
-    toast.success('Reply added successfully!');
+    const marginLeft = isNested ? 'ml-6' : '';
+    const avatarSize = isNested ? 32 : 40;
+    const avatarRing = isNested ? 'ring-cyan-400/30' : 'ring-purple-400/30';
+
+    return (
+      <div className={`${marginLeft} ${isNested ? 'mt-3' : ''} relative`}>
+        {/* Vertical line for nesting */}
+        {isNested && (
+          <div className="absolute left-2 top-0 h-full border-l-2 border-white/20 z-0"></div>
+        )}
+        
+        <div className={`${isNested ? 'pl-4' : ''} relative z-10`}>
+          {/* Comment Header */}
+          <div className="flex items-start space-x-3 mb-3">
+            <Avatar 
+              config={getUserAvatarConfig(comment.user)}
+              size={avatarSize}
+              className={`ring-2 ${avatarRing} flex-shrink-0`}
+            />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center space-x-2 mb-1">
+                <h5 className="text-white font-semibold text-base">{comment.user.username}</h5>
+                {(() => {
+                  const stakeInfo = getUserStakeInfo(comment.userId);
+                  return stakeInfo.amount > 0 && (
+                    <div className={`bg-gradient-to-r ${isNested ? 'from-cyan-600/30 to-blue-600/30 border-cyan-400/50' : 'from-purple-600/30 to-pink-600/30 border-purple-400/50'} border rounded-full px-2 py-0.5 flex items-center space-x-1`}>
+                      <div className={`w-1.5 h-1.5 ${isNested ? 'bg-cyan-400' : 'bg-purple-400'} rounded-full`}></div>
+                      <span className={`text-xs ${isNested ? 'text-cyan-200' : 'text-purple-200'} font-medium`}>
+                        Staked {stakeInfo.amount.toFixed(2)} PP on {stakeInfo.prediction ? 'TRUE' : 'FALSE'}
+                      </span>
+                    </div>
+                  );
+                })()}
+              </div>
+              <div className="flex items-center space-x-2 text-xs text-slate-400">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{getTimeSince(comment.createdAt)}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Comment Content */}
+          <div className={`${isNested ? 'ml-9' : 'ml-12'} mb-3`}>
+            <p className="text-slate-100 leading-relaxed text-base">{comment.content}</p>
+          </div>
+
+          {/* Comment Actions */}
+          <div className={`${isNested ? 'ml-9' : 'ml-12'} flex items-center justify-between`}>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => onVote(comment.id, 'like')}
+                className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg transition-all duration-200 ${
+                  comment.userVote === 'like' 
+                    ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                    : 'text-slate-400 hover:text-green-400 hover:bg-green-500/10 border border-transparent hover:border-green-500/20'
+                }`}
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/>
+                </svg>
+                <span className="font-medium text-sm">{comment.likes}</span>
+              </button>
+              <button
+                onClick={() => onVote(comment.id, 'dislike')}
+                className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg transition-all duration-200 ${
+                  comment.userVote === 'dislike' 
+                    ? 'bg-red-500/20 text-red-400 border border-red-500/30' 
+                    : 'text-slate-400 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20'
+                }`}
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M18 9.5a1.5 1.5 0 11-3 0v-6a1.5 1.5 0 013 0v6zM14 9.667v-5.43a2 2 0 00-1.106-1.79l-.05-.025A4 4 0 0011.057 2H5.64a2 2 0 00-1.962 1.608l-1.2 6A2 2 0 004.44 12H8v4a2 2 0 002 2 1 1 0 001-1v-.667a4 4 0 01.8-2.4l1.4-1.866a4 4 0 00.8-2.4z"/>
+                </svg>
+                <span className="font-medium text-sm">{comment.dislikes}</span>
+              </button>
+              {canReply && user && (
+                <button
+                  onClick={() => setIsReplying(!isReplying)}
+                  className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-purple-400 hover:bg-purple-500/10 border border-transparent hover:border-purple-500/20 transition-all duration-200"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                  </svg>
+                  <span className="font-medium text-sm">Reply</span>
+                  {comment.replies && comment.replies.length > 0 && (
+                    <span className="bg-slate-600 text-slate-200 text-xs px-1.5 py-0.5 rounded-full">{comment.replies.length}</span>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Reply Form */}
+          {isReplying && user && (
+            <div className={`mt-4 ${isNested ? 'ml-9' : 'ml-12'} bg-slate-900/30 rounded-xl p-3 border border-slate-600/20`}>
+              <div className="flex items-center space-x-2 mb-2">
+                <Avatar 
+                  config={getUserAvatarConfig({
+                    id: user.id,
+                    username: user.username,
+                    avatarSkinColor: user.avatarSkinColor || '',
+                    avatarHairColor: user.avatarHairColor || '',
+                    avatarHair: user.avatarHair || '',
+                    avatarEyes: user.avatarEyes || '',
+                    avatarMouth: user.avatarMouth || '',
+                    avatarAccessories: user.avatarAccessories || ''
+                  })}
+                  size={28}
+                  className="ring-2 ring-cyan-400/30"
+                />
+                <span className="text-slate-300 text-xs">Replying to <span className="text-white font-medium">{comment.user.username}</span></span>
+              </div>
+              <textarea
+                value={replyContent}
+                onChange={(e) => setReplyContent(e.target.value)}
+                placeholder="Share your thoughts on this comment..."
+                className="w-full px-3 py-2 bg-slate-800/50 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 resize-none transition-all duration-200 text-sm"
+                rows={2}
+              />
+              <div className="flex justify-end space-x-2 mt-2">
+                <button
+                  onClick={() => setIsReplying(false)}
+                  className="text-slate-400 hover:text-slate-300 px-3 py-1.5 rounded-lg transition-colors text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmitReply}
+                  disabled={!replyContent.trim()}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-200 disabled:cursor-not-allowed text-sm"
+                >
+                  Post Reply
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Nested Replies */}
+        {comment.replies && comment.replies.length > 0 && (
+          <div className="mt-3 space-y-3">
+            {comment.replies.map((reply) => (
+              <Comment
+                key={reply.id}
+                comment={reply}
+                depth={depth + 1}
+                onVote={onVote}
+                onReply={onReply}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   if (loading) {
@@ -411,7 +664,7 @@ const ArticleDetailPage: React.FC = () => {
     );
   }
 
-  if (!market) {
+  if (!market || !market.article) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -428,8 +681,25 @@ const ArticleDetailPage: React.FC = () => {
   }
 
   const { article } = market;
-  const totalStakes = market.stakes.length;
-  const totalVolume = market.stakes.reduce((sum, stake) => sum + stake.stakeAmount, 0);
+  
+  // Safely get stakes data
+  let stakesArray: any[] = [];
+  let totalStakes = 0;
+  let totalVolume = 0;
+  
+  try {
+    stakesArray = Array.isArray(market.stakes) ? market.stakes : [];
+    totalStakes = stakesArray.length;
+    totalVolume = stakesArray.reduce((sum, stake) => {
+      if (!stake || typeof stake.stakeAmount !== 'number') return sum;
+      return sum + stake.stakeAmount;
+    }, 0);
+  } catch (error) {
+    console.error('Error processing stakes data:', error);
+    stakesArray = [];
+    totalStakes = 0;
+    totalVolume = 0;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -677,31 +947,63 @@ const ArticleDetailPage: React.FC = () => {
         </div>
 
         {/* Forum Section */}
-        <div className="mt-8">
-          <div className="glass-card p-6">
-            <h3 className="text-2xl font-bold text-white mb-6">Discussion Forum</h3>
+        <div className="mt-12">
+          <div className="glass-card p-8">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-3xl font-bold text-white">Discussion</h3>
+              <div className="text-sm text-slate-400">
+                {forumPosts.length} {forumPosts.length === 1 ? 'comment' : 'comments'}
+              </div>
+            </div>
             
             {/* New Post Form */}
             {user && (
-              <div className="mb-8 bg-slate-800/50 rounded-lg p-4">
-                <h4 className="text-lg font-semibold text-white mb-3">Share your thoughts</h4>
+              <div className="mb-8 bg-slate-900/20 backdrop-blur-sm rounded-xl p-6 border border-slate-600/20">
+                <div className="flex items-center space-x-3 mb-4">
+                  <Avatar 
+                    config={getUserAvatarConfig({
+                      id: user.id,
+                      username: user.username,
+                      avatarSkinColor: user.avatarSkinColor || '',
+                      avatarHairColor: user.avatarHairColor || '',
+                      avatarHair: user.avatarHair || '',
+                      avatarEyes: user.avatarEyes || '',
+                      avatarMouth: user.avatarMouth || '',
+                      avatarAccessories: user.avatarAccessories || ''
+                    })}
+                    size={40}
+                    className="ring-2 ring-purple-400/30"
+                  />
+                  <div>
+                    <h4 className="text-white font-medium">{user.username}</h4>
+                    <p className="text-xs text-slate-400">Share your thoughts on this article</p>
+                  </div>
+                </div>
                 <textarea
                   value={newPost}
                   onChange={(e) => setNewPost(e.target.value)}
-                  placeholder="What do you think about this article? Share your analysis..."
-                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 resize-none"
-                  rows={3}
+                  placeholder="What's your take on this story? Share your analysis, insights, or questions..."
+                  className="w-full px-4 py-4 bg-slate-800/30 border border-slate-600/30 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 resize-none transition-all duration-200"
+                  rows={4}
                 />
-                <div className="flex justify-between items-center mt-3">
-                  <div className="text-sm text-slate-400">
-                    {user.provePoints > 0 && market?.stakes.find(stake => stake.userId === user.id) && (
-                      <span>Your stake: {market.stakes.find(stake => stake.userId === user.id)?.amount.toFixed(2)} PP</span>
-                    )}
+                <div className="flex justify-between items-center mt-4">
+                  <div className="flex items-center space-x-4">
+                    {(() => {
+                      const userStakeInfo = getUserStakeInfo(user.id);
+                      return user.provePoints > 0 && userStakeInfo.amount > 0 && (
+                        <div className="flex items-center space-x-2 text-sm">
+                          <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                          <span className="text-slate-300">
+                            Your stake: <span className="text-purple-300 font-medium">{userStakeInfo.amount.toFixed(2)} PP on {userStakeInfo.prediction ? 'TRUE' : 'FALSE'}</span>
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </div>
                   <button
                     onClick={handleSubmitPost}
                     disabled={!newPost.trim()}
-                    className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors disabled:cursor-not-allowed"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 disabled:cursor-not-allowed transform hover:scale-105 disabled:hover:scale-100"
                   >
                     Post Comment
                   </button>
@@ -710,13 +1012,19 @@ const ArticleDetailPage: React.FC = () => {
             )}
 
             {!user && (
-              <div className="mb-8 bg-slate-800/50 rounded-lg p-4 text-center">
-                <p className="text-slate-400 mb-3">Sign in to join the discussion</p>
+              <div className="mb-8 bg-slate-900/20 backdrop-blur-sm rounded-xl p-6 text-center border border-slate-600/20">
+                <div className="flex items-center justify-center mb-4">
+                  <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2v-6a2 2 0 012-2h8z" />
+                  </svg>
+                </div>
+                <p className="text-slate-300 mb-4 text-lg">Join the conversation</p>
+                <p className="text-slate-400 mb-6">Sign in to share your thoughts and engage with the community</p>
                 <Link 
                   to="/login" 
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105"
                 >
-                  Sign In
+                  Sign In to Comment
                 </Link>
               </div>
             )}
@@ -724,150 +1032,26 @@ const ArticleDetailPage: React.FC = () => {
             {/* Forum Posts */}
             <div className="space-y-6">
               {forumPosts.map((post) => (
-                <div key={post.id} className="bg-slate-800/30 rounded-lg p-4 border border-slate-700">
-                  {/* Post Header */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-sm font-bold">{post.author[0].toUpperCase()}</span>
-                      </div>
-                      <div>
-                        <h5 className="text-white font-medium">{post.author}</h5>
-                        <div className="text-xs text-slate-400">
-                          <span>{getTimeSince(post.createdAt)}</span>
-                        </div>
-                      </div>
-                    </div>
-                    {post.stakeAmount > 0 && (
-                      <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-lg px-3 py-1">
-                        <div className="text-xs text-purple-300 font-medium">Staked</div>
-                        <div className="text-sm text-purple-100 font-bold">{post.stakeAmount.toFixed(2)} PP</div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Post Content */}
-                  <p className="text-slate-200 mb-4 leading-relaxed">{post.content}</p>
-
-                  {/* Post Actions */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <button
-                        onClick={() => handleVote(post.id, 'like')}
-                        className={`flex items-center space-x-1 text-sm transition-colors ${
-                          post.userVote === 'like' 
-                            ? 'text-green-400' 
-                            : 'text-slate-400 hover:text-green-400'
-                        }`}
-                      >
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/>
-                        </svg>
-                        <span>{post.likes}</span>
-                      </button>
-                      <button
-                        onClick={() => handleVote(post.id, 'dislike')}
-                        className={`flex items-center space-x-1 text-sm transition-colors ${
-                          post.userVote === 'dislike' 
-                            ? 'text-red-400' 
-                            : 'text-slate-400 hover:text-red-400'
-                        }`}
-                      >
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M18 9.5a1.5 1.5 0 11-3 0v-6a1.5 1.5 0 013 0v6zM14 9.667v-5.43a2 2 0 00-1.106-1.79l-.05-.025A4 4 0 0011.057 2H5.64a2 2 0 00-1.962 1.608l-1.2 6A2 2 0 004.44 12H8v4a2 2 0 002 2 1 1 0 001-1v-.667a4 4 0 01.8-2.4l1.4-1.866a4 4 0 00.8-2.4z"/>
-                        </svg>
-                        <span>{post.dislikes}</span>
-                      </button>
-                      <button
-                        onClick={() => setReplyingTo(replyingTo === post.id ? null : post.id)}
-                        className="text-sm text-slate-400 hover:text-purple-400 transition-colors"
-                      >
-                        Reply ({post.replies.length})
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Reply Form */}
-                  {replyingTo === post.id && user && (
-                    <div className="mt-4 pl-8 border-l-2 border-purple-500">
-                      <textarea
-                        value={newReply}
-                        onChange={(e) => setNewReply(e.target.value)}
-                        placeholder="Write your reply..."
-                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 resize-none"
-                        rows={2}
-                      />
-                      <div className="flex justify-end space-x-2 mt-2">
-                        <button
-                          onClick={() => setReplyingTo(null)}
-                          className="text-sm text-slate-400 hover:text-slate-300 px-3 py-1"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={() => handleSubmitReply(post.id)}
-                          disabled={!newReply.trim()}
-                          className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white text-sm px-3 py-1 rounded transition-colors disabled:cursor-not-allowed"
-                        >
-                          Reply
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Replies */}
-                  {post.replies.length > 0 && (
-                    <div className="mt-4 pl-8 border-l-2 border-slate-600 space-y-3">
-                      {post.replies.map((reply) => (
-                        <div key={reply.id} className="bg-slate-700/30 rounded-lg p-3">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <div className="w-6 h-6 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">{reply.author[0].toUpperCase()}</span>
-                            </div>
-                            <div>
-                              <span className="text-white text-sm font-medium">{reply.author}</span>
-                              <span className="text-xs text-slate-400 ml-2">{getTimeSince(reply.createdAt)}</span>
-                            </div>
-                          </div>
-                          <p className="text-slate-200 text-sm mb-2">{reply.content}</p>
-                          <div className="flex items-center space-x-3">
-                            <button
-                              onClick={() => handleVote(post.id, 'like', true, reply.id)}
-                              className={`flex items-center space-x-1 text-xs transition-colors ${
-                                reply.userVote === 'like' 
-                                  ? 'text-green-400' 
-                                  : 'text-slate-400 hover:text-green-400'
-                              }`}
-                            >
-                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/>
-                              </svg>
-                              <span>{reply.likes}</span>
-                            </button>
-                            <button
-                              onClick={() => handleVote(post.id, 'dislike', true, reply.id)}
-                              className={`flex items-center space-x-1 text-xs transition-colors ${
-                                reply.userVote === 'dislike' 
-                                  ? 'text-red-400' 
-                                  : 'text-slate-400 hover:text-red-400'
-                              }`}
-                            >
-                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M18 9.5a1.5 1.5 0 11-3 0v-6a1.5 1.5 0 013 0v6zM14 9.667v-5.43a2 2 0 00-1.106-1.79l-.05-.025A4 4 0 0011.057 2H5.64a2 2 0 00-1.962 1.608l-1.2 6A2 2 0 004.44 12H8v4a2 2 0 002 2 1 1 0 001-1v-.667a4 4 0 01.8-2.4l1.4-1.866a4 4 0 00.8-2.4z"/>
-                              </svg>
-                              <span>{reply.dislikes}</span>
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <Comment
+                  key={post.id}
+                  comment={post}
+                  depth={0}
+                  onVote={handleVote}
+                  onReply={handleSubmitReply}
+                />
               ))}
 
               {forumPosts.length === 0 && (
-                <div className="text-center py-8">
-                  <p className="text-slate-400">No discussions yet. Be the first to share your thoughts!</p>
+                <div className="text-center py-12">
+                  <div className="flex justify-center mb-4">
+                    <svg className="w-16 h-16 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                  </div>
+                  <h4 className="text-xl font-semibold text-white mb-2">Start the conversation</h4>
+                  <p className="text-slate-400 max-w-md mx-auto">
+                    No discussions yet. Be the first to share your thoughts and spark meaningful dialogue about this article.
+                  </p>
                 </div>
               )}
             </div>
