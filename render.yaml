@@ -30,7 +30,7 @@ services:
     name: provn-orbital25-frontend
     env: static
     rootDir: frontend
-    buildCommand: npm install && npm run build
+    buildCommand: chmod +x build-with-env-check.sh && ./build-with-env-check.sh
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL

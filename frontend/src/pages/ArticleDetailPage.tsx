@@ -13,6 +13,7 @@ console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
 console.log('API_BASE_URL:', API_BASE_URL);
 console.log('Environment MODE:', import.meta.env.MODE);
 console.log('Is Production:', import.meta.env.PROD);
+console.log('All env vars:', import.meta.env);
 
 interface Article {
   id: number;
@@ -197,9 +198,22 @@ const ArticleDetailPage: React.FC = () => {
         throw new Error('No article data in response');
       }
     } catch (error) {
-      console.error('Error fetching article data:', error);
+      console.error('💥 Error fetching article data:', error);
+      console.error('💥 Error type:', typeof error);
+      console.error('💥 Error name:', error instanceof Error ? error.name : 'Unknown');
+      console.error('💥 Error message:', error instanceof Error ? error.message : String(error));
+      console.error('💥 Error stack:', error instanceof Error ? error.stack : 'No stack');
+      
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       setError(`Failed to load article: ${errorMessage}`);
+      
+      // Show detailed error info in the UI debug section
+      console.log('🚨 DEBUG INFO FOR USER:');
+      console.log('🚨 Article ID requested:', articleId);
+      console.log('🚨 API URL used:', API_BASE_URL);
+      console.log('🚨 Full URL attempted:', `${API_BASE_URL}/articles/${articleId}`);
+      console.log('🚨 Environment:', import.meta.env.MODE);
+      console.log('🚨 VITE_API_URL:', import.meta.env.VITE_API_URL);
       
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
@@ -728,6 +742,14 @@ const ArticleDetailPage: React.FC = () => {
                 <p className="text-red-300 text-sm">Debug info: {error}</p>
                 <p className="text-red-300 text-sm">Article ID: {id}</p>
                 <p className="text-red-300 text-sm">Market state: {market ? 'Has market' : 'No market'}</p>
+                <div className="mt-2 p-2 bg-red-800/20 rounded text-xs">
+                  <p className="text-red-200">🔍 Environment Debug:</p>
+                  <p className="text-red-200">API_BASE_URL: {API_BASE_URL}</p>
+                  <p className="text-red-200">VITE_API_URL: {import.meta.env.VITE_API_URL || 'undefined'}</p>
+                  <p className="text-red-200">Mode: {import.meta.env.MODE}</p>
+                  <p className="text-red-200">Prod: {String(import.meta.env.PROD)}</p>
+                  <p className="text-red-200">Full URL attempted: {API_BASE_URL}/articles/{id}</p>
+                </div>
               </div>
             )}
             <Link to="/news" className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors">
@@ -763,6 +785,42 @@ const ArticleDetailPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        {/* DEBUG SECTION - Always visible in production */}
+        {import.meta.env.PROD && (
+          <div className="mb-6 p-4 bg-blue-900/20 border border-blue-700/30 rounded-lg">
+            <h3 className="text-blue-300 font-bold mb-2">🔍 Production Debug Info</h3>
+            <div className="text-xs text-blue-200 space-y-1">
+              <p><strong>API_BASE_URL:</strong> {API_BASE_URL}</p>
+              <p><strong>VITE_API_URL:</strong> {import.meta.env.VITE_API_URL || 'undefined'}</p>
+              <p><strong>Mode:</strong> {import.meta.env.MODE}</p>
+              <p><strong>Article ID:</strong> {id}</p>
+              <p><strong>Current URL:</strong> {window.location.href}</p>
+              <p><strong>Will fetch from:</strong> {API_BASE_URL}/articles/{id}</p>
+            </div>
+            <button
+              onClick={async () => {
+                console.log('🧪 Manual API test started');
+                try {
+                  const testUrl = `${API_BASE_URL}/articles/${id}`;
+                  console.log('🧪 Testing URL:', testUrl);
+                  const response = await fetch(testUrl);
+                  console.log('🧪 Response status:', response.status);
+                  console.log('🧪 Response URL:', response.url);
+                  const data = await response.json();
+                  console.log('🧪 Response data:', data);
+                  alert(`API Test: ${response.status} - Check console for details`);
+                } catch (error) {
+                  console.error('🧪 API test failed:', error);
+                  alert(`API Test Failed: ${error instanceof Error ? error.message : String(error)}`);
+                }
+              }}
+              className="mt-2 bg-blue-600 text-white px-3 py-1 rounded text-xs"
+            >
+              Test API Call
+            </button>
+          </div>
+        )}
         
         {/* Back Navigation */}
         <div className="mb-6">
