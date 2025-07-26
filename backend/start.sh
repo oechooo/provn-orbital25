@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # Simple deployment script for Render
+echo "🔄 Creating data directory..."
+mkdir -p /opt/render/project/src/backend/data
+
 echo "🔄 Generating Prisma client..."
 npx prisma generate
 

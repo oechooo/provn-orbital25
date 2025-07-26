@@ -4,13 +4,14 @@ services:
     name: provn-orbital25-backend
     env: node
     plan: free
-    buildCommand: cd backend && npm install && npx prisma generate && npm run build
-    startCommand: cd backend && chmod +x start.sh && ./start.sh
+    rootDir: backend
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: chmod +x start.sh && ./start.sh
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: file:./dev.db
+        value: file:/opt/render/project/src/backend/data/dev.db
       - key: JWT_SECRET
         generateValue: true
       - key: PORT
@@ -19,13 +20,18 @@ services:
         sync: false
       - key: FRONTEND_URL
         value: https://provn-orbital25-frontend.onrender.com
+    disk:
+      name: sqlite-disk
+      mountPath: /opt/render/project/src/backend/data
+      sizeGB: 1
 
   # Frontend Static Site
   - type: web
     name: provn-orbital25-frontend
     env: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: frontend/dist
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
         value: https://provn-orbital25-backend.onrender.com/api
