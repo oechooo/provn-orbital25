@@ -6,6 +6,7 @@ import { ArticleService } from './services/ArticleService';
 import { MarketService } from './services/MarketService';
 import { StakeService } from './services/StakeService';
 import { StartupService } from './services/StartupService';
+import { CronService } from './services/CronService';
 
 // Initialize core services
 const userService = new UserService(prisma);
@@ -13,6 +14,7 @@ const articleService = new ArticleService(prisma);
 const marketService = new MarketService(prisma);
 const stakeService = new StakeService(prisma);
 const startupService = new StartupService(prisma);
+const cronService = new CronService(prisma);
 
 const port = process.env.PORT || 3000;
 
@@ -26,6 +28,9 @@ initDatabase()
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     });
 
+    // Start cron jobs
+    cronService.startAll();
+
     // Run startup tasks asynchronously after server starts
     // This ensures the server is available even if startup tasks take time
     setImmediate(async () => {
@@ -38,6 +43,7 @@ initDatabase()
 
     process.on('SIGTERM', () => {
       console.log('SIGTERM received, shutting down gracefully');
+      cronService.stopAll();
       server.close(() => {
         console.log('Process terminated');
       });

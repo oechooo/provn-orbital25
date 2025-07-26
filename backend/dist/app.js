@@ -71,6 +71,9 @@ console.log('Market routes loaded successfully');
 console.log('Loading article routes...');
 const articleRoutes_1 = __importDefault(require("./routes/articleRoutes"));
 console.log('Article routes loaded successfully');
+console.log('Loading comment routes...');
+const commentRoutes_1 = __importDefault(require("./routes/commentRoutes"));
+console.log('Comment routes loaded successfully');
 // Create Express app
 exports.app = (0, express_1.default)();
 // Middleware
@@ -81,6 +84,10 @@ if (cors) {
     exports.app.use(cors({
         origin: [
             'http://localhost:5173',
+            'http://localhost:5174',
+            'http://localhost:5175',
+            'http://localhost:5176',
+            'http://localhost:5177',
             'https://provn-orbital25-frontend.onrender.com',
             process.env.FRONTEND_URL
         ].filter(Boolean),
@@ -101,6 +108,8 @@ exports.app.use('/api/markets', marketRoutes_1.default);
 console.log('Market routes registered');
 exports.app.use('/api/articles', articleRoutes_1.default);
 console.log('Article routes registered');
+exports.app.use('/api/comments', commentRoutes_1.default);
+console.log('Comment routes registered');
 // Simple health check route
 exports.app.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
