@@ -96,12 +96,12 @@ class StakeService {
             if (!stake)
                 throw new Error('Stake not found');
             const wasCorrect = stake.prediction === finalOutcome;
-            // Mark the stake as resolved and set won field - temporarily disabled due to schema sync
+            // Mark the stake as resolved and set won field
             yield this.prisma.stake.update({
                 where: { id: stakeId },
                 data: {
-                    resolved: true
-                    // won: wasCorrect  // temporarily disabled
+                    resolved: true,
+                    won: wasCorrect
                 }
             });
             // Credit user if prediction was correct
@@ -116,6 +116,36 @@ class StakeService {
                     }
                 });
             }
+        });
+    }
+    refundStake(stakeId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Fetch the stake with user info
+            const stake = yield this.prisma.stake.findUnique({
+                where: { id: stakeId },
+                include: { user: true }
+            });
+            if (!stake)
+                throw new Error('Stake not found');
+            // Mark the stake as resolved with won = null (refunded)
+            yield this.prisma.stake.update({
+                where: { id: stakeId },
+                data: {
+                    resolved: true,
+                    won: null // null indicates refunded
+                }
+            });
+            // Refund the original stake amount to the user
+            console.log(`Refunding stake ${stakeId}: User ${stake.userId} gets ${stake.stakeAmount} PP back`);
+            yield this.prisma.user.update({
+                where: { id: stake.userId },
+                data: {
+                    provePoints: {
+                        increment: stake.stakeAmount
+                    }
+                }
+            });
+            console.log(`Refunded user ${stake.userId} with ${stake.stakeAmount} PP`);
         });
     }
     getUserStakes(userId) {

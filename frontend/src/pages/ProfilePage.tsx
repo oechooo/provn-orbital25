@@ -49,7 +49,7 @@ interface Article {
 }
 
 const ProfilePage: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [stakes, setStakes] = useState<Stake[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
@@ -80,6 +80,9 @@ const ProfilePage: React.FC = () => {
   const fetchUserData = async () => {
     try {
       setLoading(true);
+      
+      // Refresh user data (including updated provePoints balance)
+      await refreshUser();
       
       // Fetch stakes and articles in parallel
       const [stakesResponse, articlesResponse] = await Promise.all([
@@ -165,6 +168,12 @@ const ProfilePage: React.FC = () => {
                   {user.provePoints.toFixed(2)}
                 </div>
                 <div className="text-sm text-slate-300">Prove Points</div>
+                <button
+                  onClick={() => refreshUser()}
+                  className="mt-2 text-xs text-cyan-400 hover:text-cyan-300 underline"
+                >
+                  Refresh Balance
+                </button>
               </div>
               <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm border border-green-500/20 rounded-xl p-6 text-center">
                 <div className="text-3xl font-bold text-green-400 mb-2">
@@ -225,26 +234,35 @@ const ProfilePage: React.FC = () => {
           {/* My Stakes & Articles */}
           <div className="glass-card p-8">
             {/* Tab Navigation */}
-            <div className="flex space-x-1 mb-6 bg-white/5 rounded-xl p-1">
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex space-x-1 bg-white/5 rounded-xl p-1">
+                <button
+                  onClick={() => setActiveTab('stakes')}
+                  className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
+                    activeTab === 'stakes'
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                      : 'text-slate-300 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  My Stakes ({stakes.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('articles')}
+                  className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
+                    activeTab === 'articles'
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                      : 'text-slate-300 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  My Articles ({articles.length})
+                </button>
+              </div>
               <button
-                onClick={() => setActiveTab('stakes')}
-                className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
-                  activeTab === 'stakes'
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                    : 'text-slate-300 hover:text-white hover:bg-white/10'
-                }`}
+                onClick={fetchUserData}
+                disabled={loading}
+                className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 border border-cyan-500/30 text-cyan-300 px-4 py-2 rounded-lg font-medium transition-all duration-200 disabled:opacity-50"
               >
-                My Stakes ({stakes.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('articles')}
-                className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
-                  activeTab === 'articles'
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                    : 'text-slate-300 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                My Articles ({articles.length})
+                {loading ? 'Refreshing...' : 'Refresh Data'}
               </button>
             </div>
             

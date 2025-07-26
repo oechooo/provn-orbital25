@@ -4,7 +4,7 @@ import { StakeService } from './StakeService';
 
 // at liquidity = 1000, 1000PP moves the probabilities from 50% to 73%, and 2000PP moves it to 88%.
 const LIQUIDITY = 1000;
-const CONFIDENCE_THRESHOLD = 0.95; // 95% confidence
+const CONFIDENCE_THRESHOLD = 0.80; // 80% confidence
 
 export class MarketService {
   constructor(private readonly prisma: PrismaClient) {}
@@ -194,28 +194,33 @@ export class MarketService {
     if (!market) throw new Error('Market not found');
 
     let outcomeToUse: boolean | null = market.outcome;
+    let shouldRefund = false;
+
     if (outcomeToUse === null) {
       const { probTrue, probFalse } = await this.getImpliedProbability(marketId);
       const contentious = await this.isContentious(marketId);
       if (contentious) {
-        throw new Error('Market is contentious and cannot be auto-resolved.');
+        // Market is contentious - refund all stakes instead of throwing error
+        shouldRefund = true;
+      } else {
+        // Not contentious: resolve to the higher probability
+        outcomeToUse = probTrue > probFalse;
       }
-      // Not contentious: resolve to the higher probability
-      outcomeToUse = probTrue > probFalse;
     }
 
-    // Find all stakes for this market in the current period
+    // Find all unresolved stakes for this market (not just current period)
     const stakesToResolve = market.stakes.filter(
-      (stake) =>
-        stake.createdAt >= market.lastResolve &&
-        stake.createdAt < market.nextResolve &&
-        !stake.resolved
+      (stake) => !stake.resolved
     );
 
-    // Resolve each stake
+    // Process each stake (either resolve or refund)
     const stakeService = new StakeService(this.prisma);
     for (const stake of stakesToResolve) {
-      await stakeService.resolveStake(stake.id, outcomeToUse!);
+      if (shouldRefund) {
+        await stakeService.refundStake(stake.id);
+      } else {
+        await stakeService.resolveStake(stake.id, outcomeToUse!);
+      }
     }
 
     // Update market timing and status

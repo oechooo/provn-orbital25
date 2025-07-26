@@ -13,7 +13,7 @@ exports.MarketService = void 0;
 const StakeService_1 = require("./StakeService");
 // at liquidity = 1000, 1000PP moves the probabilities from 50% to 73%, and 2000PP moves it to 88%.
 const LIQUIDITY = 1000;
-const CONFIDENCE_THRESHOLD = 0.95; // 95% confidence
+const CONFIDENCE_THRESHOLD = 0.80; // 80% confidence
 class MarketService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -205,23 +205,30 @@ class MarketService {
             if (!market)
                 throw new Error('Market not found');
             let outcomeToUse = market.outcome;
+            let shouldRefund = false;
             if (outcomeToUse === null) {
                 const { probTrue, probFalse } = yield this.getImpliedProbability(marketId);
                 const contentious = yield this.isContentious(marketId);
                 if (contentious) {
-                    throw new Error('Market is contentious and cannot be auto-resolved.');
+                    // Market is contentious - refund all stakes instead of throwing error
+                    shouldRefund = true;
                 }
-                // Not contentious: resolve to the higher probability
-                outcomeToUse = probTrue > probFalse;
+                else {
+                    // Not contentious: resolve to the higher probability
+                    outcomeToUse = probTrue > probFalse;
+                }
             }
-            // Find all stakes for this market in the current period
-            const stakesToResolve = market.stakes.filter((stake) => stake.createdAt >= market.lastResolve &&
-                stake.createdAt < market.nextResolve &&
-                !stake.resolved);
-            // Resolve each stake
+            // Find all unresolved stakes for this market (not just current period)
+            const stakesToResolve = market.stakes.filter((stake) => !stake.resolved);
+            // Process each stake (either resolve or refund)
             const stakeService = new StakeService_1.StakeService(this.prisma);
             for (const stake of stakesToResolve) {
-                yield stakeService.resolveStake(stake.id, outcomeToUse);
+                if (shouldRefund) {
+                    yield stakeService.refundStake(stake.id);
+                }
+                else {
+                    yield stakeService.resolveStake(stake.id, outcomeToUse);
+                }
             }
             // Update market timing and status
             let newNextResolve = market.nextResolve;

@@ -96,12 +96,12 @@ export class StakeService {
 
     const wasCorrect = stake.prediction === finalOutcome;
 
-    // Mark the stake as resolved and set won field - temporarily disabled due to schema sync
+    // Mark the stake as resolved and set won field
     await this.prisma.stake.update({
       where: { id: stakeId },
       data: { 
-        resolved: true
-        // won: wasCorrect  // temporarily disabled
+        resolved: true,
+        won: wasCorrect
       }
     });
 
@@ -117,6 +117,36 @@ export class StakeService {
         }
       });
     }
+  }
+
+  async refundStake(stakeId: number): Promise<void> {
+    // Fetch the stake with user info
+    const stake = await this.prisma.stake.findUnique({
+      where: { id: stakeId },
+      include: { user: true }
+    });
+    if (!stake) throw new Error('Stake not found');
+
+    // Mark the stake as resolved with won = null (refunded)
+    await this.prisma.stake.update({
+      where: { id: stakeId },
+      data: { 
+        resolved: true,
+        won: null  // null indicates refunded
+      }
+    });
+
+    // Refund the original stake amount to the user
+    console.log(`Refunding stake ${stakeId}: User ${stake.userId} gets ${stake.stakeAmount} PP back`);
+    await this.prisma.user.update({
+      where: { id: stake.userId },
+      data: {
+        provePoints: {
+          increment: stake.stakeAmount
+        }
+      }
+    });
+    console.log(`Refunded user ${stake.userId} with ${stake.stakeAmount} PP`);
   }
   
   async getUserStakes(userId: number): Promise<Stake[]> {
