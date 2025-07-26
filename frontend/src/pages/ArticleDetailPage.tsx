@@ -7,6 +7,13 @@ import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
+// Debug logging for production
+console.log('🔍 ArticleDetailPage Debug Info:');
+console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
+console.log('API_BASE_URL:', API_BASE_URL);
+console.log('Environment MODE:', import.meta.env.MODE);
+console.log('Is Production:', import.meta.env.PROD);
+
 interface Article {
   id: number;
   title: string;
@@ -118,6 +125,8 @@ const ArticleDetailPage: React.FC = () => {
   const fetchArticleData = async (articleId: number) => {
     try {
       console.log('Fetching article data for ID:', articleId);
+      console.log('🚀 Using API_BASE_URL:', API_BASE_URL);
+      console.log('🌐 Full URL will be:', `${API_BASE_URL}/articles/${articleId}`);
       setLoading(true);
       
       // Add timeout to the fetch request
@@ -133,6 +142,13 @@ const ArticleDetailPage: React.FC = () => {
       });
       
       clearTimeout(timeoutId);
+      
+      console.log('📡 Response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        headers: Object.fromEntries(response.headers.entries())
+      });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

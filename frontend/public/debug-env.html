@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Environment Debug</title>
+</head>
+<body>
+    <h1>Frontend Environment Debug</h1>
+    <div id="output"></div>
+    <script type="module">
+        console.log('🔍 Frontend Environment Debug');
+        
+        // Check environment variables
+        const viteApiUrl = 'https://provn-orbital25-backend.onrender.com/api'; // This should be what VITE_API_URL is set to
+        const fallbackUrl = 'http://localhost:3000/api';
+        const actualApiUrl = viteApiUrl || fallbackUrl;
+        
+        document.getElementById('output').innerHTML = `
+            <p><strong>Expected VITE_API_URL:</strong> https://provn-orbital25-backend.onrender.com/api</p>
+            <p><strong>Fallback URL:</strong> http://localhost:3000/api</p>
+            <p><strong>Actual API URL being used:</strong> ${actualApiUrl}</p>
+            <p><strong>Testing API call...</strong></p>
+        `;
+        
+        // Test API call
+        console.log('🚀 Testing API call with:', actualApiUrl);
+        
+        fetch(`${actualApiUrl}/articles/2`, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            console.log('✅ API Response status:', response.status);
+            console.log('📍 Actual URL called:', response.url);
+            
+            document.getElementById('output').innerHTML += `
+                <p><strong>✅ API Response Status:</strong> ${response.status}</p>
+                <p><strong>📍 Actual URL Called:</strong> ${response.url}</p>
+            `;
+            
+            return response.json();
+        })
+        .then(data => {
+            console.log('✅ API Data received:', data);
+            document.getElementById('output').innerHTML += `
+                <p><strong>✅ Article Title:</strong> ${data.article?.title || 'No title found'}</p>
+                <p><strong>✅ Market ID:</strong> ${data.article?.market?.id || 'No market found'}</p>
+            `;
+        })
+        .catch(error => {
+            console.log('❌ API Error:', error);
+            document.getElementById('output').innerHTML += `
+                <p><strong>❌ API Error:</strong> ${error.message}</p>
+            `;
+        });
+    </script>
+</body>
+</html>
