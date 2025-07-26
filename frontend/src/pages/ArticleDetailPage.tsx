@@ -87,6 +87,7 @@ const ArticleDetailPage: React.FC = () => {
   const [placing, setPlacing] = useState(false);
   const [forumPosts, setForumPosts] = useState<ForumPost[]>([]);
   const [newPost, setNewPost] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   // Load comments from API
   useEffect(() => {
@@ -106,20 +107,22 @@ const ArticleDetailPage: React.FC = () => {
   };
 
   useEffect(() => {
+    console.log('ArticleDetailPage mounted with ID:', id);
     if (id) {
-      fetchMarketData(parseInt(id));
+      fetchArticleData(parseInt(id));
     }
   }, [id]);
 
-  const fetchMarketData = async (marketId: number) => {
+  const fetchArticleData = async (articleId: number) => {
     try {
+      console.log('Fetching article data for ID:', articleId);
       setLoading(true);
       
       // Add timeout to the fetch request
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
-      const response = await fetch(`http://localhost:3000/api/markets/${marketId}`, {
+      const response = await fetch(`http://localhost:3000/api/articles/${articleId}`, {
         signal: controller.signal,
         headers: {
           'Accept': 'application/json',
@@ -135,20 +138,51 @@ const ArticleDetailPage: React.FC = () => {
       
       const data = await response.json();
       
-      console.log('Market data received:', data); // Debug log
+      console.log('Article data received:', data); // Debug log
       
-      if (data && data.market) {
-        // Ensure stakes is always an array
-        if (!data.market.stakes) {
-          data.market.stakes = [];
+      if (data && data.article) {
+        console.log('Article found:', data.article.title);
+        // Check if article has a market
+        if (data.article.market) {
+          console.log('Market found:', data.article.market.id);
+          // Ensure stakes is always an array
+          if (!data.article.market.stakes) {
+            data.article.market.stakes = [];
+          }
+          console.log('Stakes array:', data.article.market.stakes); // Debug log
+          
+          // Create a market object with the article nested inside it
+          const marketWithArticle = {
+            ...data.article.market,
+            article: data.article
+          };
+          setMarket(marketWithArticle);
+        } else {
+          console.log('No market found for this article');
+          // Article exists but no market yet - create a temporary market structure
+          const tempMarket = {
+            id: 0,
+            articleId: data.article.id,
+            outcome: null,
+            sharesTrue: 0,
+            sharesFalse: 0,
+            probTrue: 0.5,
+            probFalse: 0.5,
+            createdAt: new Date().toISOString(),
+            article: data.article,
+            stakes: []
+          };
+          setMarket(tempMarket);
         }
-        console.log('Stakes array:', data.market.stakes); // Debug log
-        setMarket(data.market);
       } else {
-        throw new Error('No market data in response');
+        console.error('No article data in response:', data);
+        throw new Error('No article data in response');
       }
     } catch (error) {
-      console.error('Error fetching market data:', error);
+      console.error('Error fetching article data:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      setError(`Failed to load article: ${errorMessage}`);
+      
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
           toast.error('Request timed out. Please try again.');
@@ -202,8 +236,8 @@ const ArticleDetailPage: React.FC = () => {
       
       toast.success(`Stake placed successfully! You predicted: ${prediction ? 'TRUE' : 'FALSE'}`);
       
-      // Refresh market data
-      await fetchMarketData(market.id);
+      // Refresh article data
+      await fetchArticleData(parseInt(id!));
       
       // Reset form
       setStakeAmount(10);
@@ -664,15 +698,22 @@ const ArticleDetailPage: React.FC = () => {
     );
   }
 
-  if (!market || !market.article) {
+  if (!market) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="glass-card p-8 text-center">
             <h1 className="text-3xl font-bold text-white mb-4">Article Not Found</h1>
             <p className="text-slate-300 mb-6">The article you're looking for doesn't exist or has been removed.</p>
-            <Link to="/dashboard" className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors">
-              Back to Dashboard
+            {error && (
+              <div className="mb-6 p-4 bg-red-900/20 border border-red-700/30 rounded-lg">
+                <p className="text-red-300 text-sm">Debug info: {error}</p>
+                <p className="text-red-300 text-sm">Article ID: {id}</p>
+                <p className="text-red-300 text-sm">Market state: {market ? 'Has market' : 'No market'}</p>
+              </div>
+            )}
+            <Link to="/news" className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors">
+              Back to News
             </Link>
           </div>
         </div>
@@ -708,13 +749,13 @@ const ArticleDetailPage: React.FC = () => {
         {/* Back Navigation */}
         <div className="mb-6">
           <Link 
-            to="/dashboard" 
+            to="/news" 
             className="inline-flex items-center text-purple-400 hover:text-purple-300 transition-colors"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
             </svg>
-            Back to Dashboard
+            Back to News
           </Link>
         </div>
 

@@ -48,8 +48,21 @@ export class ArticleService {
         return this.prisma.article.findUnique({
             where: { id },
             include: {
-                market: true
-            }
+                market: {
+                    include: {
+                        stakes: {
+                            include: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        username: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         });
     }
 
