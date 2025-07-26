@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/SimpleAuthContext';
-import { commentAPI } from '../services/api';
+import { commentAPI, articleAPI, stakeAPI } from '../services/api';
 import Avatar from '../components/Avatar';
 import toast from 'react-hot-toast';
 
@@ -126,36 +126,11 @@ const ArticleDetailPage: React.FC = () => {
   const fetchArticleData = async (articleId: number) => {
     try {
       console.log('Fetching article data for ID:', articleId);
-      console.log('🚀 Using API_BASE_URL:', API_BASE_URL);
-      console.log('🌐 Full URL will be:', `${API_BASE_URL}/articles/${articleId}`);
+      console.log('🚀 Using articleAPI.getArticleById from services');
       setLoading(true);
       
-      // Add timeout to the fetch request
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-      
-      const response = await fetch(`${API_BASE_URL}/articles/${articleId}`, {
-        signal: controller.signal,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      clearTimeout(timeoutId);
-      
-      console.log('📡 Response received:', {
-        status: response.status,
-        statusText: response.statusText,
-        url: response.url,
-        headers: Object.fromEntries(response.headers.entries())
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      // Use the same API service as NewsPage
+      const data = await articleAPI.getArticleById(articleId);
       
       console.log('Article data received:', data); // Debug log
       
@@ -210,17 +185,12 @@ const ArticleDetailPage: React.FC = () => {
       // Show detailed error info in the UI debug section
       console.log('🚨 DEBUG INFO FOR USER:');
       console.log('🚨 Article ID requested:', articleId);
-      console.log('🚨 API URL used:', API_BASE_URL);
-      console.log('🚨 Full URL attempted:', `${API_BASE_URL}/articles/${articleId}`);
+      console.log('🚨 Using articleAPI service instead of direct fetch');
       console.log('🚨 Environment:', import.meta.env.MODE);
       console.log('🚨 VITE_API_URL:', import.meta.env.VITE_API_URL);
       
       if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          toast.error('Request timed out. Please try again.');
-        } else {
-          toast.error(`Failed to load article: ${error.message}`);
-        }
+        toast.error(`Failed to load article: ${error.message}`);
       } else {
         toast.error('Failed to load article details');
       }
@@ -247,24 +217,8 @@ const ArticleDetailPage: React.FC = () => {
 
     setPlacing(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/stakes`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify({
-          marketId: market.id,
-          stakeAmount,
-          prediction
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Failed to place stake' }));
-        throw new Error(errorData.message || 'Failed to place stake');
-      }
+      // Use the same API service as other parts of the app
+      await stakeAPI.createStake(market.id, stakeAmount, prediction);
       
       toast.success(`Stake placed successfully! You predicted: ${prediction ? 'TRUE' : 'FALSE'}`);
       
@@ -274,6 +228,7 @@ const ArticleDetailPage: React.FC = () => {
       // Reset form
       setStakeAmount(10);
     } catch (error: any) {
+      console.error('Error placing stake:', error);
       toast.error(error.message || 'Failed to place stake');
     } finally {
       setPlacing(false);
@@ -786,30 +741,25 @@ const ArticleDetailPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
-        {/* DEBUG SECTION - Always visible in production */}
-        {import.meta.env.PROD && (
-          <div className="mb-6 p-4 bg-blue-900/20 border border-blue-700/30 rounded-lg">
-            <h3 className="text-blue-300 font-bold mb-2">🔍 Production Debug Info</h3>
+        {/* DEBUG SECTION - Always visible for debugging */}
+        <div className="mb-6 p-4 bg-blue-900/20 border border-blue-700/30 rounded-lg">
+          <h3 className="text-blue-300 font-bold mb-2">🔍 Debug Info (Mode: {import.meta.env.MODE})</h3>
             <div className="text-xs text-blue-200 space-y-1">
               <p><strong>API_BASE_URL:</strong> {API_BASE_URL}</p>
               <p><strong>VITE_API_URL:</strong> {import.meta.env.VITE_API_URL || 'undefined'}</p>
               <p><strong>Mode:</strong> {import.meta.env.MODE}</p>
               <p><strong>Article ID:</strong> {id}</p>
               <p><strong>Current URL:</strong> {window.location.href}</p>
-              <p><strong>Will fetch from:</strong> {API_BASE_URL}/articles/{id}</p>
+              <p><strong>Using:</strong> articleAPI.getArticleById({id}) - same as NewsPage</p>
             </div>
             <button
               onClick={async () => {
-                console.log('🧪 Manual API test started');
+                console.log('🧪 Manual API test started using articleAPI');
                 try {
-                  const testUrl = `${API_BASE_URL}/articles/${id}`;
-                  console.log('🧪 Testing URL:', testUrl);
-                  const response = await fetch(testUrl);
-                  console.log('🧪 Response status:', response.status);
-                  console.log('🧪 Response URL:', response.url);
-                  const data = await response.json();
+                  console.log('🧪 Testing articleAPI.getArticleById:', id);
+                  const data = await articleAPI.getArticleById(parseInt(id!));
                   console.log('🧪 Response data:', data);
-                  alert(`API Test: ${response.status} - Check console for details`);
+                  alert(`API Test Success: Article found - ${data.article?.title || 'No title'}`);
                 } catch (error) {
                   console.error('🧪 API test failed:', error);
                   alert(`API Test Failed: ${error instanceof Error ? error.message : String(error)}`);
@@ -817,10 +767,10 @@ const ArticleDetailPage: React.FC = () => {
               }}
               className="mt-2 bg-blue-600 text-white px-3 py-1 rounded text-xs"
             >
-              Test API Call
+              Test API Call (using articleAPI)
             </button>
           </div>
-        )}
+        
         
         {/* Back Navigation */}
         <div className="mb-6">
