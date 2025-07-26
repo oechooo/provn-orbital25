@@ -5,6 +5,8 @@ import { commentAPI } from '../services/api';
 import Avatar from '../components/Avatar';
 import toast from 'react-hot-toast';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
 interface Article {
   id: number;
   title: string;
@@ -122,7 +124,7 @@ const ArticleDetailPage: React.FC = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
-      const response = await fetch(`http://localhost:3000/api/articles/${articleId}`, {
+      const response = await fetch(`${API_BASE_URL}/articles/${articleId}`, {
         signal: controller.signal,
         headers: {
           'Accept': 'application/json',
@@ -216,7 +218,7 @@ const ArticleDetailPage: React.FC = () => {
     setPlacing(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/stakes', {
+      const response = await fetch(`${API_BASE_URL}/stakes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
