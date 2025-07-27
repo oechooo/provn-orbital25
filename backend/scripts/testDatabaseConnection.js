@@ -17,7 +17,7 @@ async function testDatabaseConnection() {
       }
     });
     
-    console.log('\n📰 Articles from database:');
+    console.log('\n Articles from database:');
     articles.forEach((article, index) => {
       console.log(`${index + 1}. ${article.title}`);
       console.log(`   Source: ${article.sourceName}`);
@@ -29,12 +29,12 @@ async function testDatabaseConnection() {
     const { ArticleService } = require('../dist/services/ArticleService');
     const articleService = new ArticleService(prisma);
     
-    console.log('📋 Testing ArticleService...');
+    console.log('Testing ArticleService...');
     const serviceArticles = await articleService.getFilteredArticles({
       limit: 3
     });
     
-    console.log('\n📰 Articles from ArticleService:');
+    console.log('\n Articles from ArticleService:');
     serviceArticles.forEach((article, index) => {
       console.log(`${index + 1}. ${article.title}`);
       console.log(`   Source: ${article.sourceName}`);
@@ -43,10 +43,11 @@ async function testDatabaseConnection() {
     });
     
   } catch (error) {
-    console.error('❌ Error:', error);
+    console.error('Error:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
 testDatabaseConnection();
+

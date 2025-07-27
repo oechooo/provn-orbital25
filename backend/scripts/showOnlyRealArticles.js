@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 async function showOnlyRealArticles() {
   try {
-    console.log('🔍 Showing ONLY real articles from News API...\n');
+    console.log(' Showing ONLY real articles from News API...\n');
       const articles = await prisma.article.findMany({
       where: {
         // Only exclude obvious test/example URLs
@@ -20,7 +20,7 @@ async function showOnlyRealArticles() {
       }
     });
     
-    console.log(`📊 Real articles from News API: ${articles.length}\n`);
+    console.log(` Real articles from News API: ${articles.length}\n`);
     
     articles.slice(0, 10).forEach((article, index) => {
       console.log(`${index + 1}. ${article.title}`);
@@ -41,10 +41,11 @@ async function showOnlyRealArticles() {
     console.log(`📅 Total real articles: ${articles.length}`);
     
   } catch (error) {
-    console.error('❌ Error:', error);
+    console.error('Error:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
 showOnlyRealArticles();
+

@@ -39,7 +39,7 @@ const UltraSimpleTest: React.FC = () => {
               fontSize: '1rem'
             }}
           >
-            📰 News
+            News
           </button>
           <button 
             onClick={() => alert('Dashboard clicked!')}
@@ -53,7 +53,7 @@ const UltraSimpleTest: React.FC = () => {
               fontSize: '1rem'
             }}
           >
-            📊 Dashboard
+            Dashboard
           </button>
           <button 
             onClick={() => alert('Login clicked!')}
@@ -81,7 +81,7 @@ const UltraSimpleTest: React.FC = () => {
               fontSize: '1rem'
             }}
           >
-            📝 Register
+            Register
           </button>
         </div>
       </div>
@@ -94,10 +94,10 @@ const UltraSimpleTest: React.FC = () => {
       }}>
         <h3 style={{ color: '#ffff00' }}>System Status:</h3>
         <ul style={{ listStyle: 'none', padding: 0 }}>
-          <li style={{ color: '#00ff00' }}>✅ React is rendering</li>
-          <li style={{ color: '#00ff00' }}>✅ JavaScript is working</li>
-          <li style={{ color: '#00ff00' }}>✅ Styling is applied</li>
-          <li style={{ color: '#00ff00' }}>✅ Event handlers work</li>
+          <li style={{ color: '#00ff00' }}>React is rendering</li>
+          <li style={{ color: '#00ff00' }}>JavaScript is working</li>
+          <li style={{ color: '#00ff00' }}>Styling is applied</li>
+          <li style={{ color: '#00ff00' }}>Event handlers work</li>
         </ul>
       </div>
       

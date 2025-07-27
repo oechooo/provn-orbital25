@@ -17,3 +17,4 @@ console.log(`Multiplier: ${multiplier.toFixed(2)}x`);
 // This should match the backend test results:
 // - Potential winnings: 97.6 PP
 // - Which means profit = 97.6 - 50 = 47.6 PP
+

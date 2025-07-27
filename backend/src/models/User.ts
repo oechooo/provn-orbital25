@@ -28,3 +28,4 @@ export type UserWithoutPassword = {
     createdAt: Date;
     updatedAt: Date;
 };
+

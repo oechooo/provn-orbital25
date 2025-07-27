@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 async function verifyRealArticles() {
   try {
-    console.log('🔍 Checking all articles in the database...\n');
+    console.log(' Checking all articles in the database...\n');
     
     const articles = await prisma.article.findMany({
       include: {
@@ -15,7 +15,7 @@ async function verifyRealArticles() {
       }
     });
     
-    console.log(`📊 Total articles in database: ${articles.length}\n`);
+    console.log(` Total articles in database: ${articles.length}\n`);
     
     // Check for mock/test data indicators
     const mockIndicators = [
@@ -48,7 +48,7 @@ async function verifyRealArticles() {
         realArticles++;
       } else {
         suspiciousArticles++;
-        console.log(`⚠️ Suspicious Article #${index + 1}:`);
+        console.log(`Suspicious Article #${index + 1}:`);
         console.log(`   Title: ${article.title}`);
         console.log(`   Source: ${article.sourceName}`);
         console.log(`   URL: ${article.url}`);
@@ -59,10 +59,10 @@ async function verifyRealArticles() {
     });
     
     // Show detailed analysis
-    console.log('📈 ANALYSIS RESULTS:');
-    console.log(`✅ Real News Articles: ${realArticles}`);
-    console.log(`⚠️ Suspicious Articles: ${suspiciousArticles}`);
-    console.log(`📊 Total Articles: ${articles.length}\n`);
+    console.log(' ANALYSIS RESULTS:');
+    console.log(`Real News Articles: ${realArticles}`);
+    console.log(`Suspicious Articles: ${suspiciousArticles}`);
+    console.log(` Total Articles: ${articles.length}\n`);
     
     // Show sources breakdown
     const sources = {};
@@ -70,7 +70,7 @@ async function verifyRealArticles() {
       sources[article.sourceName] = (sources[article.sourceName] || 0) + 1;
     });
     
-    console.log('📰 SOURCES BREAKDOWN:');
+    console.log(' SOURCES BREAKDOWN:');
     Object.entries(sources).forEach(([source, count]) => {
       console.log(`   ${source}: ${count} articles`);
     });
@@ -81,13 +81,13 @@ async function verifyRealArticles() {
       categories[article.category] = (categories[article.category] || 0) + 1;
     });
     
-    console.log('\n📂 CATEGORIES BREAKDOWN:');
+    console.log('\nCATEGORIES BREAKDOWN:');
     Object.entries(categories).forEach(([category, count]) => {
       console.log(`   ${category}: ${count} articles`);
     });
     
     // Show recent articles (last 5)
-    console.log('\n📋 RECENT ARTICLES (Last 5):');
+    console.log('\nRECENT ARTICLES (Last 5):');
     articles.slice(0, 5).forEach((article, index) => {
       console.log(`${index + 1}. ${article.title.substring(0, 60)}...`);
       console.log(`   Source: ${article.sourceName} | Category: ${article.category}`);
@@ -98,16 +98,17 @@ async function verifyRealArticles() {
     
     // Final verification
     if (suspiciousArticles === 0) {
-      console.log('🎉 SUCCESS: All articles appear to be real news from the API!');
+      console.log(' SUCCESS: All articles appear to be real news from the API!');
     } else {
-      console.log(`⚠️ WARNING: Found ${suspiciousArticles} suspicious articles that may be test data.`);
+      console.log(`WARNING: Found ${suspiciousArticles} suspicious articles that may be test data.`);
     }
     
   } catch (error) {
-    console.error('❌ Error checking articles:', error);
+    console.error('Error checking articles:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
 verifyRealArticles();
+

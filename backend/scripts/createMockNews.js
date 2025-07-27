@@ -98,46 +98,47 @@ async function createMockNewsArticles() {
           data: articleData
         });
 
-        console.log(`✅ Created article: ${article.title}`);
+        console.log(`Created article: ${article.title}`);
         articlesCreated++;        // Create market for the article
         try {
           const market = await createMarketForArticle(article.id);
-          console.log(`📊 Created market ${market.id} for article ${article.id}`);
+          console.log(`Created market ${market.id} for article ${article.id}`);
           marketsCreated++;
         } catch (marketError) {
           if (marketError.message && marketError.message.includes('already has a market')) {
-            console.log(`⚠️ Market already exists for article: ${article.title}`);
+            console.log(`Market already exists for article: ${article.title}`);
           } else {
-            console.error(`❌ Error creating market:`, marketError.message || marketError);
+            console.error(`Error creating market:`, marketError.message || marketError);
           }
         }
 
       } catch (articleError) {
         if (articleError.code === 'P2002') {
-          console.log(`⚠️ Article already exists: ${articleData.title}`);
+          console.log(`Article already exists: ${articleData.title}`);
         } else {
-          console.error(`❌ Error creating article:`, articleError.message);
+          console.error(`Error creating article:`, articleError.message);
         }
       }
     }
 
-    console.log(`\n🎉 Mock news creation completed!`);
-    console.log(`📰 Articles created: ${articlesCreated}`);
-    console.log(`📊 Markets created: ${marketsCreated}`);
+    console.log(`\nMock news creation completed!`);
+    console.log(`Articles created: ${articlesCreated}`);
+    console.log(`Markets created: ${marketsCreated}`);
 
     // Show final stats
     const totalArticles = await prisma.article.count();
     const totalMarkets = await prisma.market.count();
     
-    console.log(`\n📈 Database totals:`);
+    console.log(`\nDatabase totals:`);
     console.log(`   Total articles: ${totalArticles}`);
     console.log(`   Total markets: ${totalMarkets}`);
 
   } catch (error) {
-    console.error('❌ Error creating mock news:', error);
+    console.error('Error creating mock news:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
 createMockNewsArticles();
+

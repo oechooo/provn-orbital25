@@ -5,7 +5,7 @@ const PRODUCTION_API = 'https://provn-orbital25-backend.onrender.com/api';
 
 async function testEndpoint(url, description) {
     try {
-        console.log(`\n🔍 Testing ${description}:`);
+        console.log(`\nTesting ${description}:`);
         console.log(`URL: ${url}`);
         
         const response = await fetch(url, {
@@ -20,15 +20,15 @@ async function testEndpoint(url, description) {
         
         if (response.ok) {
             const data = await response.json();
-            console.log(`✅ Success:`, data);
+            console.log(`Success:`, data);
             return data;
         } else {
             const errorText = await response.text();
-            console.log(`❌ Error Response:`, errorText);
+            console.log(`Error Response:`, errorText);
             return null;
         }
     } catch (error) {
-        console.log(`💥 Network Error:`, error.message);
+        console.log(`Network Error:`, error.message);
         return null;
     }
 }

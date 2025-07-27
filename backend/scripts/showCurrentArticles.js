@@ -19,7 +19,7 @@ async function showCurrentArticles() {
       take: 10
     });
     
-    console.log('📰 Current articles in database:');
+    console.log('Current articles in database:');
     console.log('================================');
     
     articles.forEach((article, index) => {
@@ -32,10 +32,11 @@ async function showCurrentArticles() {
     });
     
   } catch (error) {
-    console.error('❌ Error:', error);
+    console.error('Error:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
 showCurrentArticles();
+

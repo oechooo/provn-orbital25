@@ -51,3 +51,4 @@ describe('UserService', () => {
     expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({ where: { id: 1 }, select: expect.anything() });
   });
 });
+

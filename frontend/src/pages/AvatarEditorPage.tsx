@@ -12,6 +12,8 @@ const AvatarEditorPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'skinColor' | 'hairColor' | 'hairStyle' | 'eyes' | 'mouth' | 'accessories'>('skinColor');
 
+  console.log('AvatarEditorPage rendering, user:', user);
+
   // Initialize avatar config from user or use default
   const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>(() => {
     if (user && user.avatarSkinColor && user.avatarHairColor && user.avatarHair && user.avatarEyes && user.avatarMouth) {
@@ -62,7 +64,7 @@ const AvatarEditorPage: React.FC = () => {
       
       console.log('Response from server:', response);
       
-      // Update the user context with response data (includes updated PP balance)
+      // Update the user context with response data (includes updated PP balance and purchased items)
       updateUser({
         avatarSkinColor: avatarConfig.skinColor,
         avatarHairColor: avatarConfig.hairColor,
@@ -70,7 +72,11 @@ const AvatarEditorPage: React.FC = () => {
         avatarEyes: avatarConfig.eyes,
         avatarMouth: avatarConfig.mouth,
         avatarAccessories: avatarConfig.accessories,
-        provePoints: response.provePoints // Use server's updated balance
+        provePoints: response.provePoints, // Use server's updated balance
+        purchasedHair: response.purchasedHair,
+        purchasedEyes: response.purchasedEyes,
+        purchasedMouth: response.purchasedMouth,
+        purchasedAccessories: response.purchasedAccessories
       });
       
       console.log('User after updateUser call should have PP:', response.provePoints);
@@ -91,32 +97,34 @@ const AvatarEditorPage: React.FC = () => {
 
   // Calculate total PP requirement for premium features
   const calculateRequirement = () => {
+    return 0; // Temporarily disabled for debugging
+    /*
     let requirement = 0;
     
-    // Charge for any premium item they haven't currently equipped (meaning they haven't purchased it yet)
-    // Users pay for each individual premium item, not category access
+    // Charge only for premium items they don't already own
     
     // Hair style requirement
-    if (avatarConfig.hair !== user?.avatarHair && avatarConfig.hair !== 'shortHair') {
+    if (avatarConfig.hair !== 'shortHair' && !ownsOption('hair', avatarConfig.hair)) {
       requirement += AVATAR_REQUIREMENTS.hairStyle[avatarConfig.hair as keyof typeof AVATAR_REQUIREMENTS.hairStyle] || 50;
     }
     
     // Eyes requirement
-    if (avatarConfig.eyes !== user?.avatarEyes && avatarConfig.eyes !== 'normal') {
+    if (avatarConfig.eyes !== 'normal' && !ownsOption('eyes', avatarConfig.eyes)) {
       requirement += AVATAR_REQUIREMENTS.eyes[avatarConfig.eyes as keyof typeof AVATAR_REQUIREMENTS.eyes] || 30;
     }
     
     // Mouth requirement
-    if (avatarConfig.mouth !== user?.avatarMouth && avatarConfig.mouth !== 'teethSmile') {
+    if (avatarConfig.mouth !== 'teethSmile' && !ownsOption('mouth', avatarConfig.mouth)) {
       requirement += AVATAR_REQUIREMENTS.mouth[avatarConfig.mouth as keyof typeof AVATAR_REQUIREMENTS.mouth] || 30;
     }
     
     // Accessories requirement
-    if (avatarConfig.accessories !== user?.avatarAccessories && avatarConfig.accessories !== 'none') {
+    if (avatarConfig.accessories !== 'none' && !ownsOption('accessories', avatarConfig.accessories)) {
       requirement += AVATAR_REQUIREMENTS.accessories[avatarConfig.accessories as keyof typeof AVATAR_REQUIREMENTS.accessories] || 100;
     }
     
     return requirement;
+    */
   };
 
   const totalRequirement = calculateRequirement();
@@ -154,20 +162,43 @@ const AvatarEditorPage: React.FC = () => {
     }
   };
 
-  // Check if user already owns a premium option (simpler check - they own it if they currently have it equipped)
+  // Check if user already owns a premium option - check purchased items lists
   const ownsOption = (category: string, value: string) => {
-    switch (category) {
-      case 'hair':
-        return user?.avatarHair === value;
-      case 'eyes':
-        return user?.avatarEyes === value;
-      case 'mouth':
-        return user?.avatarMouth === value;
-      case 'accessories':
-        return user?.avatarAccessories === value;
-      default:
-        return false;
+    if (!user) return false;
+    
+    // Temporarily return false to debug
+    return false;
+    
+    /*
+    try {
+      console.log(`Checking ownership for ${category}:${value}, user data:`, {
+        purchasedHair: user.purchasedHair,
+        purchasedEyes: user.purchasedEyes,
+        purchasedMouth: user.purchasedMouth,
+        purchasedAccessories: user.purchasedAccessories
+      });
+      
+      switch (category) {
+        case 'hair':
+          const purchasedHair = user.purchasedHair ? JSON.parse(user.purchasedHair) : [];
+          return purchasedHair.includes(value);
+        case 'eyes':
+          const purchasedEyes = user.purchasedEyes ? JSON.parse(user.purchasedEyes) : [];
+          return purchasedEyes.includes(value);
+        case 'mouth':
+          const purchasedMouth = user.purchasedMouth ? JSON.parse(user.purchasedMouth) : [];
+          return purchasedMouth.includes(value);
+        case 'accessories':
+          const purchasedAccessories = user.purchasedAccessories ? JSON.parse(user.purchasedAccessories) : [];
+          return purchasedAccessories.includes(value);
+        default:
+          return false;
+      }
+    } catch (error) {
+      console.error('Error parsing purchased items:', error);
+      return false;
     }
+    */
   };
 
   if (!user) {
@@ -319,8 +350,7 @@ const AvatarEditorPage: React.FC = () => {
                     <label className="block text-white font-medium mb-3">Hair Style</label>
                     <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
                       {AVATAR_OPTIONS.hair.map((option) => {
-                        const isPremium = isPremiumOption('hair', option.value);
-                        const isOwned = ownsOption('hair', option.value);
+                        // Temporarily disable premium logic for debugging
                         return (
                           <button
                             key={option.value}
@@ -329,18 +359,10 @@ const AvatarEditorPage: React.FC = () => {
                               avatarConfig.hair === option.value
                                 ? 'bg-purple-600 text-white shadow-lg'
                                 : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                            } ${isPremium && !isOwned ? 'border border-yellow-500/50' : ''}`}
+                            }`}
                           >
                             <div className="flex items-center justify-between">
                               <span>{option.label}</span>
-                              {isPremium && !isOwned && (
-                                <div className="flex items-center gap-1">
-                                  <span className="text-xs text-yellow-400">{getItemCost('hair', option.value)} PP</span>
-                                  <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                  </svg>
-                                </div>
-                              )}
                             </div>
                           </button>
                         );

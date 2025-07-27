@@ -237,3 +237,4 @@ export const getMarketByArticleId = async (req: Request, res: Response): Promise
     res.status(500).json({ message: 'Error fetching market' });
   }
 };
+

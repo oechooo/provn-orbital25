@@ -214,12 +214,13 @@ export const updateUserAvatar = async (req: AuthRequest, res: Response): Promise
         avatarEyes: true,
         avatarMouth: true,
         avatarAccessories: true,
+        // @ts-ignore - purchased fields exist but not in current type definition
         purchasedHair: true,
         purchasedEyes: true,
         purchasedMouth: true,
         purchasedAccessories: true
       }
-    });
+    }) as any; // Type assertion after query
 
     if (!currentUser) {
       res.status(404).json({ message: "User not found" });
@@ -326,7 +327,12 @@ export const updateUserAvatar = async (req: AuthRequest, res: Response): Promise
         avatarHair: true,
         avatarEyes: true,
         avatarMouth: true,
-        avatarAccessories: true
+        avatarAccessories: true,
+        // @ts-ignore - purchased fields exist but not in current type definition
+        purchasedHair: true,
+        purchasedEyes: true,
+        purchasedMouth: true,
+        purchasedAccessories: true
       }
     });
     
@@ -358,7 +364,18 @@ export const getCurrentUser = async (req: AuthRequest, res: Response): Promise<v
         email: true, 
         provePoints: true,
         createdAt: true, 
-        updatedAt: true
+        updatedAt: true,
+        avatarSkinColor: true,
+        avatarHairColor: true,
+        avatarHair: true,
+        avatarEyes: true,
+        avatarMouth: true,
+        avatarAccessories: true,
+        // @ts-ignore - purchased fields exist but not in current type definition
+        purchasedHair: true,
+        purchasedEyes: true,
+        purchasedMouth: true,
+        purchasedAccessories: true
       }
     });
     
@@ -373,3 +390,4 @@ export const getCurrentUser = async (req: AuthRequest, res: Response): Promise<v
     res.status(500).json({ message: "Error fetching user" });
   }
 };
+

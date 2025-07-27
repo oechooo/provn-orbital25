@@ -16,6 +16,10 @@ interface User {
   avatarEyes?: string;
   avatarMouth?: string;
   avatarAccessories?: string;
+  purchasedHair?: string;
+  purchasedEyes?: string;
+  purchasedMouth?: string;
+  purchasedAccessories?: string;
 }
 
 interface AuthContextType {

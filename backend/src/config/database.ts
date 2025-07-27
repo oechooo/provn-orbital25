@@ -23,3 +23,4 @@ export const initDatabase = async () => {
 export const closeDatabase = async () => {
   await prisma.$disconnect();
 };
+

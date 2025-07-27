@@ -5,3 +5,4 @@ export type MarketWithRelations = Market & {
   stakes: StakeWithUser[];
   article: Article;
 };
+

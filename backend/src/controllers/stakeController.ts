@@ -143,3 +143,4 @@ export const getUserStats = async (req: AuthRequest, res: Response): Promise<voi
     res.status(500).json({ message: 'Error fetching user statistics' });
   }
 };
+

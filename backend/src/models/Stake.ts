@@ -4,3 +4,4 @@ import { Stake, User } from '@prisma/client';
 export type StakeWithUser = Stake & {
   user: Pick<User, 'id' | 'username'>;
 };
+

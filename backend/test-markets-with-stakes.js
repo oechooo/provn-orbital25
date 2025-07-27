@@ -24,7 +24,7 @@ async function findMarketsWithStakes() {
       // Check if this is the air traffic controller article
       if (detailedMarket.article && detailedMarket.article.title && 
           detailedMarket.article.title.includes('air traffic controllers')) {
-        console.log(`\n🎯 Found Air Traffic Controller Market!`);
+        console.log(`\nFound Air Traffic Controller Market!`);
         console.log(`Market ID: ${detailedMarket.id}`);
         console.log(`Title: ${detailedMarket.article.title}`);
         console.log(`Stakes: ${detailedMarket.stakes.length}`);
@@ -75,3 +75,4 @@ async function findMarketsWithStakes() {
 }
 
 findMarketsWithStakes();
+

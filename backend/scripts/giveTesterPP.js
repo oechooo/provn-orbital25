@@ -26,9 +26,9 @@ async function giveTesterPP() {
         data: { predictionPoints: 10000 }
       });
       
-      console.log(`✅ Success! ${updatedUser.username} now has ${updatedUser.predictionPoints} PP`);
+      console.log(`Success! ${updatedUser.username} now has ${updatedUser.predictionPoints} PP`);
     } else {
-      console.log('\n❌ No tester user found. Available users listed above.');
+      console.log('\nNo tester user found. Available users listed above.');
     }
     
   } catch (error) {
@@ -39,3 +39,4 @@ async function giveTesterPP() {
 }
 
 giveTesterPP();
+

@@ -14,3 +14,4 @@ router.delete('/:id', deleteUser);
 router.put('/:id/avatar', auth, updateUserAvatar);
 
 export default router;
+

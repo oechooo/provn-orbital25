@@ -4,21 +4,21 @@ const { execSync } = require('child_process');
 const path = require('path');
 
 async function startupScript() {
-  console.log('🚀 Starting deployment initialization...');
+  console.log(' Starting deployment initialization...');
   
   try {
     // Ensure we're in the right directory
     process.chdir(path.join(__dirname, '..'));
     
-    console.log('📦 Installing dependencies...');
+    console.log('Installing dependencies...');
     
     console.log('🔄 Generating Prisma client...');
     execSync('npx prisma generate', { stdio: 'inherit' });
     
-    console.log('🗄️ Setting up database...');
+    console.log('Setting up database...');
     execSync('npx prisma db push --force-reset', { stdio: 'inherit' });
     
-    console.log('✅ Database setup complete!');
+    console.log('Database setup complete!');
     
     // Wait a moment for Prisma client to be ready
     console.log('⏳ Waiting for Prisma client to initialize...');
@@ -28,10 +28,10 @@ async function startupScript() {
     const { setupProduction } = require('./setupProduction');
     await setupProduction();
     
-    console.log('🎉 Deployment initialization successful!');
+    console.log(' Deployment initialization successful!');
     
   } catch (error) {
-    console.error('❌ Deployment initialization failed:', error);
+    console.error('Deployment initialization failed:', error);
     process.exit(1);
   }
 }
@@ -41,3 +41,4 @@ if (require.main === module) {
 }
 
 module.exports = { startupScript };
+

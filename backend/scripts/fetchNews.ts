@@ -9,17 +9,17 @@ dotenv.config();
 const prisma = new PrismaClient();
 
 async function fetchAndStoreArticles() {
-  console.log('🚀 Starting fetchNews.ts script...');
+  console.log('Starting fetchNews.ts script...');
   console.log('📡 Fetching fresh news articles and creating markets...\n');
   
   const API_KEY = process.env.NEWS_API_KEY;
   
   if (!API_KEY) {
-    console.error('❌ NEWS_API_KEY not found in environment variables');
+    console.error('NEWS_API_KEY not found in environment variables');
     return;
   }
   
-  console.log('✅ API Key found, proceeding with fetch...');
+  console.log('API Key found, proceeding with fetch...');
   
   const CATEGORIES = ["business", "entertainment", "health", "science", "sports", "technology"];
   const QUERIES = 5;
@@ -31,7 +31,7 @@ async function fetchAndStoreArticles() {
     let totalMarketsCreated = 0;
     
     for (const category of CATEGORIES) {
-      console.log(`\n📂 Processing category: ${category.toUpperCase()}`);
+      console.log(`\nProcessing category: ${category.toUpperCase()}`);
       const url = `https://newsapi.org/v2/top-headlines?apiKey=${API_KEY}&category=${category}&from=${fromDate}&pageSize=${QUERIES}&page=1`;
       const response = await axios.get(url);
       const articles = response.data.articles;
@@ -70,7 +70,7 @@ async function fetchAndStoreArticles() {
               category, // <-- Add this line
             },
           });
-          console.log(`✅ Added article: ${title}`);
+          console.log(`Added article: ${title}`);
           totalArticlesCreated++;
           
           // Create market for the new article
@@ -88,32 +88,33 @@ async function fetchAndStoreArticles() {
                 closed: false
               }
             });
-            console.log(`📊 Created market ${market.id} for article ${newArticle.id}`);
+            console.log(`Created market ${market.id} for article ${newArticle.id}`);
             totalMarketsCreated++;
           } catch (marketErr: any) {
-            console.error(`❌ Error creating market for article ${newArticle.id}:`, marketErr);
+            console.error(`Error creating market for article ${newArticle.id}:`, marketErr);
           }
         } catch (err: any) {
           if (err.code === 'P2002') {
-            console.log(`⚠️ Skipping duplicate article: ${title}`);
+            console.log(`Skipping duplicate article: ${title}`);
           } else {
-            console.error(`❌ Error inserting article: ${title}`, err);
+            console.error(`Error inserting article: ${title}`, err);
           }
         }
       }
     }
 
-    console.log(`\n✅ Process complete!`);
-    console.log('\n📊 SUMMARY:');
-    console.log(`📰 Total articles processed: ${totalArticlesProcessed}`);
-    console.log(`✅ New articles created: ${totalArticlesCreated}`);
-    console.log(`📊 Markets created: ${totalMarketsCreated}`);
-    console.log(`⚠️  Duplicate articles skipped: ${totalArticlesProcessed - totalArticlesCreated}`);
+    console.log(`\nProcess complete!`);
+    console.log('\nSUMMARY:');
+    console.log(`Total articles processed: ${totalArticlesProcessed}`);
+    console.log(`New articles created: ${totalArticlesCreated}`);
+    console.log(`Markets created: ${totalMarketsCreated}`);
+    console.log(`Duplicate articles skipped: ${totalArticlesProcessed - totalArticlesCreated}`);
   } catch (err) {
-    console.error('❌ Failed to fetch news:', err);
+    console.error('Failed to fetch news:', err);
   } finally {
     await prisma.$disconnect();
   }
 }
 
 fetchAndStoreArticles();
+

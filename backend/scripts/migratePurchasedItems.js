@@ -62,9 +62,9 @@ async function giveTester1PP() {
         where: { username: 'tester1' },
         data: { provePoints: 10000 }
       });
-      console.log(`✅ Success! ${updatedUser.username} now has ${updatedUser.provePoints} PP`);
+      console.log(`Success! ${updatedUser.username} now has ${updatedUser.provePoints} PP`);
     } else {
-      console.log('❌ User "tester1" not found');
+      console.log('User "tester1" not found');
       
       // Show available users
       const users = await prisma.user.findMany({
@@ -84,3 +84,4 @@ async function giveTester1PP() {
 
 // Run the PP update instead of migration
 giveTester1PP().catch(console.error);
+

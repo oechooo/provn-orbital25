@@ -20,13 +20,13 @@ async function testArticle4() {
         
         if (response.ok) {
             const data = await response.json();
-            console.log('✅ Article 4 found:', data.article.title);
+            console.log('Article 4 found:', data.article.title);
         } else {
             const errorText = await response.text();
-            console.log('❌ Article 4 failed:', response.status, errorText);
+            console.log('Article 4 failed:', response.status, errorText);
         }
     } catch (error) {
-        console.error('💥 Network error:', error);
+        console.error('Network error:', error);
     }
 }
 

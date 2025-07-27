@@ -3,7 +3,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function createMissingMarkets() {
-  console.log('🔍 Checking for articles without markets...');
+  console.log('Checking for articles without markets...');
   
   try {
     // Find all articles without markets
@@ -21,10 +21,10 @@ async function createMissingMarkets() {
       }
     });
 
-    console.log(`📊 Found ${articlesWithoutMarkets.length} articles without markets`);
+    console.log(`Found ${articlesWithoutMarkets.length} articles without markets`);
 
     if (articlesWithoutMarkets.length === 0) {
-      console.log('✅ All articles already have markets!');
+      console.log('All articles already have markets!');
       return;
     }
 
@@ -48,17 +48,17 @@ async function createMissingMarkets() {
           }
         });
 
-        console.log(`✅ Created market ${market.id} for article ${article.id}: "${article.title.substring(0, 50)}..."`);
+        console.log(`Created market ${market.id} for article ${article.id}: "${article.title.substring(0, 50)}..."`);
         created++;
       } catch (error) {
-        console.error(`❌ Failed to create market for article ${article.id}:`, error.message);
+        console.error(`Failed to create market for article ${article.id}:`, error.message);
         failed++;
       }
     }
 
-    console.log(`\n📈 Summary:`);
-    console.log(`✅ Markets created: ${created}`);
-    console.log(`❌ Failed: ${failed}`);
+    console.log(`\nSummary:`);
+    console.log(`Markets created: ${created}`);
+    console.log(`Failed: ${failed}`);
 
     // Verify the results
     const updatedCount = await prisma.article.count({
@@ -71,17 +71,17 @@ async function createMissingMarkets() {
 
     const totalArticles = await prisma.article.count();
     
-    console.log(`\n🎯 Final Status:`);
-    console.log(`📰 Total articles: ${totalArticles}`);
-    console.log(`📊 Articles with markets: ${updatedCount}`);
-    console.log(`⚠️  Articles without markets: ${totalArticles - updatedCount}`);
+    console.log(`\nFinal Status:`);
+    console.log(`Total articles: ${totalArticles}`);
+    console.log(`Articles with markets: ${updatedCount}`);
+    console.log(`Articles without markets: ${totalArticles - updatedCount}`);
 
     if (updatedCount === totalArticles) {
-      console.log(`\n🎉 SUCCESS: All articles now have markets!`);
+      console.log(`\nSUCCESS: All articles now have markets!`);
     }
 
   } catch (error) {
-    console.error('💥 Error:', error);
+    console.error('Error:', error);
   } finally {
     await prisma.$disconnect();
   }
@@ -89,3 +89,4 @@ async function createMissingMarkets() {
 
 // Run the script
 createMissingMarkets();
+

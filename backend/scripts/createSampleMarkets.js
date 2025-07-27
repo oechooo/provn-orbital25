@@ -73,7 +73,7 @@ async function createSampleData() {
     // Clear existing data
     await prisma.market.deleteMany();
     await prisma.article.deleteMany();
-    console.log('🗑️ Cleared existing data');
+    console.log(' Cleared existing data');
 
     let articlesCreated = 0;
     let marketsCreated = 0;
@@ -85,7 +85,7 @@ async function createSampleData() {
           data: articleData
         });
         
-        console.log(`✅ Created article: ${article.title}`);
+        console.log(`Created article: ${article.title}`);
         articlesCreated++;
 
         // Create corresponding market
@@ -101,26 +101,26 @@ async function createSampleData() {
           }
         });
         
-        console.log(`📊 Created market for article: ${article.title}`);
+        console.log(`Created market for article: ${article.title}`);
         marketsCreated++;
         
       } catch (error) {
-        console.error(`❌ Error creating article/market:`, error.message);
+        console.error(`Error creating article/market:`, error.message);
       }
     }
 
-    console.log('\n🎉 Sample data creation completed!');
-    console.log(`📰 Articles created: ${articlesCreated}`);
-    console.log(`📊 Markets created: ${marketsCreated}`);
+    console.log('\nSample data creation completed!');
+    console.log(`Articles created: ${articlesCreated}`);
+    console.log(`Markets created: ${marketsCreated}`);
 
     // Show final stats
     const totalArticles = await prisma.article.count();
     const totalMarkets = await prisma.market.count();
-    console.log(`\n📈 Total articles in database: ${totalArticles}`);
-    console.log(`📈 Total markets in database: ${totalMarkets}`);
+    console.log(`\nTotal articles in database: ${totalArticles}`);
+    console.log(`Total markets in database: ${totalMarkets}`);
 
   } catch (error) {
-    console.error('❌ Error creating sample data:', error);
+    console.error('Error creating sample data:', error);
   } finally {
     await prisma.$disconnect();
   }
@@ -128,3 +128,4 @@ async function createSampleData() {
 
 // Run the script
 createSampleData();
+

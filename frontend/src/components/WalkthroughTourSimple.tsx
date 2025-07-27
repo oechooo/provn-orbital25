@@ -29,7 +29,7 @@ const WalkthroughTour: React.FC = () => {
     {
       title: 'Welcome to Provn.io!',
       content: 'Welcome to the future of news verification! Let\'s take a guided tour of how Provn.io works. This interactive tour will show you the actual pages and features!',
-      icon: '🌟',
+      icon: '',
       page: '/',
       highlight: null,
       action: null
@@ -37,7 +37,7 @@ const WalkthroughTour: React.FC = () => {
     {
       title: 'Your Homepage',
       content: 'This is your homepage! Here you can see the latest news and get an overview of Provn.io. Notice the navigation bar at the top.',
-      icon: '🏠',
+      icon: '',
       page: '/',
       highlight: '[data-tour="navbar"]',
       action: null
@@ -45,7 +45,7 @@ const WalkthroughTour: React.FC = () => {
     {
       title: 'Explore News',
       content: 'Let\'s check out the news section where you can see all available articles for prediction! Click "Next" to navigate there now.',
-      icon: '📰',
+      icon: '',
       page: '/news',
       highlight: null,
       action: () => navigate('/news')
@@ -53,7 +53,7 @@ const WalkthroughTour: React.FC = () => {
     {
       title: 'The News Page',
       content: 'Welcome to the news page! Here you can see all the articles available for predictions. Each article shows its title, description, and most importantly - the market confidence percentages.',
-      icon: '📊',
+      icon: '',
       page: '/news',
       highlight: '[data-tour="article-list"]',
       action: null
@@ -61,7 +61,7 @@ const WalkthroughTour: React.FC = () => {
     {
       title: 'Understanding Articles',
       content: 'Each article card shows market confidence with TRUE/FALSE percentages. Higher percentages mean more community confidence. Notice how each article has prediction markets attached!',
-      icon: '�',
+      icon: '',
       page: '/news',
       highlight: '[data-tour="article-card"]',
       action: null
@@ -69,31 +69,31 @@ const WalkthroughTour: React.FC = () => {
     {
       title: 'Visit an Article',
       content: 'Now let\'s visit an actual article to see how predictions work! Click "Next" and we\'ll take you to a real article page.',
-      icon: '🎯',
+      icon: '',
       page: '/news',
       highlight: '[data-tour="article-link"]',
-      action: () => navigate('/article/34')
+      action: () => navigate('/article/4')
     },
     {
       title: 'Article Detail Page',
       content: 'Here\'s where the magic happens! This is a real article detail page. You can read the full article, see the current market probabilities, and place your own predictions using ProvePoints.',
-      icon: '🔍',
-      page: '/article/34',
+      icon: '',
+      page: '/article/4',
       highlight: '[data-tour="article-content"]',
       action: null
     },
     {
       title: 'Making Predictions',
       content: 'See the prediction interface on the right? This is where you can stake ProvePoints on whether you think this news will prove TRUE or FALSE. The market updates in real-time based on community predictions!',
-      icon: '💎',
-      page: '/article/34',
+      icon: '',
+      page: '/article/4',
       highlight: '[data-tour="prediction-interface"]',
       action: null
     },
     {
       title: 'ProvePoints System',
       content: 'Your ProvePoints (PP) are shown in the top right. That\'s your currency for making predictions. You start with 100 PP! If you\'re not logged in, you\'ll see the login button instead.',
-      icon: '�',
+      icon: '',
       page: null,
       highlight: '[data-tour="prove-points"]',
       action: null
@@ -101,7 +101,7 @@ const WalkthroughTour: React.FC = () => {
     {
       title: 'Your Profile',
       content: 'Let\'s visit your profile to customize your avatar and track your progress! If you\'re not logged in, this will take you to the login page.',
-      icon: '✨',
+      icon: '',
       page: '/profile',
       highlight: null,
       action: () => user ? navigate('/profile') : navigate('/login')
@@ -109,7 +109,7 @@ const WalkthroughTour: React.FC = () => {
     {
       title: 'Track Your Success',
       content: 'In your profile, you can see your prediction history, customize your avatar, and track your PP earnings! This is your personal dashboard for success.',
-      icon: '🏆',
+      icon: '',
       page: '/profile',
       highlight: '.avatar-section',
       action: null
@@ -117,7 +117,7 @@ const WalkthroughTour: React.FC = () => {
     {
       title: 'Ready to Start!',
       content: 'You\'ve completed the tour! You\'ve seen the news page, visited an actual article, and learned how predictions work. Ready to start making your own predictions and earning ProvePoints?',
-      icon: '🚀',
+      icon: '',
       page: null,
       highlight: null,
       action: null
@@ -356,7 +356,7 @@ const WalkthroughTour: React.FC = () => {
               {/* Show current page indicator */}
               {steps[currentStep].page && (
                 <div className="mt-3 text-xs text-purple-600 font-medium">
-                  📍 Currently on: {steps[currentStep].page === '/' ? 'Homepage' : steps[currentStep].page.replace('/', '').charAt(0).toUpperCase() + steps[currentStep].page.slice(2)}
+                  Currently on: {steps[currentStep].page === '/' ? 'Homepage' : steps[currentStep].page.replace('/', '').charAt(0).toUpperCase() + steps[currentStep].page.slice(2)}
                 </div>
               )}
             </div>
@@ -395,7 +395,7 @@ const WalkthroughTour: React.FC = () => {
                     : 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white'
                 }`}
               >
-                {currentStep === steps.length - 1 ? '🚀 Start!' : 'Next →'}
+                {currentStep === steps.length - 1 ? 'Start!' : 'Next →'}
               </button>
             </div>
           </div>

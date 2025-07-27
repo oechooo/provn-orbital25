@@ -274,7 +274,7 @@ const ProfilePage: React.FC = () => {
             ) : activeTab === 'stakes' ? (
               stakes.length === 0 ? (
                 <div className="text-center text-slate-400 py-12">
-                  <div className="text-6xl mb-4">📊</div>
+                  <div className="text-6xl mb-4"></div>
                   <p className="text-xl font-semibold mb-2">No stakes yet</p>
                   <p className="text-sm">Start making predictions to see your stakes here!</p>
                 </div>
@@ -352,7 +352,7 @@ const ProfilePage: React.FC = () => {
               // My Articles Tab
               articles.length === 0 ? (
                 <div className="text-center text-slate-400 py-12">
-                  <div className="text-6xl mb-4">📝</div>
+                  <div className="text-6xl mb-4">?</div>
                   <p className="text-xl font-semibold mb-2">No articles yet</p>
                   <p className="text-sm mb-4">Start creating articles to see them here!</p>
                   <button

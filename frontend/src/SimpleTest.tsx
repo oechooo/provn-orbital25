@@ -9,7 +9,7 @@ function SimpleTest() {
       justifyContent: 'center',
       flexDirection: 'column'
     }}>
-      <h1 style={{ fontSize: '3rem' }}>🚀 React is Working!</h1>
+      <h1 style={{ fontSize: '3rem' }}>React is Working!</h1>
       <p style={{ fontSize: '1.5rem', opacity: 0.8 }}>White screen debugging</p>
     </div>
   );

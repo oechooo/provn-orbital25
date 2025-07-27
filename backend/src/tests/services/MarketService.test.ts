@@ -109,3 +109,4 @@ describe('MarketService', () => {
     expect(params.sharesBought).toBeCloseTo(190.90, 2);
   });
 });
+

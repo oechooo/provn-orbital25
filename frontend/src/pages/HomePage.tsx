@@ -266,7 +266,7 @@ const HomePage: React.FC = () => {
             </div>
           ) : (
             <div className="glass-card p-12 text-center">
-              <div className="text-6xl mb-4">📊</div>
+              <div className="text-6xl mb-4"></div>
               <h3 className="text-xl font-bold text-white mb-2">No Markets Available</h3>
               <p className="text-slate-300 mb-6">
                 No prediction markets are currently active. Try refreshing to load new markets from recent news.

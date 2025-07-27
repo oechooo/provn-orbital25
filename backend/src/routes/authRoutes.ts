@@ -38,3 +38,4 @@ router.put('/profile', auth, updateProfile);
 router.put('/update-avatar', auth, updateUserAvatar);
 
 export default router;
+

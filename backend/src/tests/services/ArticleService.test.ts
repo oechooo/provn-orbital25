@@ -41,3 +41,4 @@ describe('ArticleService', () => {
     expect(mockPrisma.article.findUnique).toHaveBeenCalled();
   });
 });
+

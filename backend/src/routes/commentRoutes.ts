@@ -26,3 +26,4 @@ router.put('/:commentId', auth, updateComment);
 router.delete('/:commentId', auth, deleteComment);
 
 export default router;
+

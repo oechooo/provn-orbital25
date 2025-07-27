@@ -21,9 +21,9 @@ const DebugApp: React.FC = () => {
       }}>
         <h2>System Check:</h2>
         <ul>
-          <li>✅ React is rendering</li>
-          <li>✅ Basic styling is working</li>
-          <li>✅ Component is mounted</li>
+          <li>React is rendering</li>
+          <li>Basic styling is working</li>
+          <li>Component is mounted</li>
         </ul>
       </div>
     </div>

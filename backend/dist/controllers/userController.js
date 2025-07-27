@@ -197,12 +197,13 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 avatarEyes: true,
                 avatarMouth: true,
                 avatarAccessories: true,
+                // @ts-ignore - purchased fields exist but not in current type definition
                 purchasedHair: true,
                 purchasedEyes: true,
                 purchasedMouth: true,
                 purchasedAccessories: true
             }
-        });
+        }); // Type assertion after query
         if (!currentUser) {
             res.status(404).json({ message: "User not found" });
             return;
@@ -297,7 +298,12 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 avatarHair: true,
                 avatarEyes: true,
                 avatarMouth: true,
-                avatarAccessories: true
+                avatarAccessories: true,
+                // @ts-ignore - purchased fields exist but not in current type definition
+                purchasedHair: true,
+                purchasedEyes: true,
+                purchasedMouth: true,
+                purchasedAccessories: true
             }
         });
         res.json(Object.assign({ message: totalCost > 0 ? `Avatar updated! ${totalCost} PP deducted.` : "Avatar updated successfully!", costDeducted: totalCost }, user));
@@ -324,7 +330,18 @@ const getCurrentUser = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 email: true,
                 provePoints: true,
                 createdAt: true,
-                updatedAt: true
+                updatedAt: true,
+                avatarSkinColor: true,
+                avatarHairColor: true,
+                avatarHair: true,
+                avatarEyes: true,
+                avatarMouth: true,
+                avatarAccessories: true,
+                // @ts-ignore - purchased fields exist but not in current type definition
+                purchasedHair: true,
+                purchasedEyes: true,
+                purchasedMouth: true,
+                purchasedAccessories: true
             }
         });
         if (!user) {

@@ -19,12 +19,12 @@ To get articles from the News API, you need to:
 
 ## Features Added:
 
-✅ **Article Controller** - Handles fetching and serving articles
-✅ **News API Integration** - Fetches real articles from NewsAPI.org
-✅ **Automatic Market Creation** - Creates prediction markets for each article
-✅ **Multiple Categories** - Fetches from business, health, science, technology
-✅ **Duplicate Prevention** - Avoids creating duplicate articles/markets
-✅ **Error Handling** - Graceful handling of API errors and rate limits
+**Article Controller** - Handles fetching and serving articles
+**News API Integration** - Fetches real articles from NewsAPI.org
+**Automatic Market Creation** - Creates prediction markets for each article
+**Multiple Categories** - Fetches from business, health, science, technology
+**Duplicate Prevention** - Avoids creating duplicate articles/markets
+**Error Handling** - Graceful handling of API errors and rate limits
 
 ## Free Tier Limits:
 - 1,000 requests per day

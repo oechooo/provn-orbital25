@@ -5,7 +5,7 @@ async function testNewsAPI() {
   const API_KEY = process.env.NEWS_API_KEY;
   
   if (!API_KEY || API_KEY === 'your_actual_api_key_here') {
-    console.log('❌ Please set your real News API key in the .env file');
+    console.log('Please set your real News API key in the .env file');
     console.log('1. Go to https://newsapi.org/register');
     console.log('2. Sign up for a free account');
     console.log('3. Get your API key');
@@ -13,22 +13,22 @@ async function testNewsAPI() {
     return;
   }
 
-  console.log('🔍 Testing News API connection...');
+  console.log(' Testing News API connection...');
   
   try {
     const url = `https://newsapi.org/v2/top-headlines?apiKey=${API_KEY}&category=technology&pageSize=1&language=en`;
     const response = await axios.get(url);
     
     if (response.data.status === 'ok') {
-      console.log('✅ News API is working!');
-      console.log(`📰 Sample article: ${response.data.articles[0]?.title || 'No articles found'}`);
+      console.log('News API is working!');
+      console.log(` Sample article: ${response.data.articles[0]?.title || 'No articles found'}`);
       console.log('\nYou can now run: node scripts/fetchRealNews.js');
     } else {
-      console.log('❌ API returned an error:', response.data);
+      console.log('API returned an error:', response.data);
     }
     
   } catch (error) {
-    console.error('❌ API Test failed:', error.response?.data || error.message);
+    console.error('API Test failed:', error.response?.data || error.message);
     
     if (error.response?.status === 401) {
       console.log('\n🔑 API Key Error:');
@@ -44,3 +44,4 @@ async function testNewsAPI() {
 }
 
 testNewsAPI();
+

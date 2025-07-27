@@ -94,9 +94,9 @@ async function populateMarketWithStakes(marketId: number, botUserId: number) {
 
 async function fetchAndPopulateArticles() {
   // Force output to be visible immediately
-  process.stdout.write('\n🚀 MOCK DATA POPULATION STARTING\n');
-  console.log('🚀 Starting mockAndPopulateNews.ts script...');
-  console.log('🎭 Creating MOCK articles, markets, and populating with bot stakes...\n');
+  process.stdout.write('\nMOCK DATA POPULATION STARTING\n');
+  console.log('Starting mockAndPopulateNews.ts script...');
+  console.log('Creating MOCK articles, markets, and populating with bot stakes...\n');
   
   // Flush output immediately
   if (typeof process.stdout.write === 'function') {
@@ -104,22 +104,22 @@ async function fetchAndPopulateArticles() {
   }
   
   // Debug: Database connection
-  console.log('\n🔍 Testing database connection...');
+  console.log('\nTesting database connection...');
   await prisma.$connect();
-  console.log('✅ Database connection successful');
+  console.log('Database connection successful');
   
   // Check existing data
   const existingArticles = await prisma.article.count();
   const existingMarkets = await prisma.market.count();
   const existingStakes = await prisma.stake.count();
-  console.log(`📊 Current DB state: ${existingArticles} articles, ${existingMarkets} markets, ${existingStakes} stakes`);
+  console.log(`Current DB state: ${existingArticles} articles, ${existingMarkets} markets, ${existingStakes} stakes`);
   
   // Create or get bot user
-  console.log('\n🤖 Setting up bot user...');
+  console.log('\nSetting up bot user...');
   const bot = await createOrGetBot();
-  console.log(`✅ Bot ready: ${bot.username} (ID: ${bot.id}, PP: ${bot.provePoints})`);
+  console.log(`Bot ready: ${bot.username} (ID: ${bot.id}, PP: ${bot.provePoints})`);
 
-  console.log('\n📰 Creating mock articles with markets and stakes...');
+  console.log('\nCreating mock articles with markets and stakes...');
   await createMockArticles();
   
   // Get final counts
@@ -128,21 +128,21 @@ async function fetchAndPopulateArticles() {
   const finalStakes = await prisma.stake.count();
   const finalBot = await prisma.user.findUnique({ where: { id: bot.id } });
   
-  console.log(`\n🎉 PROCESS COMPLETE!`);
-  console.log('\n📊 FINAL SUMMARY:');
-  console.log(`   📰 Total articles in DB: ${finalArticles}`);
-  console.log(`   🏪 Total markets in DB: ${finalMarkets}`);
-  console.log(`   🎲 Total stakes in DB: ${finalStakes}`);
-  console.log(`   💰 Bot PP remaining: ${finalBot?.provePoints || 0}`);
-  console.log(`   🤖 Bot final status: ${finalBot?.username} (ID: ${finalBot?.id})`);
+  console.log(`\nPROCESS COMPLETE!`);
+  console.log('\nFINAL SUMMARY:');
+  console.log(`   Total articles in DB: ${finalArticles}`);
+  console.log(`   Total markets in DB: ${finalMarkets}`);
+  console.log(`   Total stakes in DB: ${finalStakes}`);
+  console.log(`   Bot PP remaining: ${finalBot?.provePoints || 0}`);
+  console.log(`   Bot final status: ${finalBot?.username} (ID: ${finalBot?.id})`);
   
-  console.log('\n🔌 Disconnecting from database...');
+  console.log('\nDisconnecting from database...');
   await prisma.$disconnect();
-  console.log('✅ Database disconnected');
+  console.log('Database disconnected');
 }
 
 async function createMockArticles() {
-  console.log('\n🎭 Creating mock articles...');
+  console.log('\nCreating mock articles...');
   
   const mockArticles = [
     {
@@ -194,11 +194,11 @@ async function createMockArticles() {
   let totalMarketsCreated = 0;
   let totalStakesCreated = 0;
 
-  console.log(`📊 Planning to create ${mockArticles.length} mock articles...`);
+  console.log(`Planning to create ${mockArticles.length} mock articles...`);
 
   for (let i = 0; i < mockArticles.length; i++) {
     const mockArticle = mockArticles[i];
-    console.log(`\n📰 Creating mock article ${i + 1}/${mockArticles.length}: "${mockArticle.title.substring(0, 50)}..."`);
+    console.log(`\nCreating mock article ${i + 1}/${mockArticles.length}: "${mockArticle.title.substring(0, 50)}..."`);
     
     // Add timestamp to URL to ensure uniqueness
     const uniqueUrl = `https://example.com/${mockArticle.category}/article-${Date.now()}-${i}`;
@@ -217,11 +217,11 @@ async function createMockArticles() {
       },
     });
 
-    console.log(`✅ Created mock article with ID: ${newArticle.id}`);
+    console.log(`Created mock article with ID: ${newArticle.id}`);
     totalCreated++;
 
     // Create market for mock article
-    console.log(`🏪 Creating market for article ${newArticle.id}...`);
+    console.log(`Creating market for article ${newArticle.id}...`);
     const market = await prisma.market.create({
       data: {
         articleId: newArticle.id,
@@ -236,11 +236,11 @@ async function createMockArticles() {
       }
     });
 
-    console.log(`✅ Created market ${market.id} for mock article`);
+    console.log(`Created market ${market.id} for mock article`);
     totalMarketsCreated++;
     
     // Add bot stakes to the market
-    console.log(`🎲 Adding bot stakes to market ${market.id}...`);
+    console.log(`Adding bot stakes to market ${market.id}...`);
     const stakesCountBefore = await prisma.stake.count({ where: { marketId: market.id } });
     
     await populateMarketWithStakes(market.id, bot.id);
@@ -248,14 +248,14 @@ async function createMockArticles() {
     const stakesCountAfter = await prisma.stake.count({ where: { marketId: market.id } });
     const stakesAdded = stakesCountAfter - stakesCountBefore;
     totalStakesCreated += stakesAdded;
-    console.log(`✅ Added ${stakesAdded} stakes to market ${market.id}`);
+    console.log(`Added ${stakesAdded} stakes to market ${market.id}`);
     
     // Show final market state
     const updatedMarket = await prisma.market.findUnique({
       where: { id: market.id }
     });
     if (updatedMarket) {
-      console.log(`📊 Final probabilities: TRUE ${(updatedMarket.probTrue * 100).toFixed(1)}%, FALSE ${(updatedMarket.probFalse * 100).toFixed(1)}%`);
+      console.log(`Final probabilities: TRUE ${(updatedMarket.probTrue * 100).toFixed(1)}%, FALSE ${(updatedMarket.probFalse * 100).toFixed(1)}%`);
     }
 
     // Small delay between articles
@@ -264,14 +264,14 @@ async function createMockArticles() {
     }
   }
 
-  console.log(`\n🎯 Mock data creation summary:`);
-  console.log(`   📰 Articles created: ${totalCreated}/${mockArticles.length}`);
-  console.log(`   🏪 Markets created: ${totalMarketsCreated}`);
-  console.log(`   🎲 Stakes created: ${totalStakesCreated}`);
+  console.log(`\nMock data creation summary:`);
+  console.log(`   Articles created: ${totalCreated}/${mockArticles.length}`);
+  console.log(`   Markets created: ${totalMarketsCreated}`);
+  console.log(`   Stakes created: ${totalStakesCreated}`);
   
   // Get updated bot status
   const finalBot = await prisma.user.findUnique({ where: { id: bot.id } });
-  console.log(`   🤖 Bot PP remaining: ${finalBot?.provePoints || 0}`);
+  console.log(`   Bot PP remaining: ${finalBot?.provePoints || 0}`);
 }
 
 // Wrapper to ensure output is visible
@@ -279,9 +279,10 @@ async function runScript() {
   process.stdout.write('\n=== SCRIPT WRAPPER STARTING ===\n');
   console.log('🔄 About to call fetchAndPopulateArticles...');
   await fetchAndPopulateArticles();
-  console.log('✅ fetchAndPopulateArticles completed successfully');
+  console.log('fetchAndPopulateArticles completed successfully');
   process.stdout.write('=== SCRIPT WRAPPER COMPLETED ===\n');
 }
 
 // Call the wrapper
 runScript();
+

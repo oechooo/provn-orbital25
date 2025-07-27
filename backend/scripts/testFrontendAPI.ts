@@ -14,12 +14,12 @@ async function testFrontendStakeAPI() {
     });
 
     if (!market) {
-      console.log('❌ No markets found for testing');
+      console.log('No markets found for testing');
       return;
     }
 
-    console.log(`📊 Testing with market ID: ${market.id}`);
-    console.log(`📰 Article: "${market.article.title}"`);
+    console.log(` Testing with market ID: ${market.id}`);
+    console.log(` Article: "${market.article.title}"`);
 
     // Test the new getStakingParameters endpoint
     const testStakeAmount = 25;
@@ -41,7 +41,7 @@ async function testFrontendStakeAPI() {
 
     const mockRes = {
       json: (data: any) => {
-        console.log('📊 API Response:');
+        console.log(' API Response:');
         console.log(`   - Upside: ${data.upside.toFixed(3)}`);
         console.log(`   - Shares bought: ${data.sharesBought.toFixed(3)}`);
         console.log(`   - Potential winnings: ${data.potentialWinnings.toFixed(1)} PP`);
@@ -49,7 +49,7 @@ async function testFrontendStakeAPI() {
       },
       status: (code: number) => ({
         json: (data: any) => {
-          console.log(`❌ API Error ${code}:`, data);
+          console.log(`API Error ${code}:`, data);
           return mockRes;
         }
       })
@@ -57,24 +57,25 @@ async function testFrontendStakeAPI() {
 
     await getStakingParameters(mockReq, mockRes);
 
-    console.log('\n✅ getStakingParameters API test completed successfully!');
+    console.log('\ngetStakingParameters API test completed successfully!');
 
     // Test that the calculation matches the actual staking
     const { MarketService } = require('../src/services/MarketService');
     const marketService = new MarketService(prisma);
     
     const directParams = await marketService.getStakingParameters(market.id, testPrediction, testStakeAmount);
-    console.log('\n🔍 Direct service comparison:');
+    console.log('\n Direct service comparison:');
     console.log(`   - Service upside: ${directParams.upside.toFixed(3)}`);
     console.log(`   - Service shares: ${directParams.sharesBought.toFixed(3)}`);
 
-    console.log('\n🎉 All API tests passed!');
+    console.log('\n All API tests passed!');
 
   } catch (error) {
-    console.error('❌ API test failed:', error);
+    console.error('API test failed:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
 testFrontendStakeAPI();
+

@@ -63,7 +63,7 @@ export const refreshArticles = async (req: Request, res: Response): Promise<void
       try {
         const url = `https://newsapi.org/v2/top-headlines?apiKey=${API_KEY}&category=${category}&pageSize=${ARTICLES_PER_CATEGORY}&language=en&sortBy=publishedAt`;
         
-        console.log(`📰 Fetching ${category} articles...`);
+        console.log(`Fetching ${category} articles...`);
         const response = await axios.get(url);
         const articles = response.data.articles;
 
@@ -84,36 +84,36 @@ export const refreshArticles = async (req: Request, res: Response): Promise<void
               category: category,
             });
 
-            console.log(`✅ Created article: ${newArticle.title}`);
+            console.log(`Created article: ${newArticle.title}`);
             totalFetched++;
 
             // Create market for the article
             try {
               const market = await marketService.createMarket(newArticle.id);
-              console.log(`📊 Created market ${market.id} for article ${newArticle.id}`);
+              console.log(`Created market ${market.id} for article ${newArticle.id}`);
               marketsCreated++;
             } catch (marketError: any) {
               if (marketError.message.includes('already has a market')) {
-                console.log(`⚠️ Market already exists for article: ${newArticle.title}`);
+                console.log(`Market already exists for article: ${newArticle.title}`);
               } else {
-                console.error(`❌ Error creating market for article ${newArticle.id}:`, marketError.message);
+                console.error(`Error creating market for article ${newArticle.id}:`, marketError.message);
               }
             }
 
           } catch (articleError: any) {
             if (articleError.code === 'P2002') {
-              console.log(`⚠️ Article already exists: ${article.title}`);
+              console.log(`Article already exists: ${article.title}`);
             } else {
-              console.error(`❌ Error creating article:`, articleError.message);
+              console.error(`Error creating article:`, articleError.message);
             }
           }
         }
       } catch (categoryError) {
-        console.error(`❌ Error fetching ${category} articles:`, categoryError);
+        console.error(`Error fetching ${category} articles:`, categoryError);
       }
     }
 
-    console.log(`🎉 News refresh completed: ${totalFetched} articles, ${marketsCreated} markets created`);
+    console.log(`News refresh completed: ${totalFetched} articles, ${marketsCreated} markets created`);
     
     res.json({ 
       message: 'Articles refreshed successfully',
@@ -183,9 +183,9 @@ export const createUserArticle = async (req: AuthRequest, res: Response): Promis
     // Create a market for the user-submitted article
     try {
       const market = await marketService.createMarket(newArticle.id);
-      console.log(`📊 Created market ${market.id} for user article ${newArticle.id}`);
+      console.log(`Created market ${market.id} for user article ${newArticle.id}`);
     } catch (marketError: any) {
-      console.error(`❌ Error creating market for user article ${newArticle.id}:`, marketError.message);
+      console.error(`Error creating market for user article ${newArticle.id}:`, marketError.message);
     }
 
     res.status(201).json({ 
@@ -223,3 +223,4 @@ export const getUserArticles = async (req: AuthRequest, res: Response): Promise<
     res.status(500).json({ message: 'Error fetching user articles' });
   }
 };
+

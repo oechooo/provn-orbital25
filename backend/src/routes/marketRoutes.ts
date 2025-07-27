@@ -20,3 +20,4 @@ router.put('/:id/set-outcome', auth, setMarketOutcome);
 router.put('/:id/admin-resolve', auth, adminResolveMarket);
 
 export default router;
+

@@ -144,7 +144,7 @@ const ProbChart: React.FC<ProbChartProps> = ({
     return (
       <div className="bg-slate-800 rounded-xl border border-slate-600 p-6 w-full max-w-md">
         <div className="flex flex-col items-center justify-center h-64 text-slate-400">
-          <div className="text-4xl mb-2">⚠️</div>
+          <div className="text-4xl mb-2">!</div>
           <p className="text-sm text-center">{error}</p>
         </div>
       </div>
@@ -160,7 +160,7 @@ const ProbChart: React.FC<ProbChartProps> = ({
         </div>
         
         <div className="flex flex-col items-center justify-center h-48 text-slate-400">
-          <div className="text-4xl mb-3">📊</div>
+          <div className="text-4xl mb-3"></div>
           <p className="text-sm text-center mb-2">No trading history yet</p>
           <p className="text-xs text-center text-slate-500">
             Chart will appear after the first stake is placed

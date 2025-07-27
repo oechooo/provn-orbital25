@@ -48,3 +48,4 @@ app.post("/api/articles", async (req, res) => {
 
 // Export the configured app
 export default app;
+

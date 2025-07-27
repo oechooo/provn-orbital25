@@ -62,12 +62,12 @@
 </head>
 <body>
     <div class="header">
-        <h1>🌟 Real News Articles from API</h1>
+        <h1>Real News Articles from API</h1>
         <p>Live news articles fetched from News API</p>
     </div>
     
     <div id="stats" class="stats">
-        <p>📊 Loading statistics...</p>
+        <p>Loading statistics...</p>
     </div>
     
     <div id="loading" class="loading">
@@ -75,7 +75,7 @@
     </div>
     
     <div id="error" class="error" style="display: none;">
-        <p>❌ Failed to load articles</p>
+        <p>Failed to load articles</p>
     </div>
     
     <div id="articles"></div>
@@ -88,8 +88,8 @@
                 
                 // Update stats
                 document.getElementById('stats').innerHTML = `
-                    <h3>📈 Live Statistics</h3>
-                    <p>📰 Total Articles: ${data.total || data.articles.length}</p>
+                    <h3>Live Statistics</h3>
+                    <p>Total Articles: ${data.total || data.articles.length}</p>
                     <p>🔄 Last Updated: ${new Date().toLocaleString()}</p>
                 `;
                 
@@ -102,16 +102,16 @@
                     <div class="article">
                         <div class="article-title">${article.title}</div>
                         <div class="article-meta">
-                            📰 <strong>${article.sourceName}</strong> | 
-                            📂 ${article.category} | 
+                            <strong>${article.sourceName}</strong> | 
+                            ${article.category} | 
                             📅 ${new Date(article.publishedAt).toLocaleDateString()}
-                            ${article.author ? ` | ✍️ ${article.author}` : ''}
+                            ${article.author ? ` | ${article.author}` : ''}
                         </div>
                         <div class="article-description">${article.description || 'No description available'}</div>
-                        <div class="article-url">🔗 <a href="${article.url}" target="_blank" style="color: #60a5fa;">${article.url}</a></div>
+                        <div class="article-url"><a href="${article.url}" target="_blank" style="color: #60a5fa;">${article.url}</a></div>
                         ${article.market ? `
                             <div style="margin-top: 10px; font-size: 0.9em; color: #fbbf24;">
-                                📊 Market: ${(article.market.probTrue * 100).toFixed(1)}% confidence
+                                Market: ${(article.market.probTrue * 100).toFixed(1)}% confidence
                             </div>
                         ` : ''}
                     </div>
@@ -122,7 +122,7 @@
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('error').style.display = 'block';
                 document.getElementById('error').innerHTML = `
-                    <p>❌ Error: ${error.message}</p>
+                    <p>Error: ${error.message}</p>
                     <p>Make sure your backend is running at http://localhost:3000</p>
                 `;
             }
@@ -136,3 +136,4 @@
     </script>
 </body>
 </html>
+

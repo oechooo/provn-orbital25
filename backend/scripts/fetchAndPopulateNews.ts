@@ -78,7 +78,7 @@ async function createOrGetBot() {
     }
   });
 
-  console.log(`🎉 Created bot user: ${bot.username} with ${bot.provePoints} PP`);
+  console.log(`Created bot user: ${bot.username} with ${bot.provePoints} PP`);
   return bot;
 }
 

@@ -40,16 +40,17 @@ async function testFrontendAPI() {
     console.log('History length:', history.length);
     
     if (history.length === 0) {
-      console.log('❌ PROBLEM: probHistory is empty - this would show empty chart state');
+      console.log('PROBLEM: probHistory is empty - this would show empty chart state');
     } else {
-      console.log('✅ SUCCESS: probHistory has data - chart should render');
+      console.log('SUCCESS: probHistory has data - chart should render');
       console.log('First entry:', history[0]);
       console.log('Last entry:', history[history.length - 1]);
     }
     
   } catch (error) {
-    console.error('❌ API Error:', error);
+    console.error('API Error:', error);
   }
 }
 
 testFrontendAPI();
+

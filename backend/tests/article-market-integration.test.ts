@@ -74,7 +74,7 @@ describe('Article-Market Integration Tests', () => {
     expect(createdArticle?.market?.probTrue).toBe(0.5);
     expect(createdArticle?.market?.probFalse).toBe(0.5);
 
-    console.log('✅ Article with market data:', {
+    console.log('Article with market data:', {
       articleId: createdArticle?.id,
       marketId: createdArticle?.market?.id,
       probTrue: createdArticle?.market?.probTrue,
@@ -131,10 +131,10 @@ describe('Article-Market Integration Tests', () => {
     for (const article of articlesWithoutMarkets) {
       try {
         const market = await marketService.createMarket(article.id);
-        console.log(`✅ Created market ${market.id} for article ${article.id}`);
+        console.log(`Created market ${market.id} for article ${article.id}`);
         marketsCreated++;
       } catch (error) {
-        console.error(`❌ Failed to create market for article ${article.id}:`, error);
+        console.error(`Failed to create market for article ${article.id}:`, error);
       }
     }
 
@@ -178,7 +178,7 @@ describe('Article-Market Integration Tests', () => {
     expect(probFalse).toBeCloseTo(0.5, 2);
     expect(probTrue + probFalse).toBeCloseTo(1.0, 2);
 
-    console.log('✅ Market probability verification:', {
+    console.log('Market probability verification:', {
       marketId: market.id,
       storedProbTrue: market.probTrue,
       storedProbFalse: market.probFalse,
@@ -192,3 +192,4 @@ describe('Article-Market Integration Tests', () => {
 afterAll(async () => {
   await prisma.$disconnect();
 });
+

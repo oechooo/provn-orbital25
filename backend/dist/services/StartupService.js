@@ -161,22 +161,22 @@ class StartupService {
         childProcess.on('close', (code) => {
             console.log(`[NEWS ${strategy}] Process closed with exit code: ${code}`);
             if (code === 0) {
-                console.log(`[NEWS ${strategy}] ✅ Execution completed successfully`);
+                console.log(`[NEWS ${strategy}] Execution completed successfully`);
                 resolve();
             }
             else {
-                console.log(`[NEWS ${strategy}] ❌ Execution failed`);
+                console.log(`[NEWS ${strategy}] Execution failed`);
                 console.log(`[NEWS ${strategy}] Error details: ${hasErrors ? lastErrorSnippet : 'No error details available'}`);
                 reject(new Error(`${strategy} script exited with code ${code}. Error: ${hasErrors ? lastErrorSnippet : 'Unknown error'}`));
             }
         });
         childProcess.on('error', (error) => {
-            console.log(`[NEWS ${strategy}] ❌ Process error: ${error.message}`);
+            console.log(`[NEWS ${strategy}] Process error: ${error.message}`);
             reject(error);
         });
         // Set a timeout to prevent hanging (3 minutes instead of 5)
         const timeout = setTimeout(() => {
-            console.log(`[NEWS ${strategy}] ❌ Execution timed out after 3 minutes`);
+            console.log(`[NEWS ${strategy}] Execution timed out after 3 minutes`);
             childProcess.kill('SIGTERM');
             // If SIGTERM doesn't work, use SIGKILL after 5 seconds
             setTimeout(() => {

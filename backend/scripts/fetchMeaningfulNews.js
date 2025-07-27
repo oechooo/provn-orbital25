@@ -8,7 +8,7 @@ async function fetchAndStoreArticles() {
   const API_KEY = process.env.NEWS_API_KEY;
   
   if (!API_KEY || API_KEY === 'your_actual_api_key_here') {
-    console.error('❌ Please set your real News API key in the .env file');
+    console.error('Please set your real News API key in the .env file');
     console.log('1. Go to https://newsapi.org/');
     console.log('2. Sign up for a free account');
     console.log('3. Get your API key');
@@ -93,10 +93,10 @@ async function fetchAndStoreArticles() {
     // Clear existing mock data
     await prisma.market.deleteMany();
     await prisma.article.deleteMany();
-    console.log('🗑️ Cleared existing data');
+    console.log(' Cleared existing data');
 
     for (const searchQuery of SEARCH_QUERIES) {
-      console.log(`\n📰 Searching: "${searchQuery.q}"...`);
+      console.log(`\nSearching: "${searchQuery.q}"...`);
       
       // Use search endpoint instead of top-headlines for more relevant results
       const url = `https://newsapi.org/v2/everything?apiKey=${API_KEY}&q=${encodeURIComponent(searchQuery.q)}&language=en&sortBy=publishedAt&pageSize=${ARTICLES_PER_QUERY}&from=${new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()}`;
@@ -106,7 +106,7 @@ async function fetchAndStoreArticles() {
         const articles = response.data.articles;
 
         if (!articles || articles.length === 0) {
-          console.log(`⚠️ No articles found for query: ${searchQuery.q}`);
+          console.log(`No articles found for query: ${searchQuery.q}`);
           continue;
         }
 
@@ -124,7 +124,7 @@ async function fetchAndStoreArticles() {
 
           // Skip articles without proper title or URL
           if (!title || !articleUrl || title === '[Removed]') {
-            console.log(`⚠️ Skipping invalid article: ${title || 'No title'}`);
+            console.log(`Skipping invalid article: ${title || 'No title'}`);
             continue;
           }
 
@@ -180,7 +180,7 @@ async function fetchAndStoreArticles() {
               },
             });
             
-            console.log(`✅ Added: ${title.substring(0, 60)}...`);
+            console.log(`Added: ${title.substring(0, 60)}...`);
             totalArticles++;
 
             // Create a corresponding prediction market
@@ -196,14 +196,14 @@ async function fetchAndStoreArticles() {
               }
             });
             
-            console.log(`📊 Created market for: ${title.substring(0, 60)}...`);
+            console.log(`Created market for: ${title.substring(0, 60)}...`);
             totalMarkets++;
             
           } catch (err) {
             if (err.code === 'P2002') {
-              console.log(`⚠️ Skipping duplicate article: ${title.substring(0, 60)}...`);
+              console.log(`Skipping duplicate article: ${title.substring(0, 60)}...`);
             } else {
-              console.error(`❌ Error inserting article: ${title}`, err.message);
+              console.error(`Error inserting article: ${title}`, err.message);
             }
           }
         }
@@ -212,27 +212,27 @@ async function fetchAndStoreArticles() {
         await new Promise(resolve => setTimeout(resolve, 1000));
         
       } catch (queryError) {
-        console.error(`❌ Error with query "${searchQuery.q}":`, queryError.message);
+        console.error(`Error with query "${searchQuery.q}":`, queryError.message);
         if (queryError.response?.status === 429) {
-          console.log('⚠️ Rate limit reached. Waiting before continuing...');
+          console.log('Rate limit reached. Waiting before continuing...');
           await new Promise(resolve => setTimeout(resolve, 5000));
         }
       }
     }
 
-    console.log('\n🎉 News fetching completed!');
-    console.log(`📰 Total articles fetched: ${totalArticles}`);
-    console.log(`📊 Total markets created: ${totalMarkets}`);
+    console.log('\nNews fetching completed!');
+    console.log(`Total articles fetched: ${totalArticles}`);
+    console.log(`Total markets created: ${totalMarkets}`);
     console.log(`🚫 Articles filtered out: ${filteredOut}`);
 
     // Show final database stats
     const dbArticles = await prisma.article.count();
     const dbMarkets = await prisma.market.count();
-    console.log(`\n📈 Articles in database: ${dbArticles}`);
-    console.log(`📈 Markets in database: ${dbMarkets}`);
+    console.log(`\nArticles in database: ${dbArticles}`);
+    console.log(`Markets in database: ${dbMarkets}`);
 
   } catch (error) {
-    console.error('❌ Failed to fetch news:', error.message);
+    console.error('Failed to fetch news:', error.message);
     
     if (error.response?.status === 401) {
       console.log('\n🔑 API Key Error - Please check your News API key:');
@@ -247,3 +247,4 @@ async function fetchAndStoreArticles() {
 
 // Run the script
 fetchAndStoreArticles();
+

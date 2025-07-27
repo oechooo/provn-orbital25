@@ -111,7 +111,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, onStakeSuccess }) => {
           {market.resolved ? (
             <div className="flex items-center justify-center p-3 bg-slate-700/50 rounded-lg">
               <span className="text-lg font-bold">
-                RESOLVED: {market.outcome ? '✅ TRUE' : '❌ FALSE'}
+                RESOLVED: {market.outcome ? 'TRUE' : 'FALSE'}
               </span>
             </div>
           ) : (

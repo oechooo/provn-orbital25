@@ -19,12 +19,12 @@ async function testAuthentication() {
     console.log(`   Status: ${response.status}`);
     console.log(`   Message: ${data.message}`);
     if (response.status === 401) {
-      console.log('   ✅ PASS: Invalid credentials properly rejected\n');
+      console.log('   PASS: Invalid credentials properly rejected\n');
     } else {
-      console.log('   ❌ FAIL: Should have rejected invalid credentials\n');
+      console.log('   FAIL: Should have rejected invalid credentials\n');
     }
   } catch (error) {
-    console.log(`   ❌ ERROR: ${error.message}\n`);
+    console.log(`   ERROR: ${error.message}\n`);
   }
 
   // Test 2: Try to register a new user (should succeed)
@@ -45,7 +45,7 @@ async function testAuthentication() {
     console.log(`   Status: ${response.status}`);
     console.log(`   Message: ${data.message}`);
     if (response.status === 201 && data.token) {
-      console.log('   ✅ PASS: User registration successful');
+      console.log('   PASS: User registration successful');
       console.log(`   Token received: ${data.token.substring(0, 20)}...`);
       
       // Test 3: Login with the new user credentials (should succeed)
@@ -62,7 +62,7 @@ async function testAuthentication() {
       console.log(`   Status: ${loginResponse.status}`);
       console.log(`   Message: ${loginData.message}`);
       if (loginResponse.status === 200 && loginData.token) {
-        console.log('   ✅ PASS: Login successful');
+        console.log('   PASS: Login successful');
         
         // Test 4: Access protected route with valid token (should succeed)
         console.log('\n4. Testing protected route access:');
@@ -74,19 +74,19 @@ async function testAuthentication() {
         const profileData = await profileResponse.json();
         console.log(`   Status: ${profileResponse.status}`);
         if (profileResponse.status === 200 && profileData.user) {
-          console.log('   ✅ PASS: Protected route access successful');
+          console.log('   PASS: Protected route access successful');
           console.log(`   User: ${profileData.user.username} (${profileData.user.email})`);
         } else {
-          console.log('   ❌ FAIL: Protected route access failed');
+          console.log('   FAIL: Protected route access failed');
         }
       } else {
-        console.log('   ❌ FAIL: Login failed');
+        console.log('   FAIL: Login failed');
       }
     } else {
-      console.log('   ❌ FAIL: User registration failed');
+      console.log('   FAIL: User registration failed');
     }
   } catch (error) {
-    console.log(`   ❌ ERROR: ${error.message}`);
+    console.log(`   ERROR: ${error.message}`);
   }
 
   // Test 5: Try to access protected route without token (should fail)
@@ -97,16 +97,17 @@ async function testAuthentication() {
     console.log(`   Status: ${response.status}`);
     console.log(`   Message: ${data.message}`);
     if (response.status === 401) {
-      console.log('   ✅ PASS: Protected route properly secured\n');
+      console.log('   PASS: Protected route properly secured\n');
     } else {
-      console.log('   ❌ FAIL: Protected route should require authentication\n');
+      console.log('   FAIL: Protected route should require authentication\n');
     }
   } catch (error) {
-    console.log(`   ❌ ERROR: ${error.message}\n`);
+    console.log(`   ERROR: ${error.message}\n`);
   }
 
-  console.log('🎉 Authentication testing complete!');
+  console.log('Authentication testing complete!');
 }
 
 // Run the tests
 testAuthentication();
+

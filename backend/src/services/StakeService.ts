@@ -5,6 +5,11 @@ export class StakeService {
   constructor(private readonly prisma: PrismaClient) {}
 
   async createStake(userId: number, marketId: number, prediction: boolean, stakeAmount: number): Promise<Stake> {
+    // Validate stake amount
+    if (stakeAmount <= 0) {
+      throw new Error('Stake amount must be positive');
+    }
+
     // Validate user has enough provePoints before creating stake
     const user = await this.prisma.user.findUnique({
       where: { id: userId }
@@ -14,9 +19,10 @@ export class StakeService {
   
     const market = await this.prisma.market.findUnique({
       where: { id: marketId },
-      select: { probTrue: true, probFalse: true }
+      select: { probTrue: true, probFalse: true, closed: true }
     });
     if (!market) throw new Error('Market not found');
+    if (market.closed) throw new Error('Market is closed');
 
     const marketService = new MarketService(this.prisma);
     const { upside, sharesBought } = await marketService.getStakingParameters(marketId, prediction, stakeAmount);
@@ -300,3 +306,4 @@ export class StakeService {
     return null; // Temporarily return null
   }
 }
+
