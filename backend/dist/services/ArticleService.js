@@ -14,7 +14,6 @@ class ArticleService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    // Create a new article
     createArticle(data) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.prisma.article.create({
@@ -25,7 +24,6 @@ class ArticleService {
             });
         });
     }
-    // Delete an article by ID
     deleteArticle(id) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.prisma.article.delete({
@@ -33,7 +31,6 @@ class ArticleService {
             });
         });
     }
-    // Get an article by ID
     getArticleById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.prisma.article.findUnique({
@@ -57,7 +54,6 @@ class ArticleService {
             });
         });
     }
-    // Filter articles by category, date range, and/or queries
     getFilteredArticles(options) {
         return __awaiter(this, void 0, void 0, function* () {
             const { category, range, query, limit = 10 } = options;
@@ -75,7 +71,6 @@ class ArticleService {
             });
         });
     }
-    // Build date filter for articles
     buildDateFilter(range) {
         if (!range)
             return {};
@@ -105,8 +100,6 @@ class ArticleService {
             publishedAt: Object.assign(Object.assign({}, (gte && { gte })), (lt && { lt }))
         };
     }
-    // Filter articles by query
-    // TODO: Implement a more advanced search algorithm like semantic search
     buildQueryFilter(query) {
         if (!query)
             return {};
@@ -118,8 +111,6 @@ class ArticleService {
             ]
         };
     }
-    // Get articles that do not have any associated markets (should be empty)
-    // TODO: Write test for this
     getArticlesWithoutMarkets() {
         return __awaiter(this, void 0, void 0, function* () {
             return this.prisma.article.findMany({
@@ -129,7 +120,6 @@ class ArticleService {
             });
         });
     }
-    // Get unique categories from articles
     getCategories() {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield this.prisma.article.findMany({
@@ -149,7 +139,6 @@ class ArticleService {
                 .sort();
         });
     }
-    // Get articles by user ID
     getArticlesByUserId(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.prisma.article.findMany({
@@ -165,4 +154,3 @@ class ArticleService {
     }
 }
 exports.ArticleService = ArticleService;
-//# sourceMappingURL=ArticleService.js.map

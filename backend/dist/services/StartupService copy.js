@@ -1,5 +1,4 @@
 "use strict";
-// src/services/StartupService.ts
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -18,13 +17,11 @@ class StartupService {
     runStartupTasks() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('Running startup tasks...');
-            // Check if startup news population is disabled
             if (process.env.DISABLE_STARTUP_NEWS_POPULATION === 'true') {
                 console.log('Startup news population disabled by environment variable');
                 return;
             }
             try {
-                // Check if we should run the news population
                 const shouldPopulateNews = yield this.shouldPopulateNews();
                 if (shouldPopulateNews) {
                     console.log('Running news population on startup...');
@@ -37,19 +34,16 @@ class StartupService {
             }
             catch (error) {
                 console.error('Startup tasks failed:', error);
-                // Don't exit the process, just log the error
-                // The server should still start even if news population fails
             }
         });
     }
     shouldPopulateNews() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Check if we have any articles from the last 24 hours
                 const recentArticles = yield this.prisma.article.count({
                     where: {
                         createdAt: {
-                            gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
+                            gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
                         }
                     }
                 });
@@ -57,7 +51,6 @@ class StartupService {
             }
             catch (error) {
                 console.error('Error checking if news population is needed:', error);
-                // Default to running it if we can't determine
                 return true;
             }
         });
@@ -66,8 +59,6 @@ class StartupService {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('Executing news population...');
             try {
-                // Run the news population directly instead of spawning a separate process
-                // This avoids path and compilation issues in production
                 yield this.populateNewsDirectly();
                 console.log('News population completed successfully');
             }
@@ -89,7 +80,6 @@ class StartupService {
             const axios = require('axios');
             const bcrypt = require('bcrypt');
             try {
-                // Create or get bot user
                 let bot = yield this.prisma.user.findUnique({
                     where: { email: 'bot@provn.io' }
                 });
@@ -114,7 +104,6 @@ class StartupService {
                 }
                 else {
                     console.log(`[NEWS] Bot user exists with ${bot.provePoints} PP`);
-                    // Top up if needed
                     if (bot.provePoints < 1000) {
                         yield this.prisma.user.update({
                             where: { id: bot.id },
@@ -123,7 +112,6 @@ class StartupService {
                         console.log('[NEWS] Topped up bot prove points');
                     }
                 }
-                // Fetch news articles (limit to 2 categories to keep it fast)
                 const categories = ['technology', 'business'];
                 const fromDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
                 let totalCreated = 0;
@@ -134,7 +122,7 @@ class StartupService {
                     const response = yield axios.get(url);
                     const articles = response.data.articles;
                     console.log(`[NEWS] Found ${articles.length} articles for ${category}`);
-                    for (const article of articles.slice(0, 3)) { // Limit to 3 per category
+                    for (const article of articles.slice(0, 3)) {
                         try {
                             const newArticle = yield this.prisma.article.create({
                                 data: {
@@ -149,7 +137,6 @@ class StartupService {
                                     category: category,
                                 },
                             });
-                            // Create market for the article
                             const market = yield this.prisma.market.create({
                                 data: {
                                     articleId: newArticle.id,
@@ -166,25 +153,22 @@ class StartupService {
                             console.log(`[NEWS] Created: ${article.title.substring(0, 50)}...`);
                             totalCreated++;
                             totalMarkets++;
-                            // Create a few bot stakes for this market (simplified)
                             const { MarketService } = require('../services/MarketService');
                             const { StakeService } = require('../services/StakeService');
                             const marketService = new MarketService(this.prisma);
                             const stakeService = new StakeService(this.prisma);
-                            // Create 2-3 stakes per market
                             const numStakes = 2 + Math.floor(Math.random() * 2);
                             for (let i = 0; i < numStakes; i++) {
                                 try {
-                                    const stakeAmount = 20 + Math.floor(Math.random() * 30); // 20-50 PP
+                                    const stakeAmount = 20 + Math.floor(Math.random() * 30);
                                     const prediction = Math.random() > 0.5;
                                     yield stakeService.createStake(bot.id, market.id, prediction, stakeAmount);
                                     console.log(`[NEWS]   - Bot stake: ${stakeAmount} PP on ${prediction ? 'TRUE' : 'FALSE'}`);
-                                    // Small delay between stakes
                                     yield new Promise(resolve => setTimeout(resolve, 50));
                                 }
                                 catch (stakeError) {
                                     console.log(`[NEWS]   - Stake failed: ${stakeError.message}`);
-                                    break; // Stop if bot runs out of points
+                                    break;
                                 }
                             }
                         }
@@ -208,4 +192,3 @@ class StartupService {
     }
 }
 exports.StartupService = StartupService;
-//# sourceMappingURL=StartupService%20copy.js.map

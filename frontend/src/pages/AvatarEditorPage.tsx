@@ -163,7 +163,7 @@ const AvatarEditorPage: React.FC = () => {
   };
 
   // Check if user already owns a premium option - check purchased items lists
-  const ownsOption = (category: string, value: string) => {
+  const ownsOption = (_category: string, _value: string) => {
     if (!user) return false;
     
     // Temporarily return false to debug

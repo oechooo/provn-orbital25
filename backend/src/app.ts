@@ -10,27 +10,28 @@ try {
 }
 
 import './config/env';
+import { logInfo } from './utils/logger';
 import userRoutes from './routes/userRoutes';
 
-console.log('Loading auth routes...');
+logInfo('Loading auth routes...');
 import authRoutes from './routes/authRoutes';
-console.log('Auth routes loaded successfully');
+logInfo('Auth routes loaded successfully');
 
-console.log('Loading stake routes...');
+logInfo('Loading stake routes...');
 import stakeRoutes from './routes/stakeRoutes';
-console.log('Stake routes loaded successfully');
+logInfo('Stake routes loaded successfully');
 
-console.log('Loading market routes...');
+logInfo('Loading market routes...');
 import marketRoutes from './routes/marketRoutes';
-console.log('Market routes loaded successfully');
+logInfo('Market routes loaded successfully');
 
-console.log('Loading article routes...');
+logInfo('Loading article routes...');
 import articleRoutes from './routes/articleRoutes';
-console.log('Article routes loaded successfully');
+logInfo('Article routes loaded successfully');
 
-console.log('Loading comment routes...');
+logInfo('Loading comment routes...');
 import commentRoutes from './routes/commentRoutes';
-console.log('Comment routes loaded successfully');
+logInfo('Comment routes loaded successfully');
 
 // Create Express app
 export const app: Express = express();
@@ -56,20 +57,20 @@ if (cors) {
   }));
 }
 
-// Routes
-console.log('Setting up routes...');
+//Routes
+logInfo('Setting up routes...');
 app.use('/api/users', userRoutes);
-console.log('User routes registered');
+logInfo('User routes registered');
 app.use('/api/auth', authRoutes);
-console.log('Auth routes registered');
+logInfo('Auth routes registered');
 app.use('/api/stakes', stakeRoutes);
-console.log('Stake routes registered');
+logInfo('Stake routes registered');
 app.use('/api/markets', marketRoutes);
-console.log('Market routes registered');
+logInfo('Market routes registered');
 app.use('/api/articles', articleRoutes);
-console.log('Article routes registered');
+logInfo('Article routes registered');
 app.use('/api/comments', commentRoutes);
-console.log('Comment routes registered');
+logInfo('Comment routes registered');
 
 // Simple health check route
 app.get('/health', async (req: Request, res: Response) => {

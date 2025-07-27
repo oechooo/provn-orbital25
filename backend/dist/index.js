@@ -18,7 +18,6 @@ const MarketService_1 = require("./services/MarketService");
 const StakeService_1 = require("./services/StakeService");
 const StartupService_1 = require("./services/StartupService");
 const CronService_1 = require("./services/CronService");
-// Initialize core services
 const userService = new UserService_1.UserService(database_1.prisma);
 const articleService = new ArticleService_1.ArticleService(database_1.prisma);
 const marketService = new MarketService_1.MarketService(database_1.prisma);
@@ -29,15 +28,11 @@ const port = process.env.PORT || 3000;
 (0, database_1.initDatabase)()
     .then(() => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Database connected');
-    // Start the server first
     const server = app_1.app.listen(port, () => {
         console.log(`Server running at http://localhost:${port}`);
         console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     });
-    // Start cron jobs
     cronService.startAll();
-    // Run startup tasks asynchronously after server starts
-    // This ensures the server is available even if startup tasks take time
     setImmediate(() => __awaiter(void 0, void 0, void 0, function* () {
         try {
             yield startupService.runStartupTasks();
@@ -58,4 +53,3 @@ const port = process.env.PORT || 3000;
     console.error('Failed to initialize database:', error);
     process.exit(1);
 });
-//# sourceMappingURL=index.js.map

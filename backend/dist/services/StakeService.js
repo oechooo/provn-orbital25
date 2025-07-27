@@ -17,7 +17,9 @@ class StakeService {
     }
     createStake(userId, marketId, prediction, stakeAmount) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Validate user has enough provePoints before creating stake
+            if (stakeAmount <= 0) {
+                throw new Error('Stake amount must be positive');
+            }
             const user = yield this.prisma.user.findUnique({
                 where: { id: userId }
             });
@@ -29,20 +31,19 @@ class StakeService {
             }
             const market = yield this.prisma.market.findUnique({
                 where: { id: marketId },
-                select: { probTrue: true, probFalse: true }
+                select: { probTrue: true, probFalse: true, closed: true }
             });
             if (!market)
                 throw new Error('Market not found');
+            if (market.closed)
+                throw new Error('Market is closed');
             const marketService = new MarketService_1.MarketService(this.prisma);
             const { upside, sharesBought } = yield marketService.getStakingParameters(marketId, prediction, stakeAmount);
-            // Get the new probabilities after the stake
             yield marketService.updateOdds(marketId, prediction, sharesBought);
             const updatedMarket = yield this.prisma.market.findUnique({
                 where: { id: marketId },
                 select: { probTrue: true, probFalse: true }
             });
-            // Create stake and update user's prove points atomically
-            // TODO: encapsulate user logic in UserService
             return this.prisma.$transaction((tx) => __awaiter(this, void 0, void 0, function* () {
                 const stake = yield tx.stake.create({
                     data: {
@@ -62,7 +63,6 @@ class StakeService {
                         }
                     }
                 });
-                // Update probability history
                 const currentMarket = yield tx.market.findUnique({
                     where: { id: marketId },
                     select: { probHistory: true }
@@ -88,7 +88,6 @@ class StakeService {
     }
     resolveStake(stakeId, finalOutcome) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Fetch the stake with user info
             const stake = yield this.prisma.stake.findUnique({
                 where: { id: stakeId },
                 include: { user: true }
@@ -96,7 +95,6 @@ class StakeService {
             if (!stake)
                 throw new Error('Stake not found');
             const wasCorrect = stake.prediction === finalOutcome;
-            // Mark the stake as resolved and set won field
             yield this.prisma.stake.update({
                 where: { id: stakeId },
                 data: {
@@ -104,7 +102,6 @@ class StakeService {
                     won: wasCorrect
                 }
             });
-            // Credit user if prediction was correct
             if (wasCorrect) {
                 const winnings = stake.stakeAmount * stake.upside;
                 yield this.prisma.user.update({
@@ -120,22 +117,19 @@ class StakeService {
     }
     refundStake(stakeId) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Fetch the stake with user info
             const stake = yield this.prisma.stake.findUnique({
                 where: { id: stakeId },
                 include: { user: true }
             });
             if (!stake)
                 throw new Error('Stake not found');
-            // Mark the stake as resolved with won = null (refunded)
             yield this.prisma.stake.update({
                 where: { id: stakeId },
                 data: {
                     resolved: true,
-                    won: null // null indicates refunded
+                    won: null
                 }
             });
-            // Refund the original stake amount to the user
             console.log(`Refunding stake ${stakeId}: User ${stake.userId} gets ${stake.stakeAmount} PP back`);
             yield this.prisma.user.update({
                 where: { id: stake.userId },
@@ -201,15 +195,12 @@ class StakeService {
                 where: { marketId }
             });
             yield this.prisma.$transaction([
-                // Mark all stakes as resolved with won = null (refunded) - temporarily disabled
                 this.prisma.stake.updateMany({
                     where: { marketId },
                     data: {
                         resolved: true
-                        // won: null  // temporarily disabled
                     }
                 }),
-                // Refund the stake amounts to users
                 ...stakes.map(stake => this.prisma.user.update({
                     where: { id: stake.userId },
                     data: {
@@ -235,22 +226,18 @@ class StakeService {
             const totalStakeAmount = stakes.reduce((sum, stake) => sum + stake.stakeAmount, 0);
             const totalWinningAmount = winningStakes.reduce((sum, stake) => sum + stake.stakeAmount, 0);
             yield this.prisma.$transaction([
-                // Mark all stakes as resolved and set won field - temporarily disabled
                 ...winningStakes.map(stake => this.prisma.stake.update({
                     where: { id: stake.id },
                     data: {
                         resolved: true
-                        // won: true  // temporarily disabled
                     }
                 })),
                 ...losingStakes.map(stake => this.prisma.stake.update({
                     where: { id: stake.id },
                     data: {
                         resolved: true
-                        // won: false  // temporarily disabled
                     }
                 })),
-                // Distribute winnings to winning stakes
                 ...winningStakes.map(stake => {
                     const winnings = (stake.stakeAmount / totalWinningAmount) * totalStakeAmount;
                     return this.prisma.user.update({
@@ -274,9 +261,8 @@ class StakeService {
             if (!market)
                 throw new Error('Market not found');
             return market.probHistory || null;
-            return null; // Temporarily return null
+            return null;
         });
     }
 }
 exports.StakeService = StakeService;
-//# sourceMappingURL=StakeService.js.map

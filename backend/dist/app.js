@@ -46,10 +46,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.app = void 0;
-// src/app.ts
 const express_1 = __importDefault(require("express"));
-// Use try-catch for optional imports since we've added it to package.json 
-// but it might not be installed yet
 let cors;
 try {
     cors = require('cors');
@@ -58,28 +55,26 @@ catch (e) {
     console.warn('CORS package not found, CORS middleware will not be enabled');
 }
 require("./config/env");
+const logger_1 = require("./utils/logger");
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
-console.log('Loading auth routes...');
+(0, logger_1.logInfo)('Loading auth routes...');
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
-console.log('Auth routes loaded successfully');
-console.log('Loading stake routes...');
+(0, logger_1.logInfo)('Auth routes loaded successfully');
+(0, logger_1.logInfo)('Loading stake routes...');
 const stakeRoutes_1 = __importDefault(require("./routes/stakeRoutes"));
-console.log('Stake routes loaded successfully');
-console.log('Loading market routes...');
+(0, logger_1.logInfo)('Stake routes loaded successfully');
+(0, logger_1.logInfo)('Loading market routes...');
 const marketRoutes_1 = __importDefault(require("./routes/marketRoutes"));
-console.log('Market routes loaded successfully');
-console.log('Loading article routes...');
+(0, logger_1.logInfo)('Market routes loaded successfully');
+(0, logger_1.logInfo)('Loading article routes...');
 const articleRoutes_1 = __importDefault(require("./routes/articleRoutes"));
-console.log('Article routes loaded successfully');
-console.log('Loading comment routes...');
+(0, logger_1.logInfo)('Article routes loaded successfully');
+(0, logger_1.logInfo)('Loading comment routes...');
 const commentRoutes_1 = __importDefault(require("./routes/commentRoutes"));
-console.log('Comment routes loaded successfully');
-// Create Express app
+(0, logger_1.logInfo)('Comment routes loaded successfully');
 exports.app = (0, express_1.default)();
-// Middleware
 exports.app.use(express_1.default.json());
 exports.app.use(express_1.default.urlencoded({ extended: true }));
-// Apply CORS if available
 if (cors) {
     exports.app.use(cors({
         origin: [
@@ -96,26 +91,22 @@ if (cors) {
         allowedHeaders: ['Content-Type', 'Authorization']
     }));
 }
-// Routes
-console.log('Setting up routes...');
+(0, logger_1.logInfo)('Setting up routes...');
 exports.app.use('/api/users', userRoutes_1.default);
-console.log('User routes registered');
+(0, logger_1.logInfo)('User routes registered');
 exports.app.use('/api/auth', authRoutes_1.default);
-console.log('Auth routes registered');
+(0, logger_1.logInfo)('Auth routes registered');
 exports.app.use('/api/stakes', stakeRoutes_1.default);
-console.log('Stake routes registered');
+(0, logger_1.logInfo)('Stake routes registered');
 exports.app.use('/api/markets', marketRoutes_1.default);
-console.log('Market routes registered');
+(0, logger_1.logInfo)('Market routes registered');
 exports.app.use('/api/articles', articleRoutes_1.default);
-console.log('Article routes registered');
+(0, logger_1.logInfo)('Article routes registered');
 exports.app.use('/api/comments', commentRoutes_1.default);
-console.log('Comment routes registered');
-// Simple health check route
+(0, logger_1.logInfo)('Comment routes registered');
 exports.app.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Import prisma here to avoid circular imports
         const { prisma } = yield Promise.resolve().then(() => __importStar(require('./config/database')));
-        // Quick database health check
         yield prisma.$queryRaw `SELECT 1`;
         res.status(200).json({
             status: 'OK',
@@ -134,7 +125,6 @@ exports.app.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, funct
         });
     }
 }));
-// Global error handler
 exports.app.use((err, req, res, next) => {
     console.error('Unhandled error:', err);
     res.status(500).json({
@@ -142,8 +132,6 @@ exports.app.use((err, req, res, next) => {
         error: process.env.NODE_ENV === 'production' ? undefined : err.message
     });
 });
-// Handle 404 errors for undefined routes - fixed pattern
 exports.app.use((req, res) => {
     res.status(404).json({ message: 'Route not found' });
 });
-//# sourceMappingURL=app.js.map

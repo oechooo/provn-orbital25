@@ -17,21 +17,17 @@ const userController_1 = require("../controllers/userController");
 const auth_1 = require("../middleware/auth");
 const router = express_1.default.Router();
 console.log('Setting up auth routes...');
-// Test route
 router.get('/test', (req, res) => {
     console.log('Test route hit!');
     res.json({ message: 'Auth routes are working!' });
 });
 console.log('Test route registered');
-// Public routes
 router.post('/register', authController_1.register);
 router.post('/login', authController_1.login);
 router.post('/forgot-password', authController_1.requestPasswordReset);
 router.post('/reset-password', authController_1.resetPassword);
 console.log('Auth routes setup complete');
-// Protected routes (require authentication)
 router.get('/profile', auth_1.auth, authController_1.getProfile);
 router.put('/profile', auth_1.auth, authController_1.updateProfile);
 router.put('/update-avatar', auth_1.auth, userController_1.updateUserAvatar);
 exports.default = router;
-//# sourceMappingURL=authRoutes.js.map

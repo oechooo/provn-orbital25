@@ -14,7 +14,6 @@ const database_1 = require("../config/database");
 const library_1 = require("@prisma/client/runtime/library");
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Using select to ensure we get the fields needed by the test
         const users = yield database_1.prisma.user.findMany({
             select: {
                 id: true,
@@ -22,10 +21,9 @@ const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 email: true,
                 createdAt: true,
                 updatedAt: true
-            } // Exclude password from response
+            }
         });
         if (users.length === 0) {
-            // Return an empty array, not an error
             res.json([]);
             return;
         }
@@ -52,7 +50,7 @@ const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 email: true,
                 createdAt: true,
                 updatedAt: true
-            } // Exclude password
+            }
         });
         if (!user) {
             res.status(404).json({ message: "User not found" });
@@ -69,7 +67,6 @@ exports.getUserById = getUserById;
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, email, password } = req.body;
-        // Basic validation
         if (!username || !email || !password) {
             res.status(400).json({ message: "Username, email, and password are required" });
             return;
@@ -78,7 +75,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             data: {
                 username,
                 email,
-                password // In a real app, you should hash this password
+                password
             },
             select: {
                 id: true,
@@ -86,13 +83,12 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 email: true,
                 createdAt: true,
                 updatedAt: true
-            } // Exclude password from response
+            }
         });
         res.status(201).json(user);
     }
     catch (error) {
         console.error('Error creating user:', error);
-        // Handle unique constraint violations
         if (error instanceof library_1.PrismaClientKnownRequestError ||
             (error.name === 'PrismaClientKnownRequestError' && error.code === 'P2002')) {
             res.status(409).json({ message: "Username or email already exists" });
@@ -109,7 +105,6 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.status(400).json({ message: "Invalid ID format" });
             return;
         }
-        // Check if user exists before updating
         const existingUser = yield database_1.prisma.user.findUnique({
             where: { id }
         });
@@ -126,19 +121,17 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 email: true,
                 createdAt: true,
                 updatedAt: true
-            } // Exclude password from response
+            }
         });
         res.json(user);
     }
     catch (error) {
         console.error('Error updating user:', error);
-        // Handle unique constraint violations
         if (error instanceof library_1.PrismaClientKnownRequestError ||
             (error.name === 'PrismaClientKnownRequestError' && error.code === 'P2002')) {
             res.status(409).json({ message: "Username or email already exists" });
             return;
         }
-        // Handle not found errors (this should be caught by the check above, but just in case)
         if (error.message && error.message.includes('Record to update not found')) {
             res.status(404).json({ message: "User not found" });
             return;
@@ -154,7 +147,6 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.status(400).json({ message: "Invalid ID format" });
             return;
         }
-        // Check if user exists before deleting
         const existingUser = yield database_1.prisma.user.findUnique({
             where: { id }
         });
@@ -182,12 +174,10 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
             return;
         }
         const { avatarSkinColor, avatarHairColor, avatarHair, avatarEyes, avatarMouth, avatarAccessories } = req.body;
-        // Basic validation for avatar config
         if (!avatarSkinColor || !avatarHairColor || !avatarHair || !avatarEyes || !avatarMouth) {
             res.status(400).json({ message: "All avatar fields except accessories are required" });
             return;
         }
-        // Get current user to check what they already own and their PP balance
         const currentUser = yield database_1.prisma.user.findUnique({
             where: { id: userId },
             select: {
@@ -197,18 +187,16 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 avatarEyes: true,
                 avatarMouth: true,
                 avatarAccessories: true,
-                // @ts-ignore - purchased fields exist but not in current type definition
                 purchasedHair: true,
                 purchasedEyes: true,
                 purchasedMouth: true,
                 purchasedAccessories: true
             }
-        }); // Type assertion after query
+        });
         if (!currentUser) {
             res.status(404).json({ message: "User not found" });
             return;
         }
-        // Avatar pricing structure (should match frontend)
         const AVATAR_REQUIREMENTS = {
             hairStyle: {
                 curlyShortHair: 25, straightHair: 30, curlyBob: 35, wavyBob: 40, bunHair: 45,
@@ -227,21 +215,17 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 sailormoonCrown: 100, sleepMask: 50, sunglasses: 55
             }
         };
-        // Calculate cost for new items only
         let totalCost = 0;
-        // Parse purchased items (stored as JSON strings) - using any to avoid TS errors during transition
         const purchasedHair = JSON.parse(currentUser.purchasedHair || '[]');
         const purchasedEyes = JSON.parse(currentUser.purchasedEyes || '[]');
         const purchasedMouth = JSON.parse(currentUser.purchasedMouth || '[]');
         const purchasedAccessories = JSON.parse(currentUser.purchasedAccessories || '[]');
-        // Items to add to purchased lists
         const newPurchases = {
             hair: [],
             eyes: [],
             mouth: [],
             accessories: []
         };
-        // Only charge for premium items they haven't purchased before
         if (avatarHair !== 'shortHair' && !purchasedHair.includes(avatarHair)) {
             totalCost += AVATAR_REQUIREMENTS.hairStyle[avatarHair] || 50;
             newPurchases.hair.push(avatarHair);
@@ -258,19 +242,16 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
             totalCost += AVATAR_REQUIREMENTS.accessories[avatarAccessories] || 100;
             newPurchases.accessories.push(avatarAccessories);
         }
-        // Check if user can afford the total cost
         if (totalCost > currentUser.provePoints) {
             res.status(400).json({
                 message: `Insufficient ProvePoints. Required: ${totalCost}, Available: ${currentUser.provePoints}`
             });
             return;
         }
-        // Update purchased lists with new items
         const updatedPurchasedHair = [...purchasedHair, ...newPurchases.hair];
         const updatedPurchasedEyes = [...purchasedEyes, ...newPurchases.eyes];
         const updatedPurchasedMouth = [...purchasedMouth, ...newPurchases.mouth];
         const updatedPurchasedAccessories = [...purchasedAccessories, ...newPurchases.accessories];
-        // Update user with new avatar and deduct PP
         const user = yield database_1.prisma.user.update({
             where: { id: userId },
             data: {
@@ -285,7 +266,7 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 purchasedEyes: JSON.stringify(updatedPurchasedEyes),
                 purchasedMouth: JSON.stringify(updatedPurchasedMouth),
                 purchasedAccessories: JSON.stringify(updatedPurchasedAccessories)
-            }, // Temporary type assertion until Prisma client is fully updated
+            },
             select: {
                 id: true,
                 username: true,
@@ -299,7 +280,6 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 avatarEyes: true,
                 avatarMouth: true,
                 avatarAccessories: true,
-                // @ts-ignore - purchased fields exist but not in current type definition
                 purchasedHair: true,
                 purchasedEyes: true,
                 purchasedMouth: true,
@@ -337,7 +317,6 @@ const getCurrentUser = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 avatarEyes: true,
                 avatarMouth: true,
                 avatarAccessories: true,
-                // @ts-ignore - purchased fields exist but not in current type definition
                 purchasedHair: true,
                 purchasedEyes: true,
                 purchasedMouth: true,
@@ -356,4 +335,3 @@ const getCurrentUser = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getCurrentUser = getCurrentUser;
-//# sourceMappingURL=userController.js.map

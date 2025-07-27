@@ -76,7 +76,6 @@ const refreshArticles = (req, res) => __awaiter(void 0, void 0, void 0, function
                     if (!article.title || !article.url)
                         continue;
                     try {
-                        // Create article
                         const newArticle = yield articleService.createArticle({
                             sourceName: ((_a = article.source) === null || _a === void 0 ? void 0 : _a.name) || 'Unknown Source',
                             author: article.author || null,
@@ -90,7 +89,6 @@ const refreshArticles = (req, res) => __awaiter(void 0, void 0, void 0, function
                         });
                         console.log(`Created article: ${newArticle.title}`);
                         totalFetched++;
-                        // Create market for the article
                         try {
                             const market = yield marketService.createMarket(newArticle.id);
                             console.log(`Created market ${market.id} for article ${newArticle.id}`);
@@ -156,9 +154,7 @@ const createUserArticle = (req, res) => __awaiter(void 0, void 0, void 0, functi
             res.status(400).json({ message: 'Title is required' });
             return;
         }
-        // Generate a unique URL for user-created articles
         const articleUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/article/user-${Date.now()}`;
-        // Generate description from first 20 words of content
         let description = undefined;
         if (content && content.trim()) {
             const words = content.trim().split(/\s+/);
@@ -169,7 +165,6 @@ const createUserArticle = (req, res) => __awaiter(void 0, void 0, void 0, functi
                 description = content.trim();
             }
         }
-        // Create the article
         const newArticle = yield articleService.createArticle({
             sourceName: 'User Submitted',
             author: ((_b = req.user) === null || _b === void 0 ? void 0 : _b.username) || 'Anonymous',
@@ -180,9 +175,8 @@ const createUserArticle = (req, res) => __awaiter(void 0, void 0, void 0, functi
             publishedAt: new Date(),
             content: content || undefined,
             category: category || 'general',
-            userId: userId, // Add the userId to associate with the user
+            userId: userId,
         });
-        // Create a market for the user-submitted article
         try {
             const market = yield marketService.createMarket(newArticle.id);
             console.log(`Created market ${market.id} for user article ${newArticle.id}`);
@@ -226,4 +220,3 @@ const getUserArticles = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.getUserArticles = getUserArticles;
-//# sourceMappingURL=articleController.js.map

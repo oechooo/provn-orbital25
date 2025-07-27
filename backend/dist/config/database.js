@@ -10,14 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.closeDatabase = exports.initDatabase = exports.prisma = void 0;
-// src/config/database.ts
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 exports.prisma = prisma;
-// Database initialization function
 const initDatabase = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Connect to the database
         yield prisma.$connect();
         console.log('Database connection established successfully');
         return prisma;
@@ -28,9 +25,7 @@ const initDatabase = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.initDatabase = initDatabase;
-// Clean up function for tests or server shutdown
 const closeDatabase = () => __awaiter(void 0, void 0, void 0, function* () {
     yield prisma.$disconnect();
 });
 exports.closeDatabase = closeDatabase;
-//# sourceMappingURL=database.js.map

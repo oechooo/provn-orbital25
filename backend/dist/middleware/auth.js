@@ -67,7 +67,6 @@ const auth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () 
             return;
         }
         const decoded = jwt.verify(token, secret);
-        // Validate decoded token structure
         if (!decoded.userId || !decoded.username) {
             res.status(401).json({ message: 'Invalid authentication token' });
             return;
@@ -89,4 +88,3 @@ const auth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.auth = auth;
-//# sourceMappingURL=auth.js.map

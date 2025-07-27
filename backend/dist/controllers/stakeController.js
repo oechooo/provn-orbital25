@@ -13,7 +13,6 @@ exports.getUserStats = exports.getStakeStats = exports.getMarketStakes = exports
 const database_1 = require("../config/database");
 const StakeService_1 = require("../services/StakeService");
 const stakeService = new StakeService_1.StakeService(database_1.prisma);
-// Custom Request interface to include user info from auth middleware
 const createStake = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
@@ -23,7 +22,6 @@ const createStake = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             res.status(401).json({ message: 'User not authenticated' });
             return;
         }
-        // Validation
         if (!marketId || typeof prediction !== 'boolean' || !stakeAmount) {
             res.status(400).json({ message: 'Market ID, prediction, and stake amount are required' });
             return;
@@ -112,12 +110,10 @@ const getUserStats = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const { userId } = req.params;
         const requestingUserId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
-        // Only allow users to view their own stats or if it's public data
         if (!requestingUserId || (parseInt(userId) !== requestingUserId)) {
             res.status(403).json({ message: 'Access denied' });
             return;
         }
-        // Calculate user statistics
         const stakes = yield database_1.prisma.stake.findMany({
             where: {
                 userId: parseInt(userId)
@@ -143,4 +139,3 @@ const getUserStats = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getUserStats = getUserStats;
-//# sourceMappingURL=stakeController.js.map

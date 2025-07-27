@@ -1,5 +1,4 @@
 "use strict";
-// src/services/StartupService.ts
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -18,12 +17,10 @@ class StartupService {
     runStartupTasks() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('Running startup tasks...');
-            // Check if startup news population is disabled
             if (process.env.DISABLE_STARTUP_NEWS_POPULATION === 'true') {
                 console.log('Startup news population disabled by environment variable');
                 return;
             }
-            // Check memory limit
             const memUsage = process.memoryUsage().heapUsed / 1024 / 1024;
             console.log(`Current memory usage: ${Math.round(memUsage)}MB`);
             if (memUsage > 300) {
@@ -31,7 +28,6 @@ class StartupService {
                 return;
             }
             try {
-                // Check if we should run the news population
                 const shouldPopulateNews = yield this.shouldPopulateNews();
                 if (shouldPopulateNews) {
                     console.log('Running news population on startup...');
@@ -44,8 +40,6 @@ class StartupService {
             }
             catch (error) {
                 console.error('Startup tasks failed:', error);
-                // Don't exit the process, just log the error
-                // The server should still start even if news population fails
             }
         });
     }
@@ -53,10 +47,7 @@ class StartupService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
-                // In development, be more aggressive about fetching fresh news
-                // Check for articles from the last 4 hours instead of 24 hours
-                const timeWindow = isProduction ? 24 * 60 * 60 * 1000 : 4 * 60 * 60 * 1000; // 24h vs 4h
-                // Check if we have any articles from the specified time window
+                const timeWindow = isProduction ? 24 * 60 * 60 * 1000 : 4 * 60 * 60 * 1000;
                 const recentArticles = yield this.prisma.article.count({
                     where: {
                         createdAt: {
@@ -69,18 +60,13 @@ class StartupService {
             }
             catch (error) {
                 console.error('Error checking if news population is needed:', error);
-                // Default to running it if we can't determine
                 return true;
             }
         });
     }
     runNewsPopulation() {
         return __awaiter(this, void 0, void 0, function* () {
-            // Determine which script to use based on environment
-            // In development (local), we want real news from NewsAPI
-            // In production (Render), we want mock news to avoid API costs
             const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
-            // Force real news in development for better testing
             const scriptName = isProduction ? 'mockAndPopulateNews.ts' : 'fetchAndPopulateNews.ts';
             console.log(`Executing ${scriptName} script (Environment: ${isProduction ? 'production' : 'development'})...`);
             try {
@@ -98,19 +84,16 @@ class StartupService {
             const path = require('path');
             const fs = require('fs');
             console.log('[NEWS] ========== SCRIPT EXECUTION ==========');
-            // Determine the correct script path
             const scriptDir = path.join(__dirname, '../../scripts');
             const tsScriptPath = path.join(scriptDir, scriptName);
             console.log(`[NEWS] Environment: ${process.env.NODE_ENV || 'development'}`);
             console.log(`[NEWS] Script: ${scriptName}`);
             console.log(`[NEWS] Script path: ${tsScriptPath}`);
-            // Check file existence
             const tsExists = fs.existsSync(tsScriptPath);
             console.log(`[NEWS] TypeScript file exists: ${tsExists}`);
             if (!tsExists) {
                 throw new Error(`TypeScript script not found at: ${tsScriptPath}`);
             }
-            // Use simplified ts-node strategy for all environments (it's the most reliable)
             console.log('[NEWS] Using ts-node execution strategy...');
             yield this.runWithTsNode(tsScriptPath);
         });
@@ -125,8 +108,8 @@ class StartupService {
                 const childProcess = spawn('npx', ['ts-node', tsPath], {
                     stdio: 'pipe',
                     shell: true,
-                    env: Object.assign({}, process.env), // Pass all environment variables
-                    cwd: require('path').dirname(tsPath) // Set working directory to script location
+                    env: Object.assign({}, process.env),
+                    cwd: require('path').dirname(tsPath)
                 });
                 console.log(`[NEWS] Process spawned with PID: ${childProcess.pid}`);
                 this.setupProcessHandlers(childProcess, resolve, reject, 'TS-NODE');
@@ -134,13 +117,11 @@ class StartupService {
         });
     }
     setupProcessHandlers(childProcess, resolve, reject, strategy = 'UNKNOWN') {
-        // Don't accumulate all output in memory - just stream it
         let hasErrors = false;
         let lastErrorSnippet = '';
         console.log(`[NEWS] Setting up process handlers for ${strategy} strategy`);
         childProcess.stdout.on('data', (data) => {
             const message = data.toString();
-            // Stream output to console with prefix (don't store in memory)
             message.split('\n').forEach(line => {
                 if (line.trim()) {
                     console.log(`[NEWS ${strategy}] ${line}`);
@@ -150,8 +131,7 @@ class StartupService {
         childProcess.stderr.on('data', (data) => {
             const message = data.toString();
             hasErrors = true;
-            // Only keep the last error snippet, not all errors
-            lastErrorSnippet = message.slice(-500); // Keep only last 500 chars
+            lastErrorSnippet = message.slice(-500);
             message.split('\n').forEach(line => {
                 if (line.trim()) {
                     console.error(`[NEWS ${strategy} ERROR] ${line}`);
@@ -174,11 +154,9 @@ class StartupService {
             console.log(`[NEWS ${strategy}] Process error: ${error.message}`);
             reject(error);
         });
-        // Set a timeout to prevent hanging (3 minutes instead of 5)
         const timeout = setTimeout(() => {
             console.log(`[NEWS ${strategy}] Execution timed out after 3 minutes`);
             childProcess.kill('SIGTERM');
-            // If SIGTERM doesn't work, use SIGKILL after 5 seconds
             setTimeout(() => {
                 if (!childProcess.killed) {
                     console.log(`[NEWS ${strategy}] Force killing with SIGKILL`);
@@ -186,11 +164,10 @@ class StartupService {
                 }
             }, 5000);
             reject(new Error(`${strategy} script execution timed out after 3 minutes`));
-        }, 3 * 60 * 1000); // 3 minutes instead of 5
+        }, 3 * 60 * 1000);
         childProcess.on('close', () => {
             clearTimeout(timeout);
         });
     }
 }
 exports.StartupService = StartupService;
-//# sourceMappingURL=StartupService.js.map

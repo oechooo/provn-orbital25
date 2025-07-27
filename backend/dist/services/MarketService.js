@@ -11,9 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MarketService = void 0;
 const StakeService_1 = require("./StakeService");
-// at liquidity = 1000, 1000PP moves the probabilities from 50% to 73%, and 2000PP moves it to 88%.
 const LIQUIDITY = 1000;
-const CONFIDENCE_THRESHOLD = 0.80; // 80% confidence
+const CONFIDENCE_THRESHOLD = 0.80;
 class MarketService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -57,7 +56,6 @@ class MarketService {
                         },
                     },
                 },
-                // Explicitly select probHistory along with other fields
             });
             if (!market)
                 throw new Error('Market not found');
@@ -66,7 +64,6 @@ class MarketService {
     }
     createMarket(articleId) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Verify article exists and doesn't already have a market
             const article = yield this.prisma.article.findFirst({
                 where: {
                     id: articleId,
@@ -76,7 +73,6 @@ class MarketService {
             if (!article) {
                 throw new Error('Article not found or already has a market');
             }
-            // Set nextResolve to 7 days from now
             const nextResolve = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
             return this.prisma.market.create({
                 data: {
@@ -195,7 +191,6 @@ class MarketService {
     isContentious(marketId) {
         return __awaiter(this, void 0, void 0, function* () {
             const { probTrue, probFalse } = yield this.getImpliedProbability(marketId);
-            // Not contentious if either probability is above the confidence threshold
             return !(probTrue >= CONFIDENCE_THRESHOLD || probFalse >= CONFIDENCE_THRESHOLD);
         });
     }
@@ -210,17 +205,13 @@ class MarketService {
                 const { probTrue, probFalse } = yield this.getImpliedProbability(marketId);
                 const contentious = yield this.isContentious(marketId);
                 if (contentious) {
-                    // Market is contentious - refund all stakes instead of throwing error
                     shouldRefund = true;
                 }
                 else {
-                    // Not contentious: resolve to the higher probability
                     outcomeToUse = probTrue > probFalse;
                 }
             }
-            // Find all unresolved stakes for this market (not just current period)
             const stakesToResolve = market.stakes.filter((stake) => !stake.resolved);
-            // Process each stake (either resolve or refund)
             const stakeService = new StakeService_1.StakeService(this.prisma);
             for (const stake of stakesToResolve) {
                 if (shouldRefund) {
@@ -230,25 +221,20 @@ class MarketService {
                     yield stakeService.resolveStake(stake.id, outcomeToUse);
                 }
             }
-            // Update market timing and status
             let newNextResolve = market.nextResolve;
             let newClosed = market.closed;
             let newResolveCount = market.resolveCount + 1;
             let newOutcome = null;
             const newLastResolve = market.nextResolve;
-            // Set nextResolve and closed based on resolveCount
             if (market.resolveCount === 0) {
-                // First resolution: next is 1 month from createdAt
                 newNextResolve = new Date(market.createdAt.getTime());
                 newNextResolve.setMonth(newNextResolve.getMonth() + 1);
             }
             else if (market.resolveCount === 1) {
-                // Second resolution: next is 6 months from createdAt
                 newNextResolve = new Date(market.createdAt.getTime());
                 newNextResolve.setMonth(newNextResolve.getMonth() + 6);
             }
             else if (market.resolveCount === 2) {
-                // Third resolution: close the market
                 newClosed = true;
             }
             yield this.prisma.market.update({
@@ -293,7 +279,6 @@ class MarketService {
             });
         });
     }
-    // Calculates LMSR odds for a given market.
     getImpliedProbability(marketId) {
         return __awaiter(this, void 0, void 0, function* () {
             const market = yield this.getMarketById(marketId);
@@ -323,7 +308,6 @@ class MarketService {
     updateOdds(marketId, predictedOutcome, sharesBought) {
         return __awaiter(this, void 0, void 0, function* () {
             const market = yield this.getMarketById(marketId);
-            // Calculate new shares
             const newSharesTrue = predictedOutcome
                 ? market.sharesTrue + sharesBought
                 : market.sharesTrue;
@@ -337,7 +321,6 @@ class MarketService {
                     sharesFalse: newSharesFalse,
                 },
             });
-            // Recalculate probabilities
             const { probTrue, probFalse } = yield this.getImpliedProbability(marketId);
             yield this.prisma.market.update({
                 where: { id: marketId },
@@ -348,7 +331,6 @@ class MarketService {
             });
         });
     }
-    // Admin functions
     setMarketOutcome(marketId, outcome) {
         return __awaiter(this, void 0, void 0, function* () {
             const market = yield this.getMarketById(marketId);
@@ -364,4 +346,3 @@ class MarketService {
     }
 }
 exports.MarketService = MarketService;
-//# sourceMappingURL=MarketService.js.map

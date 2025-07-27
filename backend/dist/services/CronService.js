@@ -51,10 +51,6 @@ class CronService {
         this.prisma = prisma;
         this.marketService = new MarketService_1.MarketService(prisma);
     }
-    /**
-     * Start the automatic market resolution cron job
-     * Runs every hour to check for markets due for resolution
-     */
     startMarketResolutionJob() {
         const task = cron.schedule('0 * * * *', () => __awaiter(this, void 0, void 0, function* () {
             console.log('[CronService] Running market resolution check...');
@@ -65,16 +61,10 @@ class CronService {
         this.tasks.set('marketResolution', task);
         console.log('[CronService] Market resolution cron job started - runs every hour');
     }
-    /**
-     * Start all cron jobs
-     */
     startAll() {
         this.startMarketResolutionJob();
         console.log('[CronService] All cron jobs started');
     }
-    /**
-     * Stop all cron jobs
-     */
     stopAll() {
         this.tasks.forEach((task, name) => {
             task.stop();
@@ -83,9 +73,6 @@ class CronService {
         this.tasks.clear();
         console.log('[CronService] All cron jobs stopped');
     }
-    /**
-     * Stop a specific cron job
-     */
     stop(jobName) {
         const task = this.tasks.get(jobName);
         if (task) {
@@ -94,25 +81,17 @@ class CronService {
             console.log(`[CronService] Stopped ${jobName} cron job`);
         }
     }
-    /**
-     * Get status of all cron jobs
-     */
     getStatus() {
         const status = {};
         this.tasks.forEach((task, name) => {
-            // Note: node-cron doesn't expose running status, so we just check if task exists
             status[name] = true;
         });
         return status;
     }
-    /**
-     * Check for markets that are due for resolution and resolve them
-     */
     checkAndResolveMarkets() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const now = new Date();
-                // Find markets that are due for resolution
                 const dueMarkets = yield this.prisma.market.findMany({
                     where: {
                         nextResolve: {
@@ -133,7 +112,6 @@ class CronService {
                 if (dueMarkets.length === 0) {
                     return;
                 }
-                // Resolve each market
                 const resolutionPromises = dueMarkets.map((market) => __awaiter(this, void 0, void 0, function* () {
                     var _a;
                     try {
@@ -149,11 +127,9 @@ class CronService {
                     }
                 }));
                 const results = yield Promise.allSettled(resolutionPromises);
-                // Log summary
                 const successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
                 const failed = results.length - successful;
                 console.log(`[CronService] Market resolution completed. Success: ${successful}, Failed: ${failed}`);
-                // Log failed resolutions for debugging
                 results.forEach((result, index) => {
                     if (result.status === 'fulfilled' && !result.value.success) {
                         console.error(`[CronService] Market ${result.value.marketId} failed: ${result.value.error}`);
@@ -168,9 +144,6 @@ class CronService {
             }
         });
     }
-    /**
-     * Manually trigger market resolution check (useful for testing)
-     */
     triggerMarketResolution() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('[CronService] Manually triggering market resolution check...');
@@ -179,4 +152,3 @@ class CronService {
     }
 }
 exports.CronService = CronService;
-//# sourceMappingURL=CronService.js.map

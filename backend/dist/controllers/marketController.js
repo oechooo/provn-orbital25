@@ -156,7 +156,6 @@ const getSimpleStats = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getSimpleStats = getSimpleStats;
-// Admin functions
 const setMarketOutcome = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
@@ -167,7 +166,6 @@ const setMarketOutcome = (req, res) => __awaiter(void 0, void 0, void 0, functio
             res.status(401).json({ message: 'User not authenticated' });
             return;
         }
-        // Check if user is admin
         const user = yield database_1.prisma.user.findUnique({
             where: { id: userId },
             select: { isAdmin: true }
@@ -198,7 +196,6 @@ const adminResolveMarket = (req, res) => __awaiter(void 0, void 0, void 0, funct
             res.status(401).json({ message: 'User not authenticated' });
             return;
         }
-        // Check if user is admin
         const user = yield database_1.prisma.user.findUnique({
             where: { id: userId },
             select: { isAdmin: true }
@@ -207,7 +204,6 @@ const adminResolveMarket = (req, res) => __awaiter(void 0, void 0, void 0, funct
             res.status(403).json({ message: 'Admin access required' });
             return;
         }
-        // Use the existing resolveMarket function
         yield marketService.resolveMarket(parseInt(id));
         res.json({ message: 'Market resolved successfully' });
     }
@@ -233,4 +229,3 @@ const getMarketByArticleId = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.getMarketByArticleId = getMarketByArticleId;
-//# sourceMappingURL=marketController.js.map

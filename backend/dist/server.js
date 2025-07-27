@@ -11,11 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = require("./app");
 const database_1 = require("./config/database");
-// Example: API route to fetch articles
 app_1.app.get("/api/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const articles = yield database_1.prisma.article.findMany({
-            include: { market: true } // Include market info for each article
+            include: { market: true }
         });
         res.json(articles);
     }
@@ -23,7 +22,6 @@ app_1.app.get("/api/articles", (req, res) => __awaiter(void 0, void 0, void 0, f
         res.status(500).json({ error: "Error fetching articles" });
     }
 }));
-// Example: API route to create a new article
 app_1.app.post("/api/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { sourceName, author, title, description, url, urlToImage, publishedAt, content, category, } = req.body;
@@ -46,6 +44,4 @@ app_1.app.post("/api/articles", (req, res) => __awaiter(void 0, void 0, void 0, 
         res.status(500).json({ error: "Error creating article" });
     }
 }));
-// Export the configured app
 exports.default = app_1.app;
-//# sourceMappingURL=server.js.map

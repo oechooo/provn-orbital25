@@ -30,7 +30,6 @@ const createComment = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             res.status(400).json({ message: 'Article ID is required' });
             return;
         }
-        // Check if article exists
         const article = yield database_1.prisma.article.findUnique({
             where: { id: parseInt(articleId) }
         });
@@ -38,7 +37,6 @@ const createComment = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             res.status(404).json({ message: 'Article not found' });
             return;
         }
-        // If parentId is provided, check if parent comment exists
         if (parentId) {
             const parentComment = yield database_1.prisma.comment.findUnique({
                 where: { id: parseInt(parentId) }
@@ -75,7 +73,6 @@ const getCommentsByArticleId = (req, res) => __awaiter(void 0, void 0, void 0, f
             res.status(400).json({ message: 'Article ID is required' });
             return;
         }
-        // Check if article exists
         const article = yield database_1.prisma.article.findUnique({
             where: { id: parseInt(articleId) }
         });
@@ -110,7 +107,6 @@ const voteOnComment = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             res.status(400).json({ message: 'Valid vote type (like/dislike) is required' });
             return;
         }
-        // Check if comment exists
         const comment = yield database_1.prisma.comment.findUnique({
             where: { id: parseInt(commentId) }
         });
@@ -184,4 +180,3 @@ const deleteComment = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.deleteComment = deleteComment;
-//# sourceMappingURL=commentController.js.map

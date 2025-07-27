@@ -51,7 +51,7 @@ class CommentService {
             const comments = yield this.prisma.comment.findMany({
                 where: {
                     articleId,
-                    parentId: null, // Only get top-level comments
+                    parentId: null,
                 },
                 include: {
                     user: {
@@ -97,7 +97,6 @@ class CommentService {
                 },
                 orderBy: { createdAt: 'desc' }
             });
-            // Transform the data to match our interface and include user votes
             return comments.map(comment => (Object.assign(Object.assign({}, comment), { userVote: userId && comment.votes && comment.votes.length > 0
                     ? comment.votes[0].voteType
                     : null, replies: comment.replies.map(reply => (Object.assign(Object.assign({}, reply), { userVote: userId && reply.votes && reply.votes.length > 0
@@ -107,7 +106,6 @@ class CommentService {
     }
     voteOnComment(userId, commentId, voteType) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Check if user has already voted on this comment
             const existingVote = yield this.prisma.commentVote.findUnique({
                 where: {
                     userId_commentId: {
@@ -119,14 +117,12 @@ class CommentService {
             let userVote = voteType;
             if (existingVote) {
                 if (existingVote.voteType === voteType) {
-                    // User is removing their vote
                     yield this.prisma.commentVote.delete({
                         where: { id: existingVote.id }
                     });
                     userVote = null;
                 }
                 else {
-                    // User is changing their vote
                     yield this.prisma.commentVote.update({
                         where: { id: existingVote.id },
                         data: { voteType }
@@ -134,7 +130,6 @@ class CommentService {
                 }
             }
             else {
-                // User is voting for the first time
                 yield this.prisma.commentVote.create({
                     data: {
                         userId,
@@ -143,9 +138,7 @@ class CommentService {
                     }
                 });
             }
-            // Update comment like/dislike counts
             yield this.updateCommentCounts(commentId);
-            // Get updated counts
             const updatedComment = yield this.prisma.comment.findUnique({
                 where: { id: commentId },
                 select: { likes: true, dislikes: true }
@@ -178,7 +171,6 @@ class CommentService {
     }
     deleteComment(commentId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Check if user owns the comment
             const comment = yield this.prisma.comment.findUnique({
                 where: { id: commentId },
                 select: { userId: true }
@@ -194,7 +186,6 @@ class CommentService {
     }
     updateComment(commentId, userId, content) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Check if user owns the comment
             const existingComment = yield this.prisma.comment.findUnique({
                 where: { id: commentId },
                 select: { userId: true }
@@ -230,4 +221,3 @@ class CommentService {
     }
 }
 exports.CommentService = CommentService;
-//# sourceMappingURL=CommentService.js.map

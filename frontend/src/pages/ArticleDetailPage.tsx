@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 // Debug logging for production
-console.log('ArticleDetailPage Debug Info:');
+console.log('🔍 ArticleDetailPage Debug Info:');
 console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
 console.log('API_BASE_URL:', API_BASE_URL);
 console.log('Environment MODE:', import.meta.env.MODE);
@@ -126,11 +126,36 @@ const ArticleDetailPage: React.FC = () => {
   const fetchArticleData = async (articleId: number) => {
     try {
       console.log('Fetching article data for ID:', articleId);
-      console.log('Using articleAPI.getArticleById from services');
+      console.log('🚀 Using API_BASE_URL:', API_BASE_URL);
+      console.log('🌐 Full URL will be:', `${API_BASE_URL}/articles/${articleId}`);
       setLoading(true);
       
-      // Use the same API service as NewsPage
-      const data = await articleAPI.getArticleById(articleId);
+      // Add timeout to the fetch request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
+      const response = await fetch(`${API_BASE_URL}/articles/${articleId}`, {
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      clearTimeout(timeoutId);
+      
+      console.log('📡 Response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
       
       console.log('Article data received:', data); // Debug log
       
@@ -173,21 +198,21 @@ const ArticleDetailPage: React.FC = () => {
         throw new Error('No article data in response');
       }
     } catch (error) {
-      console.error('Error fetching article data:', error);
-      console.error('Error type:', typeof error);
-      console.error('Error name:', error instanceof Error ? error.name : 'Unknown');
-      console.error('Error message:', error instanceof Error ? error.message : String(error));
-      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
+      console.error('💥 Error fetching article data:', error);
+      console.error('💥 Error type:', typeof error);
+      console.error('💥 Error name:', error instanceof Error ? error.name : 'Unknown');
+      console.error('💥 Error message:', error instanceof Error ? error.message : String(error));
+      console.error('💥 Error stack:', error instanceof Error ? error.stack : 'No stack');
       
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       setError(`Failed to load article: ${errorMessage}`);
       
       // Show detailed error info in the UI debug section
-      console.log('DEBUG INFO FOR USER:');
-      console.log('Article ID requested:', articleId);
-      console.log('Using articleAPI service instead of direct fetch');
-      console.log('Environment:', import.meta.env.MODE);
-      console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
+      console.log('🚨 DEBUG INFO FOR USER:');
+      console.log('🚨 Article ID requested:', articleId);
+      console.log('🚨 Using articleAPI service instead of direct fetch');
+      console.log('🚨 Environment:', import.meta.env.MODE);
+      console.log('🚨 VITE_API_URL:', import.meta.env.VITE_API_URL);
       
       if (error instanceof Error) {
         toast.error(`Failed to load article: ${error.message}`);
@@ -698,7 +723,7 @@ const ArticleDetailPage: React.FC = () => {
                 <p className="text-red-300 text-sm">Article ID: {id}</p>
                 <p className="text-red-300 text-sm">Market state: {market ? 'Has market' : 'No market'}</p>
                 <div className="mt-2 p-2 bg-red-800/20 rounded text-xs">
-                  <p className="text-red-200">Environment Debug:</p>
+                  <p className="text-red-200">🔍 Environment Debug:</p>
                   <p className="text-red-200">API_BASE_URL: {API_BASE_URL}</p>
                   <p className="text-red-200">VITE_API_URL: {import.meta.env.VITE_API_URL || 'undefined'}</p>
                   <p className="text-red-200">Mode: {import.meta.env.MODE}</p>
@@ -743,7 +768,7 @@ const ArticleDetailPage: React.FC = () => {
         
         {/* DEBUG SECTION - Always visible for debugging */}
         <div className="mb-6 p-4 bg-blue-900/20 border border-blue-700/30 rounded-lg">
-          <h3 className="text-blue-300 font-bold mb-2">Debug Info (Mode: {import.meta.env.MODE})</h3>
+          <h3 className="text-blue-300 font-bold mb-2">🔍 Debug Info (Mode: {import.meta.env.MODE})</h3>
             <div className="text-xs text-blue-200 space-y-1">
               <p><strong>API_BASE_URL:</strong> {API_BASE_URL}</p>
               <p><strong>VITE_API_URL:</strong> {import.meta.env.VITE_API_URL || 'undefined'}</p>
@@ -754,14 +779,14 @@ const ArticleDetailPage: React.FC = () => {
             </div>
             <button
               onClick={async () => {
-                console.log('Manual API test started using articleAPI');
+                console.log('🧪 Manual API test started using articleAPI');
                 try {
-                  console.log('Testing articleAPI.getArticleById:', id);
+                  console.log('🧪 Testing articleAPI.getArticleById:', id);
                   const data = await articleAPI.getArticleById(parseInt(id!));
-                  console.log('Response data:', data);
+                  console.log('🧪 Response data:', data);
                   alert(`API Test Success: Article found - ${data.article?.title || 'No title'}`);
                 } catch (error) {
-                  console.error('API test failed:', error);
+                  console.error('🧪 API test failed:', error);
                   alert(`API Test Failed: ${error instanceof Error ? error.message : String(error)}`);
                 }
               }}
@@ -853,7 +878,7 @@ const ArticleDetailPage: React.FC = () => {
                     {article.content.includes('[+') && (
                       <div className="mt-4 p-3 bg-blue-900/20 border border-blue-700/30 rounded-lg">
                         <p className="text-blue-300 text-sm">
-                          This is a preview. Click "Read Full Article" below to see the complete story.
+                          📖 This is a preview. Click "Read Full Article" below to see the complete story.
                         </p>
                       </div>
                     )}
