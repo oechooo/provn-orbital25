@@ -9,10 +9,58 @@ describe('Authentication', () => {
       where: {
         OR: [
           { email: 'test@example.com' },
-          { username: 'testuser' }
+          { username: 'testuser' },
+          { email: 'different@example.com' },
+          { email: 'user@example.com' }
         ]
       }
     });
+  });
+
+  beforeEach(async () => {
+    // Clean up between tests to ensure fresh state - force multiple attempts
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        await prisma.user.deleteMany({
+          where: {
+            OR: [
+              { email: 'test@example.com' },
+              { username: 'testuser' },
+              { email: 'different@example.com' },
+              { email: 'user@example.com' },
+              { email: 'first@example.com' },
+              { username: 'duplicatetest' }
+            ]
+          }
+        });
+        
+        // Verify cleanup worked
+        const remainingUsers = await prisma.user.count({
+          where: {
+            OR: [
+              { email: 'test@example.com' },
+              { username: 'testuser' },
+              { email: 'different@example.com' },
+              { email: 'user@example.com' },
+              { email: 'first@example.com' },
+              { username: 'duplicatetest' }
+            ]
+          }
+        });
+        
+        if (remainingUsers === 0) break;
+        
+        if (attempt === 2) {
+          console.warn(`Auth test cleanup incomplete: ${remainingUsers} users remaining`);
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 10));
+      } catch (error) {
+        if (attempt === 2) {
+          console.error('Auth test cleanup failed:', error);
+        }
+      }
+    }
   });
 
   afterAll(async () => {
@@ -84,11 +132,26 @@ describe('Authentication', () => {
     });
 
     it('should not register duplicate username', async () => {
+      const uniqueId = Date.now();
+      const username = `duplicatetest${uniqueId}`;
+      
+      // First, create a user
+      const firstResponse = await request(app)
+        .post('/api/auth/register')
+        .send({
+          username,
+          email: `first${uniqueId}@example.com`,
+          password: 'testpassword123'
+        });
+
+      expect(firstResponse.status).toBe(201);
+
+      // Then immediately try to create another user with the same username but different email
       const response = await request(app)
         .post('/api/auth/register')
         .send({
-          username: 'testuser', // duplicate
-          email: 'different@example.com',
+          username, // duplicate username
+          email: `different${uniqueId}@example.com`, // different email
           password: 'testpassword123'
         });
 
@@ -99,6 +162,16 @@ describe('Authentication', () => {
 
   describe('Login', () => {
     it('should login with valid credentials (username)', async () => {
+      // First create a user
+      await request(app)
+        .post('/api/auth/register')
+        .send({
+          username: 'testuser',
+          email: 'test@example.com',
+          password: 'testpassword123'
+        });
+
+      // Then try to login
       const response = await request(app)
         .post('/api/auth/login')
         .send({
@@ -114,6 +187,16 @@ describe('Authentication', () => {
     });
 
     it('should login with valid credentials (email)', async () => {
+      // First create a user
+      await request(app)
+        .post('/api/auth/register')
+        .send({
+          username: 'testuser',
+          email: 'test@example.com',
+          password: 'testpassword123'
+        });
+
+      // Then try to login with email
       const response = await request(app)
         .post('/api/auth/login')
         .send({
@@ -178,15 +261,29 @@ describe('Authentication', () => {
   describe('Protected routes', () => {
     let authToken: string;
 
-    beforeAll(async () => {
-      // Get a valid token
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
+    beforeEach(async () => {
+      // Create a fresh user for each test to avoid token/user mismatch
+      const registerResponse = await request(app)
+        .post('/api/auth/register')
         .send({
           username: 'testuser',
+          email: 'test@example.com',
           password: 'testpassword123'
         });
-      authToken = loginResponse.body.token;
+
+      // Get a valid token for this fresh user
+      if (registerResponse.status === 201) {
+        authToken = registerResponse.body.token;
+      } else {
+        // User might already exist, try to login
+        const loginResponse = await request(app)
+          .post('/api/auth/login')
+          .send({
+            username: 'testuser',
+            password: 'testpassword123'
+          });
+        authToken = loginResponse.body.token;
+      }
     });
 
     it('should access protected route with valid token', async () => {

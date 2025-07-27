@@ -40,15 +40,34 @@ describe('StakeService', () => {
 
   it('should create stake and decrement prove points', async () => {
     mockPrisma.user.findUnique.mockResolvedValue({ id: 1, provePoints: 100 });
-    mockPrisma.market.findUnique.mockResolvedValue({ id: 1, probTrue: 0.5, probFalse: 0.5, stakes: [], article: {} }); // <-- Add this line
+    mockPrisma.market.findUnique.mockResolvedValue({ 
+      id: 1, 
+      probTrue: 0.5, 
+      probFalse: 0.5, 
+      closed: false,
+      probHistory: [],
+      stakes: [], 
+      article: {} 
+    });
+    
+    // Mock transaction to provide all required models
     mockPrisma.$transaction.mockImplementation(async (cb) => {
-      // Simulate the transaction callback
       return cb({
         stake: { create: mockPrisma.stake.create },
-        user: { update: mockPrisma.user.update }
+        user: { update: mockPrisma.user.update },
+        market: { update: mockPrisma.market.update }
       });
     });
-    mockPrisma.stake.create.mockResolvedValue({ id: 1, userId: 1, marketId: 1, prediction: true, stakeAmount: 10 });
+    
+    mockPrisma.stake.create.mockResolvedValue({ 
+      id: 1, 
+      userId: 1, 
+      marketId: 1, 
+      prediction: true, 
+      stakeAmount: 10,
+      upside: 1.5,
+      resolved: false
+    });
 
     const stake = await stakeService.createStake(1, 1, true, 10);
     expect(stake).toHaveProperty('id', 1);
@@ -59,17 +78,34 @@ describe('StakeService', () => {
   it('should create a stake and update odds using LMSR', async () => {
     marketService = new MarketService(mockPrisma as any);
     mockPrisma.user.findUnique.mockResolvedValue({ id: 1, provePoints: 100 });
-    mockPrisma.market.findUnique.mockResolvedValue({ id: 1, probTrue: 0.5, probFalse: 0.5, stakes: [], article: {} });
+    mockPrisma.market.findUnique.mockResolvedValue({ 
+      id: 1, 
+      probTrue: 0.5, 
+      probFalse: 0.5, 
+      closed: false,
+      probHistory: [],
+      stakes: [], 
+      article: {} 
+    });
     marketService.getStakingParameters = jest.fn().mockResolvedValue({ upside: 1.2, sharesBought: 10 });
     marketService.updateOdds = jest.fn().mockResolvedValue(undefined);
 
     mockPrisma.$transaction.mockImplementation(async (cb) => {
       return cb({
         stake: { create: mockPrisma.stake.create },
-        user: { update: mockPrisma.user.update }
+        user: { update: mockPrisma.user.update },
+        market: { update: mockPrisma.market.update }
       });
     });
-    mockPrisma.stake.create.mockResolvedValue({ id: 1, userId: 1, marketId: 1, prediction: true, stakeAmount: 10 });
+    mockPrisma.stake.create.mockResolvedValue({ 
+      id: 1, 
+      userId: 1, 
+      marketId: 1, 
+      prediction: true, 
+      stakeAmount: 10,
+      upside: 1.2,
+      resolved: false
+    });
 
     const stake = await stakeService.createStake(1, 1, true, 10);
     expect(stake).toHaveProperty('id', 1);
@@ -84,8 +120,9 @@ describe('StakeService', () => {
 
   it('should add the new stake to the user\'s stake array', async () => {
     const userId = 1;
-    const newStake = { id: 2, userId, marketId: 1, prediction: true, stakeAmount: 20, market: {} };
-    // Mock user creation and stake creation
+    const newStake = { id: 2, userId, marketId: 1, prediction: true, stakeAmount: 20, upside: 1.3, resolved: false };
+    
+    // Mock user for validation
     mockPrisma.user.findUnique.mockResolvedValue({
       id: userId,
       username: 'testuser',
@@ -97,12 +134,33 @@ describe('StakeService', () => {
       updatedAt: new Date(),
       stakes: [newStake]
     });
+    
+    // Mock market for validation
+    mockPrisma.market.findUnique.mockResolvedValue({
+      id: 1,
+      probTrue: 0.6,
+      probFalse: 0.4,
+      closed: false,
+      probHistory: [],
+      stakes: [],
+      article: {}
+    });
+    
+    // Mock transaction
+    mockPrisma.$transaction.mockImplementation(async (cb) => {
+      return cb({
+        stake: { create: mockPrisma.stake.create },
+        user: { update: mockPrisma.user.update },
+        market: { update: mockPrisma.market.update }
+      });
+    });
+    
     mockPrisma.stake.create.mockResolvedValue(newStake);
 
-    // Create the stake (simulate)
-    await stakeService.createStake(userId, 1, true, 20);
+    // Create the stake
+    const createdStake = await stakeService.createStake(userId, 1, true, 20);
 
-    // Use UserService to get the user and their stakes
+    // Use UserService to get the user and their stakes  
     const userService = new UserService(mockPrisma as any);
     const user = await userService.getUser(userId);
 
@@ -112,6 +170,7 @@ describe('StakeService', () => {
         expect.objectContaining({ id: 2, userId, prediction: true, stakeAmount: 20 })
       ])
     );
+    expect(createdStake).toEqual(newStake);
   });
 });
 

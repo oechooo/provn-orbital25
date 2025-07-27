@@ -1,12 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 
 export class TestSetup {
-  private static prisma: PrismaClient;
+  private static prismaInstances: Map<string, PrismaClient> = new Map();
+  private static resetLocks: Map<string, boolean> = new Map();
 
-  static async setupTestDatabase(): Promise<PrismaClient> {
-    if (!this.prisma) {
-      // Use test database or in-memory for testing
-      this.prisma = new PrismaClient({
+  static async setupTestDatabase(testSuiteName?: string): Promise<PrismaClient> {
+    const instanceKey = testSuiteName || 'default';
+    
+    if (!this.prismaInstances.has(instanceKey)) {
+      // Create a unique Prisma instance for this test suite
+      const prisma = new PrismaClient({
         datasources: {
           db: {
             url: process.env.TEST_DATABASE_URL || process.env.DATABASE_URL
@@ -14,41 +17,84 @@ export class TestSetup {
         }
       });
       
-      await this.resetDatabase();
+      this.prismaInstances.set(instanceKey, prisma);
+      this.resetLocks.set(instanceKey, false);
+      
+      await this.resetDatabase(instanceKey);
     }
     
-    return this.prisma;
+    return this.prismaInstances.get(instanceKey)!;
   }
 
-  static async resetDatabase(): Promise<void> {
+  static async resetDatabase(instanceKey: string = 'default'): Promise<void> {
+    const prisma = this.prismaInstances.get(instanceKey);
+    if (!prisma) {
+      throw new Error(`No Prisma instance found for key: ${instanceKey}`);
+    }
+
+    // Prevent concurrent resets for this instance
+    if (this.resetLocks.get(instanceKey)) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      return this.resetDatabase(instanceKey);
+    }
+    
+    this.resetLocks.set(instanceKey, true);
+    
     try {
-      // Disable foreign key constraints temporarily
-      await this.prisma.$executeRaw`PRAGMA foreign_keys = OFF;`;
+      // Use transaction for reliable cleanup
+      await prisma.$transaction(async (tx) => {
+        // Clear all data in correct order (respecting foreign keys)
+        await tx.$executeRaw`PRAGMA foreign_keys = OFF;`;
+        await tx.$executeRaw`DELETE FROM CommentVote;`;
+        await tx.$executeRaw`DELETE FROM Comment;`;
+        await tx.$executeRaw`DELETE FROM Stake;`;
+        await tx.$executeRaw`DELETE FROM Market;`;
+        await tx.$executeRaw`DELETE FROM Article;`;
+        await tx.$executeRaw`DELETE FROM User;`;
+        
+        // Reset sequences
+        await tx.$executeRaw`UPDATE sqlite_sequence SET seq = 0 WHERE name IN ('User', 'Article', 'Market', 'Stake', 'Comment', 'CommentVote');`;
+        await tx.$executeRaw`PRAGMA foreign_keys = ON;`;
+      });
       
-      // Clear all data
-      await this.prisma.stake.deleteMany();
-      await this.prisma.market.deleteMany();
-      await this.prisma.article.deleteMany();
-      await this.prisma.user.deleteMany();
+      // Add a small delay to ensure cleanup is complete
+      await new Promise(resolve => setTimeout(resolve, 50));
       
-      // Re-enable foreign key constraints
-      await this.prisma.$executeRaw`PRAGMA foreign_keys = ON;`;
     } catch (error) {
-      console.error('Database reset failed:', error);
-      // Re-enable foreign keys even if reset failed
+      console.error(`Database reset failed for ${instanceKey}:`, error);
+      // Fallback cleanup 
       try {
-        await this.prisma.$executeRaw`PRAGMA foreign_keys = ON;`;
-      } catch (fkError) {
-        console.error('Failed to re-enable foreign keys:', fkError);
+        await prisma.$executeRaw`PRAGMA foreign_keys = OFF;`;
+        await prisma.$executeRaw`DELETE FROM CommentVote;`;
+        await prisma.$executeRaw`DELETE FROM Comment;`;
+        await prisma.$executeRaw`DELETE FROM Stake;`;
+        await prisma.$executeRaw`DELETE FROM Market;`;
+        await prisma.$executeRaw`DELETE FROM Article;`;
+        await prisma.$executeRaw`DELETE FROM User;`;
+        await prisma.$executeRaw`UPDATE sqlite_sequence SET seq = 0 WHERE name IN ('User', 'Article', 'Market', 'Stake', 'Comment', 'CommentVote');`;
+        await prisma.$executeRaw`PRAGMA foreign_keys = ON;`;
+        await new Promise(resolve => setTimeout(resolve, 50));
+      } catch (fallbackError) {
+        console.error(`Fallback reset failed for ${instanceKey}:`, fallbackError);
       }
-      throw error;
+    } finally {
+      this.resetLocks.set(instanceKey, false);
     }
   }
 
-  static async createTestUser(overrides: any = {}): Promise<any> {
+  static async createTestUser(overrides: any = {}, instanceKey: string = 'default'): Promise<any> {
+    const prisma = this.prismaInstances.get(instanceKey);
+    if (!prisma) {
+      throw new Error(`No Prisma instance found for key: ${instanceKey}`);
+    }
+
     const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000);
-    return await this.prisma.user.create({
+    const random = Math.floor(Math.random() * 10000);
+    
+    // Wait a bit to ensure unique timestamps
+    await new Promise(resolve => setTimeout(resolve, 1));
+    
+    return await prisma.user.create({
       data: {
         username: `testuser_${timestamp}_${random}`,
         email: `test_${timestamp}_${random}@example.com`,
@@ -69,13 +115,22 @@ export class TestSetup {
     });
   }
 
-  static async createTestArticle(overrides: any = {}): Promise<any> {
+  static async createTestArticle(overrides: any = {}, instanceKey: string = 'default'): Promise<any> {
+    const prisma = this.prismaInstances.get(instanceKey);
+    if (!prisma) {
+      throw new Error(`No Prisma instance found for key: ${instanceKey}`);
+    }
+
     const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000);
-    return await this.prisma.article.create({
+    const random = Math.floor(Math.random() * 10000);
+    
+    // Wait a bit to ensure unique timestamps
+    await new Promise(resolve => setTimeout(resolve, 1));
+    
+    return await prisma.article.create({
       data: {
         sourceName: 'Test Source',
-        title: `Test Article ${timestamp}`,
+        title: `Test Article ${timestamp}_${random}`,
         description: 'Test description for testing purposes',
         url: `https://test.example.com/article_${timestamp}_${random}`,
         category: 'technology',
@@ -85,25 +140,57 @@ export class TestSetup {
     });
   }
 
-  static async createTestMarket(articleId: number, overrides: any = {}): Promise<any> {
-    return await this.prisma.market.create({
+  static async createTestMarket(articleId: number, overrides: any = {}, instanceKey: string = 'default'): Promise<any> {
+    const prisma = this.prismaInstances.get(instanceKey);
+    if (!prisma) {
+      throw new Error(`No Prisma instance found for key: ${instanceKey}`);
+    }
+
+    // Always create a new market rather than checking for existing ones
+    // This prevents race conditions in tests
+    return await prisma.market.create({
       data: {
         articleId,
         probTrue: 0.5,
         probFalse: 0.5,
-        sharesTrue: 0,
-        sharesFalse: 0,
-        nextResolve: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        sharesTrue: 100,
+        sharesFalse: 100,
+        nextResolve: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
         closed: false,
         outcome: null,
+        probHistory: JSON.stringify([{ date: new Date().toISOString(), probTrue: 0.5 }]),
         ...overrides
       }
     });
   }
 
-  static async teardown(): Promise<void> {
-    if (this.prisma) {
-      await this.prisma.$disconnect();
+  static async teardown(instanceKey?: string): Promise<void> {
+    if (instanceKey) {
+      // Teardown specific instance
+      const prisma = this.prismaInstances.get(instanceKey);
+      if (prisma) {
+        try {
+          await this.resetDatabase(instanceKey);
+          await prisma.$disconnect();
+        } catch (error) {
+          console.error(`Teardown error for ${instanceKey}:`, error);
+        } finally {
+          this.prismaInstances.delete(instanceKey);
+          this.resetLocks.delete(instanceKey);
+        }
+      }
+    } else {
+      // Teardown all instances
+      for (const [key, prisma] of this.prismaInstances.entries()) {
+        try {
+          await this.resetDatabase(key);
+          await prisma.$disconnect();
+        } catch (error) {
+          console.error(`Teardown error for ${key}:`, error);
+        }
+      }
+      this.prismaInstances.clear();
+      this.resetLocks.clear();
     }
   }
 }

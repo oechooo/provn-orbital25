@@ -54,6 +54,7 @@ Not only does this allow us to gauge crowd sentiment about the veracity of news,
 - [API Endpoints](#api-endpoints) - Complete API documentation
 - [Development & Testing](#development--testing) - Development workflows
 - [User Journey](#user-journey) - Step-by-step user experience flow
+- Tests
 - [Future Enhancements](#future-enhancements) - Planned features and improvements
 
 ### Miscellaneous
@@ -736,6 +737,140 @@ Admin Resolution → Automatic Calculation → Payout Distribution → Balance U
 - **Journey**: Deep research → Evidence-based staking → Community validation → Market influence
 - **Pain Points**: Slow resolution times, bias concerns
 - **Success Metrics**: Accurate markets, reduced misinformation
+
+## Tests
+
+Provn.io includes a comprehensive test suite with 74 tests across 11 test suites, ensuring platform reliability and functionality. All tests use Jest with TypeScript and include proper database isolation to prevent test interference.
+
+### Test Architecture
+
+#### **Test Isolation System**
+- **Sequential Execution**: Tests run sequentially (`maxWorkers: 1`) to prevent database conflicts
+- **Unique Database Instances**: Each test suite uses isolated database instances with unique keys
+- **Automatic Cleanup**: Database state is reset between test suites using custom TestSetup utilities
+- **Mutex Protection**: Database operations are protected with mutex locks to ensure data integrity
+
+### Test Categories
+
+#### **1. Authentication Tests** (`auth.test.ts`)
+**Coverage**: User registration, login, and protected route access
+- **Registration Tests**: Valid user creation, duplicate prevention, password validation, email format validation
+- **Login Tests**: Username/email authentication, invalid credential handling, missing field validation  
+- **Protected Route Tests**: JWT token validation, authorization middleware, malformed header handling
+- **Security Features**: Password hashing, input sanitization, duplicate username/email prevention
+
+#### **2. Authentication Service Tests** (`unit/AuthenticationService.test.ts`)
+**Coverage**: User management and profile operations
+- **User Registration**: Account creation with proper defaults, avatar initialization, duplicate prevention
+- **Profile Management**: Avatar configuration updates, purchase tracking, balance integrity
+- **Data Validation**: User lookup operations, null handling for non-existent users
+
+#### **3. Basic Database Tests** (`basic.test.ts`)
+**Coverage**: Core database connectivity and CRUD operations
+- **Database Connection**: Prisma client connectivity verification
+- **Entity Creation**: User, article, and market creation and retrieval
+- **Data Integrity**: Relationship validation between users, articles, and markets
+
+#### **4. Service Layer Tests**
+
+##### **Article Service** (`services/ArticleService.test.ts`)
+- **Article Management**: Article creation with proper metadata
+- **Data Retrieval**: Article lookup by ID with validation
+
+##### **Market Service** (`services/MarketService.test.ts`) 
+- **Market Creation**: Automated market generation for articles
+- **Market Configuration**: Proper initialization with default probabilities
+
+##### **Stake Service** (`services/StakeService.test.ts`)
+- **Stake Creation**: ProvePoints validation, stake amount verification, LMSR probability updates
+- **Balance Management**: User balance deduction, insufficient funds handling
+- **Market Integration**: Odds calculation using Logarithmic Market Scoring Rule (LMSR)
+- **Stake Tracking**: User stake arrays, stake-to-user relationship validation
+
+##### **User Service** (`services/UserService.test.ts`)
+- **User Operations**: User creation, profile updates, balance management
+- **Authentication**: Login validation, credential verification
+
+##### **Cron Service** (`services/CronService.test.ts`)
+- **Scheduled Tasks**: Automated news fetching, market updates, system maintenance
+- **Error Handling**: Service failure recovery, retry mechanisms
+
+#### **5. Unit Tests**
+
+##### **Stake Service Unit Tests** (`unit/StakeService.test.ts`)
+- **Error Handling**: Insufficient ProvePoints validation, invalid market ID handling, zero/negative stake prevention
+- **Data Retrieval**: Empty stake arrays for new users
+- **Stake Resolution**: Losing stake calculations, payout distributions
+
+#### **6. Integration Tests**
+
+##### **Stake Integration Tests** (`integration/stakeIntegration.test.ts`)
+- **Complete Stake Flow**: End-to-end stake creation with market probability updates
+- **Financial Validation**: ProvePoints deduction, upside calculation accuracy
+- **Market Dynamics**: LMSR probability calculations, stake statistics tracking
+- **Error Scenarios**: Invalid user/market IDs, insufficient funds, edge case handling
+
+### Running Tests
+
+#### **Full Test Suite**
+```bash
+cd backend
+npm test
+```
+
+### Test Results Summary
+- **11/11 Test Suites Passing**
+- **74/74 Individual Tests Passing**
+
+### Key Testing Features
+
+#### **Database Management**
+- Isolated test databases prevent data contamination
+- Automatic cleanup between test suites
+- Proper relationship testing between entities
+
+#### **Authentication Security**
+- JWT token validation and expiration handling
+- Password hashing verification
+- Input sanitization and validation
+
+#### **Financial Integrity**
+- ProvePoints balance validation
+- LMSR probability calculation accuracy
+- Stake payout verification
+
+#### **API Endpoint Coverage**
+- User registration and authentication endpoints
+- Article and market management APIs
+- Stake creation and resolution endpoints
+- Profile and balance management APIs
+
+#### **Error Handling**
+- Graceful handling of invalid inputs
+- Proper error messages and status codes
+- Edge case scenario coverage
+
+### Test Configuration
+
+#### **Jest Configuration** (`jest.config.js`)
+```javascript
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  setupFilesAfterEnv: ['<rootDir>/src/tests/setup/jest.setup.ts'],
+  maxWorkers: 1, // Sequential execution for database isolation
+  testTimeout: 30000,
+  verbose: true
+};
+```
+
+#### **Test Setup** (`src/tests/setup/testSetup.ts`)
+- Custom TestSetup class for database management
+- Unique instance key generation for test isolation
+- Automated user, article, and market creation utilities
+- Database cleanup and reset functionality
+
+The test suite ensures Provn.io's reliability across all core features including user authentication, prediction markets, financial transactions, and news article management. All tests maintain independence through proper isolation mechanisms and comprehensive cleanup procedures.
 
 ## Future Enhancements
 

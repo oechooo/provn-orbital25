@@ -31,7 +31,7 @@ export class StakeService {
     await marketService.updateOdds(marketId, prediction, sharesBought);
     const updatedMarket = await this.prisma.market.findUnique({
       where: { id: marketId },
-      select: { probTrue: true, probFalse: true }
+      select: { probTrue: true, probFalse: true, probHistory: true }
     });
 
     // Create stake and update user's prove points atomically
@@ -57,13 +57,8 @@ export class StakeService {
         }
       });
 
-      // Update probability history
-      const currentMarket = await tx.market.findUnique({
-        where: { id: marketId },
-        select: { probHistory: true }
-      });
-      
-      const currentHistory = (currentMarket?.probHistory as Array<{
+      // Update probability history using the market data from outside transaction
+      const currentHistory = (updatedMarket?.probHistory as Array<{
         timestamp: string;
         probTrue: number;
         probFalse: number;

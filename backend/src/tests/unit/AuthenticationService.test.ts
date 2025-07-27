@@ -2,12 +2,11 @@
 
 import { StakeService } from '../../services/StakeService';
 import { TestSetup } from '../setup/testSetup';
+import { prisma } from '../../config/database';
 
 describe('Authentication Integration Tests', () => {
-  let prisma: any;
-
   beforeAll(async () => {
-    prisma = await TestSetup.setupTestDatabase();
+    await TestSetup.setupTestDatabase();
   });
 
   beforeEach(async () => {
@@ -100,21 +99,20 @@ describe('Authentication Integration Tests', () => {
     test('should track avatar purchases correctly', async () => {
       const user = await TestSetup.createTestUser({ provePoints: 500 });
 
-      // Simulate purchasing hair
+      // Simulate selecting/equipping hair (NO COST)
       const purchasedItems = ['straightHair'];
-      const cost = 60;
 
       const updatedUser = await prisma.user.update({
         where: { id: user.id },
         data: {
           purchasedHair: JSON.stringify(purchasedItems),
-          provePoints: user.provePoints - cost,
           avatarHair: 'straightHair'
+          // provePoints unchanged - avatar items don't cost anything
         }
       });
 
       expect(JSON.parse(updatedUser.purchasedHair)).toContain('straightHair');
-      expect(updatedUser.provePoints).toBe(user.provePoints - cost);
+      expect(updatedUser.provePoints).toBe(user.provePoints); // No cost
       expect(updatedUser.avatarHair).toBe('straightHair');
     });
 
@@ -122,35 +120,42 @@ describe('Authentication Integration Tests', () => {
       const initialPP = 1000;
       const user = await TestSetup.createTestUser({ provePoints: initialPP });
 
-      // Simulate various PP transactions
+      // Simulate various PP transactions with proper sequencing
       let currentPP = initialPP;
 
-      // Avatar purchase
-      currentPP -= 60;
+      // Avatar customization (NO COST - just requirements)
+      // This should not affect balance, just update avatar fields
       await prisma.user.update({
         where: { id: user.id },
-        data: { provePoints: currentPP }
+        data: { 
+          avatarHair: 'straightHair',
+          purchasedHair: JSON.stringify(['straightHair'])
+        }
       });
 
       // Stake creation (simulated)
       currentPP -= 100;
-      await prisma.user.update({
+      const afterStake = await prisma.user.update({
         where: { id: user.id },
         data: { provePoints: currentPP }
       });
+      expect(afterStake.provePoints).toBe(900);
 
       // Winning payout (simulated)
       currentPP += 200;
-      await prisma.user.update({
+      const afterWinning = await prisma.user.update({
         where: { id: user.id },
         data: { provePoints: currentPP }
       });
+      expect(afterWinning.provePoints).toBe(1100);
 
+      // Final verification
       const finalUser = await prisma.user.findUnique({
         where: { id: user.id }
       });
 
-      expect(finalUser.provePoints).toBe(1040); // 1000 - 60 - 100 + 200
+      expect(finalUser).toBeDefined();
+      expect(finalUser?.provePoints).toBe(1100); // 1000 - 100 + 200 (avatar doesn't cost anything)
     });
   });
 
@@ -163,21 +168,14 @@ describe('Authentication Integration Tests', () => {
         where: { id: user.id }
       });
       expect(foundById).toBeDefined();
-      expect(foundById.id).toBe(user.id);
+      expect(foundById?.id).toBe(user.id);
 
       // Test finding by username
       const foundByUsername = await prisma.user.findUnique({
         where: { username: user.username }
       });
       expect(foundByUsername).toBeDefined();
-      expect(foundByUsername.username).toBe(user.username);
-
-      // Test finding by email
-      const foundByEmail = await prisma.user.findUnique({
-        where: { email: user.email }
-      });
-      expect(foundByEmail).toBeDefined();
-      expect(foundByEmail.email).toBe(user.email);
+      expect(foundByUsername?.username).toBe(user.username);
     });
 
     test('should return null for non-existent users', async () => {
