@@ -37,7 +37,7 @@ Not only does this allow us to gauge crowd sentiment about the veracity of news,
 ### Introduction
 - [Motivation](#motivation) - Why Provn.io?
 - [Core Features](#core-features) - Overview of all platform capabilities
-- [Upcoming Features] (#upcoming-features) - Upcoming features for Milestone 3
+- [Milestone 3 Features](#ms3-features) - Upcoming features for Milestone 3
 - [Tech Stack](#tech-stack) - Technologies and frameworks used
 - [Getting Started](#getting-started) - Installation and setup instructions
 - [User Accounts & Testing](#user-accounts--testing) - Test accounts and registration
@@ -54,8 +54,8 @@ Not only does this allow us to gauge crowd sentiment about the veracity of news,
 - [API Endpoints](#api-endpoints) - Complete API documentation
 - [Development & Testing](#development--testing) - Development workflows
 - [User Journey](#user-journey) - Step-by-step user experience flow
-- Tests
-- [Future Enhancements](#future-enhancements) - Planned features and improvements
+- [Tests](#tests) - Unit, integration, and user tests 
+- [SWE Practices](#swe-practices) - Software engineering best practices and architectural decisions
 
 ### Miscellaneous
 - [Frequently Asked Questions](#frequently-asked-questions) - Answering FAQs on our project
@@ -129,12 +129,13 @@ Research consistently shows that prediction markets are among the most accurate 
 - **Global Display**: Avatars appear throughout the app (navbar, profile, stakes history)
 - **Premium Features**: PP-gated premium avatar options, rewarding users for correct predictions with cosmetic features to customise their profile
 
-## Upcoming Features
+## MS3 Features
+- **Timezone Specific Articles**: The time of publishing and time of market resolution attached to each article is now standardised to GMT+8/SGT for greater clarity for a global audience
 - **Stake Management**: Allow users to interact with the "My Stakes" segment of the Profile Page, and ensure that stakes are properly distributed to users upon market resolution
 - **User Generated Articles**: Allow users to publish their own articles attributed to their profiles on the platform, allowing our platform to host developing news stories that are validated with our prediction market system. Users can post their own corroborations and explainers giving larger contexts around news stories.
 - **Automatic Market Closure**: Allow markets to resolve by their stipulated times automatically instead of relying upon admin verification.
-- **Simulated Markets**: Use bot accounts following simple algorithms to stake on news articles, increasing trading volume in order to more effectively display Provn.io's user experience once a userbase has been built.
-- **ProvePoint Injections**: Implement monthly ProvePoint injections to ensure users who have lost ProvePoints on staking activities have enough ProvePoints to continue enjoying Provn.io
+- **Simulated Markets**: Use bot accounts to randomly stake on news articles, increasing trading volume in order to more effectively display Provn.io's user experience once a userbase has been built.
+- **Guided Walkthrough**: Users can experience a guided walkthrough taking them through the core functionality of Provn.io, to help new users get the hang of things faster
 
 ## Tech Stack
 
@@ -872,22 +873,296 @@ module.exports = {
 
 The test suite ensures Provn.io's reliability across all core features including user authentication, prediction markets, financial transactions, and news article management. All tests maintain independence through proper isolation mechanisms and comprehensive cleanup procedures.
 
-## Future Enhancements
+## SWE Practices
 
-### Planned Features
-- **Multi-timeframe Markets**: 1-day, 1-month, and 5-month prediction windows
-- **Community Forums**: Discussion spaces for each article
-- **Advanced Analytics**: Detailed performance metrics and leaderboards
-- **Social Features**: Follow users, share predictions, and collaborative analysis
-- **Mobile App**: Native mobile applications for iOS and Android
-- **Enhanced Avatar System**: More customization options and unlockable content
+Provn.io demonstrates comprehensive software engineering best practices across architecture, development, testing, and maintenance. These practices ensure code quality, maintainability, scalability, and team collaboration.
 
-### Technical Improvements
-- Real-time updates using WebSockets
-- Enhanced caching for better performance
-- Advanced search and recommendation algorithms
-- Integration with additional news sources
-- Automated market resolution using AI/ML
+### Code Organization & Architecture
+
+#### **Modular Architecture with Clear Separation of Concerns**
+```
+├── backend/src/
+│   ├── controllers/     # API route handlers (presentation layer)
+│   ├── services/        # Business logic (service layer)
+│   ├── middleware/      # Cross-cutting concerns
+│   ├── routes/          # API route definitions
+│   └── models/          # Data models via Prisma
+```
+
+**Benefits:**
+- **Maintainability**: Each layer has distinct responsibilities, making code easier to understand and modify
+- **Testability**: Business logic is separated from API concerns, enabling focused unit testing
+- **Scalability**: New features can be added without affecting existing components
+- **Team Collaboration**: Developers can work on different layers simultaneously
+
+#### **Dependency Injection & Service Pattern**
+```typescript
+// Example: StakeService depends on MarketService, UserService
+export class StakeService {
+  constructor(
+    private marketService: MarketService,
+    private userService: UserService
+  ) {}
+}
+```
+
+**Benefits:**
+- **Loose Coupling**: Services are easily replaceable and mockable for testing
+- **Single Responsibility**: Each service handles one domain area
+- **Reusability**: Services can be used across multiple controllers and contexts
+
+### Type Safety & Code Quality
+
+#### **Full-Stack TypeScript Implementation**
+- **Frontend**: React with TypeScript for component type safety
+- **Backend**: Node.js with TypeScript for API and business logic
+- **Shared Types**: Common interfaces in `/shared/types.ts`
+
+**Benefits:**
+- **Early Error Detection**: Compile-time catching of type mismatches and null reference errors
+- **Refactoring Safety**: Breaking changes are caught at compile time
+
+#### **Database Type Safety with Prisma ORM**
+```typescript
+// Auto-generated types ensure database schema alignment
+const user: User = await prisma.user.findUnique({
+  where: { id: userId },
+  include: { stakes: true }
+});
+```
+
+**Benefits:**
+- **Schema-Code Synchronization**: Database changes automatically update TypeScript types
+- **Query Safety**: Prevents invalid database queries at compile time
+- **Migration Management**: Version-controlled database schema evolution
+- **Performance**: Generated queries are optimized and type-safe
+
+### Testing Strategy & Quality Assurance
+
+#### **Comprehensive Test Coverage (74 Tests Across 11 Suites)**
+- **Unit Tests**: Individual service and component testing
+- **Integration Tests**: End-to-end workflow validation
+- **API Tests**: HTTP endpoint behavior verification
+- **Database Tests**: Data persistence and retrieval validation
+
+**Benefits:**
+- **Regression Prevention**: Changes that break existing functionality are caught immediately
+- **Refactoring Confidence**: Code can be improved without fear of breaking existing features
+- **Documentation**: Tests serve as executable specifications of system behavior
+- **Quality Assurance**: Ensures all features work as intended across different scenarios
+
+#### **Test Isolation & Database Management**
+```typescript
+// Each test suite uses isolated database instances
+const testSetup = new TestSetup(`test-${Date.now()}-${Math.random()}`);
+```
+
+**Benefits:**
+- **Parallel Testing**: Tests can run independently without data contamination
+- **Deterministic Results**: Test outcomes are consistent across runs
+- **Clean State**: Each test starts with a known, clean database state
+- **Debugging**: Failed tests can be easily reproduced and debugged
+
+### Security & Authentication
+
+#### **JWT-Based Authentication with Proper Security Practices**
+```typescript
+// Secure password hashing
+const hashedPassword = await bcrypt.hash(password, 10);
+
+// JWT token validation middleware
+const token = req.headers.authorization?.split(' ')[1];
+const decoded = jwt.verify(token, process.env.JWT_SECRET);
+```
+
+**Benefits:**
+- **Stateless Authentication**: Scalable across multiple server instances
+- **Security**: Passwords are properly hashed, tokens have expiration
+- **Authorization**: Protected routes ensure proper access control
+- **Standards Compliance**: Follows industry-standard authentication patterns
+
+#### **Input Validation & Sanitization**
+```typescript
+// Request validation using middleware
+app.use('/api/stakes', validateStakeInput, stakeController);
+
+// SQL Injection Prevention through Prisma ORM
+const stakes = await prisma.stake.findMany({
+  where: { userId: parseInt(userId) } // Type-safe parameter binding
+});
+```
+
+**Benefits:**
+- **Attack Prevention**: Protects against SQL injection, XSS, and other common attacks
+- **Data Integrity**: Ensures only valid data enters the system
+- **Error Handling**: Provides clear feedback for invalid inputs
+- **Compliance**: Meets security standards for web applications
+
+### Development Workflow & DevOps
+
+#### **Environment-Based Configuration Management**
+```typescript
+// Environment-specific settings
+const config = {
+  database: process.env.DATABASE_URL,
+  jwtSecret: process.env.JWT_SECRET,
+  newsApiKey: process.env.NEWS_API_KEY,
+  port: process.env.PORT || 3000
+};
+```
+
+**Benefits:**
+- **Environment Separation**: Development, testing, and production use different configurations
+- **Security**: Sensitive credentials are not hardcoded in source code
+- **Flexibility**: Easy deployment to different environments
+- **Team Collaboration**: Each developer can have custom local settings
+
+#### **Hot Module Replacement & Development Efficiency**
+```json
+// Vite for frontend, nodemon for backend
+"scripts": {
+  "dev:frontend": "vite",
+  "dev:backend": "nodemon src/index.ts",
+  "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+}
+```
+
+**Benefits:**
+- **Fast Development Cycle**: Changes are reflected immediately without full rebuilds
+- **Developer Experience**: Reduces context switching and waiting time
+- **Productivity**: Enables rapid prototyping and iterative development
+- **Debugging**: Live debugging with immediate feedback
+
+### Code Maintainability & Documentation
+
+#### **Comprehensive Documentation Strategy**
+- **README.md**: Complete project documentation with setup instructions
+- **API Documentation**: Detailed endpoint specifications with examples
+- **Code Comments**: Inline documentation for complex business logic
+- **Type Definitions**: Self-documenting interfaces and types
+
+**Benefits:**
+- **Onboarding**: New developers can quickly understand and contribute to the project
+- **Knowledge Preservation**: Critical information is preserved beyond individual team members
+- **API Usability**: Clear documentation enables easy integration and testing
+- **Maintenance**: Future modifications are guided by documented intentions
+
+#### **Consistent Code Formatting & Standards**
+```json
+// ESLint and Prettier configuration
+{
+  "extends": ["@typescript-eslint/recommended"],
+  "rules": {
+    "no-unused-vars": "error",
+    "prefer-const": "error"
+  }
+}
+```
+
+**Benefits:**
+- **Team Consistency**: All code follows the same style guidelines
+- **Readability**: Consistent formatting improves code comprehension
+- **Error Prevention**: Linting catches common mistakes before runtime
+
+### Performance & Scalability
+
+#### **Efficient Database Queries with LMSR Optimization**
+```typescript
+// Optimized probability calculations
+async getImpliedProbability(marketId: number) {
+  const market = await this.getMarketById(marketId);
+  const expTrue = Math.exp(market.sharesTrue / LIQUIDITY);
+  const expFalse = Math.exp(market.sharesFalse / LIQUIDITY);
+  return { probTrue: expTrue / (expTrue + expFalse) };
+}
+```
+
+**Benefits:**
+- **Fast Response Times**: Efficient algorithms provide quick market updates
+- **Scalability**: Mathematical optimizations handle increasing user loads
+- **Real-time Updates**: Market probabilities update instantly with new stakes
+- **Resource Efficiency**: Minimizes computational overhead for frequent operations
+
+#### **Caching & Resource Management**
+```typescript
+// Static asset optimization and caching strategies
+app.use(express.static('public', { maxAge: '1d' }));
+
+// Database connection pooling through Prisma
+const prisma = new PrismaClient({
+  datasources: { db: { url: process.env.DATABASE_URL } }
+});
+```
+
+**Benefits:**
+- **Reduced Load Times**: Static assets are cached for faster loading
+- **Database Efficiency**: Connection pooling prevents resource exhaustion
+- **Bandwidth Optimization**: Reduces repeated asset downloads
+- **User Experience**: Faster page loads improve user satisfaction
+
+### Error Handling & Monitoring
+
+#### **Comprehensive Error Handling Strategy**
+```typescript
+// Global error handling middleware
+app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error('Error:', error.message);
+  res.status(500).json({ 
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? error.message : undefined
+  });
+});
+```
+
+**Benefits:**
+- **Graceful Degradation**: Errors don't crash the entire application
+- **User Experience**: Users receive helpful error messages instead of cryptic failures
+- **Debugging**: Detailed error information is available in development
+- **Security**: Production environments don't leak sensitive error details
+
+#### **Logging & Monitoring**
+```typescript
+// Structured logging for production monitoring
+console.log(`[${new Date().toISOString()}] ${method} ${url} - ${statusCode}`);
+
+// Database query monitoring
+prisma.$use(async (params, next) => {
+  const before = Date.now();
+  const result = await next(params);
+  console.log(`Query ${params.model}.${params.action} took ${Date.now() - before}ms`);
+  return result;
+});
+```
+
+**Benefits:**
+- **Production Visibility**: Monitor application behavior in real-time
+- **Performance Tracking**: Identify slow queries and bottlenecks
+- **Issue Diagnosis**: Historical logs help debug production problems
+
+### Integration & External Services
+
+#### **Clean External API Integration**
+```typescript
+// NewsAPI integration with error handling
+export class NewsService {
+  async fetchArticles(category?: string): Promise<Article[]> {
+    try {
+      const response = await fetch(`${NEWS_API_URL}?apiKey=${API_KEY}&category=${category}`);
+      if (!response.ok) throw new Error(`API Error: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('News API Error:', error);
+      return []; // Graceful fallback
+    }
+  }
+}
+```
+
+**Benefits:**
+- **Resilience**: Application continues functioning even if external services fail
+- **Error Isolation**: External service failures don't propagate throughout the system
+- **Testability**: External dependencies can be mocked for testing
+- **Monitoring**: External API performance and failures are tracked
 
 ## Contributing
 
