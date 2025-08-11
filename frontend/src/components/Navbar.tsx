@@ -40,6 +40,12 @@ const Navbar = () => {
               >
                 News
               </Link>
+              <Link 
+                to="/about" 
+                className="text-white/70 hover:text-white px-3 py-2 rounded-xl hover:bg-white/10 text-sm font-medium transition-all duration-300"
+              >
+                About
+              </Link>
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
@@ -149,6 +155,13 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               News
+            </Link>
+            <Link 
+              to="/about" 
+              className="block px-3 py-2 rounded-md text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              About
             </Link>
             
             {/* Help/Tutorial Button - Mobile */}

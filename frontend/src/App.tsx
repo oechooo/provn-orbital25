@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/SimpleAuthContext';
 import Navbar from './components/Navbar';
 import WalkthroughTour from './components/WalkthroughTourSimple';
 import HomePage from './pages/HomePage';
+import AboutPage from './pages/AboutPage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
 import ArticleCreationPage from './pages/ArticleCreationPage';
 import NewsPage from './pages/NewsPage';
@@ -25,6 +26,7 @@ function App() {
           <main className="flex-grow pt-20"> {/* Added pt-20 to account for fixed navbar */}
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/about" element={<AboutPage />} />
               <Route path="/news" element={<NewsPage />} />
               <Route path="/article/:id" element={<ArticleDetailPage />} />
               <Route path="/create-article" element={<ArticleCreationPage />} />

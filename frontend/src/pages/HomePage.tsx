@@ -176,6 +176,34 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
+      {/* Video Demo Section */}
+      <div className="relative z-10">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-white mb-4">See It In Action</h2>
+          <p className="text-lg text-slate-300">Watch how prediction markets help fight misinformation</p>
+        </div>
+
+        <div className="max-w-4xl mx-auto">
+          <div className="glass-card p-6">
+            <div className="relative w-full" style={{ paddingBottom: '56.25%' /* 16:9 aspect ratio */ }}>
+              <iframe
+                className="absolute top-0 left-0 w-full h-full rounded-lg"
+                src="https://www.youtube.com/embed/vFl8LxjZz70"
+                title="ProveN - Prediction Markets for News Verification"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              ></iframe>
+            </div>
+            <div className="mt-4 text-center">
+              <p className="text-slate-300 text-sm">
+                Learn about Provn.io's features and how to navigate our website!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Market Statistics Section */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">

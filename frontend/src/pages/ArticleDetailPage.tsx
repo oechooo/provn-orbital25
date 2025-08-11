@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/SimpleAuthContext';
-import { commentAPI, articleAPI, stakeAPI } from '../services/api';
+import { commentAPI, stakeAPI } from '../services/api';
 import Avatar from '../components/Avatar';
 import toast from 'react-hot-toast';
 
@@ -766,7 +766,7 @@ const ArticleDetailPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
-        {/* DEBUG SECTION - Always visible for debugging */}
+        {/* DEBUG SECTION - Always visible for debugging
         <div className="mb-6 p-4 bg-blue-900/20 border border-blue-700/30 rounded-lg">
           <h3 className="text-blue-300 font-bold mb-2">🔍 Debug Info (Mode: {import.meta.env.MODE})</h3>
             <div className="text-xs text-blue-200 space-y-1">
@@ -794,7 +794,7 @@ const ArticleDetailPage: React.FC = () => {
             >
               Test API Call (using articleAPI)
             </button>
-          </div>
+          </div> */}
         
         
         {/* Back Navigation */}
