@@ -89,7 +89,7 @@ interface ForumPost {
 
 const ArticleDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
+  const { user, updateUserPoints } = useAuth();
   const [market, setMarket] = useState<Market | null>(null);
   const [loading, setLoading] = useState(true);
   const [stakeAmount, setStakeAmount] = useState<number>(10);
@@ -230,6 +230,14 @@ const ArticleDetailPage: React.FC = () => {
       return;
     }
 
+    // Ensure stake amount is a positive integer
+    const validStakeAmount = Math.max(1, Math.floor(stakeAmount));
+    if (validStakeAmount !== stakeAmount) {
+      setStakeAmount(validStakeAmount);
+      toast.error('Stake amount must be a whole number');
+      return;
+    }
+
     if (stakeAmount <= 0) {
       toast.error('Stake amount must be greater than 0');
       return;
@@ -246,6 +254,9 @@ const ArticleDetailPage: React.FC = () => {
       await stakeAPI.createStake(market.id, stakeAmount, prediction);
       
       toast.success(`Stake placed successfully! You predicted: ${prediction ? 'TRUE' : 'FALSE'}`);
+      
+      // Update user's ProvePoints in the navbar
+      updateUserPoints(user.provePoints - stakeAmount);
       
       // Refresh article data
       await fetchArticleData(parseInt(id!));
@@ -997,10 +1008,31 @@ const ArticleDetailPage: React.FC = () => {
                       type="number"
                       min="1"
                       max={user.provePoints}
+                      step="1"
                       value={stakeAmount}
-                      onChange={(e) => setStakeAmount(Number(e.target.value))}
+                      onChange={(e) => setStakeAmount(Math.max(0, parseInt(e.target.value) || 0))}
                       className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                     />
+                    {/* Quick amount buttons */}
+                    <div className="flex gap-2 mt-2">
+                      {[10, 25, 50, 100].filter(amount => amount <= user.provePoints).map(amount => (
+                        <button
+                          key={amount}
+                          onClick={() => setStakeAmount(amount)}
+                          className="px-2 py-1 text-xs bg-slate-600 hover:bg-slate-500 text-slate-200 rounded transition-colors"
+                        >
+                          {amount}
+                        </button>
+                      ))}
+                      {user.provePoints > 100 && (
+                        <button
+                          onClick={() => setStakeAmount(Math.floor(user.provePoints))}
+                          className="px-2 py-1 text-xs bg-slate-600 hover:bg-slate-500 text-slate-200 rounded transition-colors"
+                        >
+                          All
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Place Stake Button */}

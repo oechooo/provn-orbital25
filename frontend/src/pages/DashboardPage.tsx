@@ -23,7 +23,7 @@ interface Market {
 }
 
 export default function DashboardPage() {
-  const { user } = useAuth();  const [stats, setStats] = useState<UserStats>({
+  const { user, updateUserPoints } = useAuth();  const [stats, setStats] = useState<UserStats>({
     totalBets: 0,
     winRate: 0,
     reputation: 0,
@@ -58,11 +58,21 @@ export default function DashboardPage() {
     if (!selectedMarket || !betAmount) {
       toast.error('Please select a market and enter a bet amount');
       return;
-    }    setIsPlacingBet(true);
+    }    
+    
+    const betAmountNumber = parseFloat(betAmount);
+    
+    setIsPlacingBet(true);
     try {
-      await stakeAPI.createStake(selectedMarket.article.id, parseFloat(betAmount), betSide === 'true');
+      await stakeAPI.createStake(selectedMarket.article.id, betAmountNumber, betSide === 'true');
       
       toast.success('Bet placed successfully!');
+      
+      // Update user's ProvePoints in the navbar
+      if (user) {
+        updateUserPoints(user.provePoints - betAmountNumber);
+      }
+      
       setBetAmount('');
       setSelectedMarket(null);
       await fetchDashboardData(); // Refresh data
