@@ -39,7 +39,7 @@ const AvatarEditorPage: React.FC = () => {
   const handleSaveAvatar = async () => {
     if (!user) return;
 
-    // Check if user meets the PP requirements for premium features
+    // Check if user meets the PP requirements for premium features (unlock system)
     if (totalRequirement > 0 && !canAfford) {
       toast.error(`You need ${totalRequirement} ProvePoints to unlock these premium features. You have ${user.provePoints.toFixed(2)} PP.`);
       return;
@@ -64,7 +64,7 @@ const AvatarEditorPage: React.FC = () => {
       
       console.log('Response from server:', response);
       
-      // Update the user context with response data (includes updated PP balance and purchased items)
+      // Update the user context with response data (no PP deduction - unlock system)
       updateUser({
         avatarSkinColor: avatarConfig.skinColor,
         avatarHairColor: avatarConfig.hairColor,
@@ -72,14 +72,10 @@ const AvatarEditorPage: React.FC = () => {
         avatarEyes: avatarConfig.eyes,
         avatarMouth: avatarConfig.mouth,
         avatarAccessories: avatarConfig.accessories,
-        provePoints: response.provePoints, // Use server's updated balance
-        purchasedHair: response.purchasedHair,
-        purchasedEyes: response.purchasedEyes,
-        purchasedMouth: response.purchasedMouth,
-        purchasedAccessories: response.purchasedAccessories
+        provePoints: response.provePoints // PP balance should remain the same
       });
       
-      console.log('User after updateUser call should have PP:', response.provePoints);
+      console.log('Avatar updated successfully with unlock system');
       
       toast.success(response.message || 'Avatar updated successfully!');
       // Stay in the shop instead of navigating away
@@ -95,36 +91,37 @@ const AvatarEditorPage: React.FC = () => {
     setAvatarConfig(prev => ({ ...prev, [key]: value }));
   };
 
-  // Calculate total PP requirement for premium features
+  // Calculate total PP requirement for premium features (unlock system)
   const calculateRequirement = () => {
-    return 0; // Temporarily disabled for debugging
-    /*
     let requirement = 0;
     
-    // Charge only for premium items they don't already own
+    // Find the highest single requirement from any selected premium item
     
     // Hair style requirement
-    if (avatarConfig.hair !== 'shortHair' && !ownsOption('hair', avatarConfig.hair)) {
-      requirement += AVATAR_REQUIREMENTS.hairStyle[avatarConfig.hair as keyof typeof AVATAR_REQUIREMENTS.hairStyle] || 50;
+    if (avatarConfig.hair !== 'shortHair') {
+      const hairReq = AVATAR_REQUIREMENTS.hairStyle[avatarConfig.hair as keyof typeof AVATAR_REQUIREMENTS.hairStyle] || 50;
+      requirement = Math.max(requirement, hairReq);
     }
     
     // Eyes requirement
-    if (avatarConfig.eyes !== 'normal' && !ownsOption('eyes', avatarConfig.eyes)) {
-      requirement += AVATAR_REQUIREMENTS.eyes[avatarConfig.eyes as keyof typeof AVATAR_REQUIREMENTS.eyes] || 30;
+    if (avatarConfig.eyes !== 'normal') {
+      const eyesReq = AVATAR_REQUIREMENTS.eyes[avatarConfig.eyes as keyof typeof AVATAR_REQUIREMENTS.eyes] || 30;
+      requirement = Math.max(requirement, eyesReq);
     }
     
     // Mouth requirement
-    if (avatarConfig.mouth !== 'teethSmile' && !ownsOption('mouth', avatarConfig.mouth)) {
-      requirement += AVATAR_REQUIREMENTS.mouth[avatarConfig.mouth as keyof typeof AVATAR_REQUIREMENTS.mouth] || 30;
+    if (avatarConfig.mouth !== 'teethSmile') {
+      const mouthReq = AVATAR_REQUIREMENTS.mouth[avatarConfig.mouth as keyof typeof AVATAR_REQUIREMENTS.mouth] || 30;
+      requirement = Math.max(requirement, mouthReq);
     }
     
     // Accessories requirement
-    if (avatarConfig.accessories !== 'none' && !ownsOption('accessories', avatarConfig.accessories)) {
-      requirement += AVATAR_REQUIREMENTS.accessories[avatarConfig.accessories as keyof typeof AVATAR_REQUIREMENTS.accessories] || 100;
+    if (avatarConfig.accessories !== 'none') {
+      const accessReq = AVATAR_REQUIREMENTS.accessories[avatarConfig.accessories as keyof typeof AVATAR_REQUIREMENTS.accessories] || 100;
+      requirement = Math.max(requirement, accessReq);
     }
     
     return requirement;
-    */
   };
 
   const totalRequirement = calculateRequirement();
@@ -162,43 +159,16 @@ const AvatarEditorPage: React.FC = () => {
     }
   };
 
-  // Check if user already owns a premium option - check purchased items lists
-  const ownsOption = (_category: string, _value: string) => {
+  // Check if user can unlock a premium option based on their PP balance
+  const canUnlockOption = (category: string, value: string) => {
     if (!user) return false;
     
-    // Temporarily return false to debug
-    return false;
+    // Free options are always unlocked
+    if (!isPremiumOption(category, value)) return true;
     
-    /*
-    try {
-      console.log(`Checking ownership for ${category}:${value}, user data:`, {
-        purchasedHair: user.purchasedHair,
-        purchasedEyes: user.purchasedEyes,
-        purchasedMouth: user.purchasedMouth,
-        purchasedAccessories: user.purchasedAccessories
-      });
-      
-      switch (category) {
-        case 'hair':
-          const purchasedHair = user.purchasedHair ? JSON.parse(user.purchasedHair) : [];
-          return purchasedHair.includes(value);
-        case 'eyes':
-          const purchasedEyes = user.purchasedEyes ? JSON.parse(user.purchasedEyes) : [];
-          return purchasedEyes.includes(value);
-        case 'mouth':
-          const purchasedMouth = user.purchasedMouth ? JSON.parse(user.purchasedMouth) : [];
-          return purchasedMouth.includes(value);
-        case 'accessories':
-          const purchasedAccessories = user.purchasedAccessories ? JSON.parse(user.purchasedAccessories) : [];
-          return purchasedAccessories.includes(value);
-        default:
-          return false;
-      }
-    } catch (error) {
-      console.error('Error parsing purchased items:', error);
-      return false;
-    }
-    */
+    // For premium options, check if user has enough PP to unlock
+    const requiredPP = getItemCost(category, value);
+    return user.provePoints >= requiredPP;
   };
 
   if (!user) {
@@ -380,7 +350,7 @@ const AvatarEditorPage: React.FC = () => {
                     <div className="grid grid-cols-2 gap-2">
                       {AVATAR_OPTIONS.eyes.map((option) => {
                         const isPremium = isPremiumOption('eyes', option.value);
-                        const isOwned = ownsOption('eyes', option.value);
+                        const canUnlock = canUnlockOption('eyes', option.value);
                         return (
                           <button
                             key={option.value}
@@ -389,16 +359,25 @@ const AvatarEditorPage: React.FC = () => {
                               avatarConfig.eyes === option.value
                                 ? 'bg-purple-600 text-white shadow-lg'
                                 : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                            } ${isPremium && !isOwned ? 'border border-yellow-500/50' : ''}`}
+                            } ${isPremium && !canUnlock ? 'border border-red-500/50 opacity-60' : isPremium ? 'border border-yellow-500/50' : ''}`}
+                            disabled={isPremium && !canUnlock}
                           >
                             <div className="flex items-center justify-between">
                               <span>{option.label}</span>
-                              {isPremium && !isOwned && (
+                              {isPremium && (
                                 <div className="flex items-center gap-1">
-                                  <span className="text-xs text-yellow-400">{getItemCost('eyes', option.value)} PP</span>
-                                  <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                  </svg>
+                                  <span className={`text-xs ${canUnlock ? 'text-yellow-400' : 'text-red-400'}`}>
+                                    {getItemCost('eyes', option.value)} PP
+                                  </span>
+                                  {canUnlock ? (
+                                    <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                  ) : (
+                                    <svg className="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
+                                    </svg>
+                                  )}
                                 </div>
                               )}
                             </div>
@@ -418,7 +397,7 @@ const AvatarEditorPage: React.FC = () => {
                     <div className="grid grid-cols-2 gap-2">
                       {AVATAR_OPTIONS.mouth.map((option) => {
                         const isPremium = isPremiumOption('mouth', option.value);
-                        const isOwned = ownsOption('mouth', option.value);
+                        const canUnlock = canUnlockOption('mouth', option.value);
                         return (
                           <button
                             key={option.value}
@@ -427,16 +406,25 @@ const AvatarEditorPage: React.FC = () => {
                               avatarConfig.mouth === option.value
                                 ? 'bg-purple-600 text-white shadow-lg'
                                 : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                            } ${isPremium && !isOwned ? 'border border-yellow-500/50' : ''}`}
+                            } ${isPremium && !canUnlock ? 'border border-red-500/50 opacity-60' : isPremium ? 'border border-yellow-500/50' : ''}`}
+                            disabled={isPremium && !canUnlock}
                           >
                             <div className="flex items-center justify-between">
                               <span>{option.label}</span>
-                              {isPremium && !isOwned && (
+                              {isPremium && (
                                 <div className="flex items-center gap-1">
-                                  <span className="text-xs text-yellow-400">{getItemCost('mouth', option.value)} PP</span>
-                                  <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                  </svg>
+                                  <span className={`text-xs ${canUnlock ? 'text-yellow-400' : 'text-red-400'}`}>
+                                    {getItemCost('mouth', option.value)} PP
+                                  </span>
+                                  {canUnlock ? (
+                                    <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                  ) : (
+                                    <svg className="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
+                                    </svg>
+                                  )}
                                 </div>
                               )}
                             </div>
@@ -456,7 +444,7 @@ const AvatarEditorPage: React.FC = () => {
                     <div className="grid grid-cols-2 gap-2">
                       {AVATAR_OPTIONS.accessories.map((option) => {
                         const isPremium = isPremiumOption('accessories', option.value);
-                        const isOwned = ownsOption('accessories', option.value);
+                        const canUnlock = canUnlockOption('accessories', option.value);
                         return (
                           <button
                             key={option.value}
@@ -465,16 +453,25 @@ const AvatarEditorPage: React.FC = () => {
                               avatarConfig.accessories === option.value
                                 ? 'bg-purple-600 text-white shadow-lg'
                                 : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                            } ${isPremium && !isOwned ? 'border border-yellow-500/50' : ''}`}
+                            } ${isPremium && !canUnlock ? 'border border-red-500/50 opacity-60' : isPremium ? 'border border-yellow-500/50' : ''}`}
+                            disabled={isPremium && !canUnlock}
                           >
                             <div className="flex items-center justify-between">
                               <span>{option.label}</span>
-                              {isPremium && !isOwned && (
+                              {isPremium && (
                                 <div className="flex items-center gap-1">
-                                  <span className="text-xs text-yellow-400">{getItemCost('accessories', option.value)} PP</span>
-                                  <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                  </svg>
+                                  <span className={`text-xs ${canUnlock ? 'text-yellow-400' : 'text-red-400'}`}>
+                                    {getItemCost('accessories', option.value)} PP
+                                  </span>
+                                  {canUnlock ? (
+                                    <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                  ) : (
+                                    <svg className="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
+                                    </svg>
+                                  )}
                                 </div>
                               )}
                             </div>
@@ -507,7 +504,7 @@ const AvatarEditorPage: React.FC = () => {
                   : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
               }`}
             >
-              {isLoading ? 'Saving...' : totalRequirement > 0 ? `Save Avatar (Requires ${totalRequirement} PP)` : 'Save Avatar'}
+              {isLoading ? 'Saving...' : totalRequirement > 0 ? `Save Avatar (Requires ${totalRequirement} PP to unlock)` : 'Save Avatar'}
             </button>
           </div>
         </div>

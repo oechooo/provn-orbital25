@@ -186,11 +186,7 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 avatarHair: true,
                 avatarEyes: true,
                 avatarMouth: true,
-                avatarAccessories: true,
-                purchasedHair: true,
-                purchasedEyes: true,
-                purchasedMouth: true,
-                purchasedAccessories: true
+                avatarAccessories: true
             }
         });
         if (!currentUser) {
@@ -215,43 +211,34 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 sailormoonCrown: 100, sleepMask: 50, sunglasses: 55
             }
         };
-        let totalCost = 0;
-        const purchasedHair = JSON.parse(currentUser.purchasedHair || '[]');
-        const purchasedEyes = JSON.parse(currentUser.purchasedEyes || '[]');
-        const purchasedMouth = JSON.parse(currentUser.purchasedMouth || '[]');
-        const purchasedAccessories = JSON.parse(currentUser.purchasedAccessories || '[]');
-        const newPurchases = {
-            hair: [],
-            eyes: [],
-            mouth: [],
-            accessories: []
-        };
-        if (avatarHair !== 'shortHair' && !purchasedHair.includes(avatarHair)) {
-            totalCost += AVATAR_REQUIREMENTS.hairStyle[avatarHair] || 50;
-            newPurchases.hair.push(avatarHair);
+        let totalRequirement = 0;
+        const unlockedItems = [];
+        if (avatarHair !== 'shortHair') {
+            const requirement = AVATAR_REQUIREMENTS.hairStyle[avatarHair] || 50;
+            totalRequirement = Math.max(totalRequirement, requirement);
+            unlockedItems.push(`Hair: ${avatarHair} (${requirement} PP required)`);
         }
-        if (avatarEyes !== 'normal' && !purchasedEyes.includes(avatarEyes)) {
-            totalCost += AVATAR_REQUIREMENTS.eyes[avatarEyes] || 30;
-            newPurchases.eyes.push(avatarEyes);
+        if (avatarEyes !== 'normal') {
+            const requirement = AVATAR_REQUIREMENTS.eyes[avatarEyes] || 30;
+            totalRequirement = Math.max(totalRequirement, requirement);
+            unlockedItems.push(`Eyes: ${avatarEyes} (${requirement} PP required)`);
         }
-        if (avatarMouth !== 'teethSmile' && !purchasedMouth.includes(avatarMouth)) {
-            totalCost += AVATAR_REQUIREMENTS.mouth[avatarMouth] || 30;
-            newPurchases.mouth.push(avatarMouth);
+        if (avatarMouth !== 'teethSmile') {
+            const requirement = AVATAR_REQUIREMENTS.mouth[avatarMouth] || 30;
+            totalRequirement = Math.max(totalRequirement, requirement);
+            unlockedItems.push(`Mouth: ${avatarMouth} (${requirement} PP required)`);
         }
-        if (avatarAccessories !== 'none' && !purchasedAccessories.includes(avatarAccessories)) {
-            totalCost += AVATAR_REQUIREMENTS.accessories[avatarAccessories] || 100;
-            newPurchases.accessories.push(avatarAccessories);
+        if (avatarAccessories !== 'none') {
+            const requirement = AVATAR_REQUIREMENTS.accessories[avatarAccessories] || 100;
+            totalRequirement = Math.max(totalRequirement, requirement);
+            unlockedItems.push(`Accessories: ${avatarAccessories} (${requirement} PP required)`);
         }
-        if (totalCost > currentUser.provePoints) {
+        if (totalRequirement > currentUser.provePoints) {
             res.status(400).json({
-                message: `Insufficient ProvePoints. Required: ${totalCost}, Available: ${currentUser.provePoints}`
+                message: `Insufficient ProvePoints to unlock these features. Required: ${totalRequirement} PP, Available: ${currentUser.provePoints} PP`
             });
             return;
         }
-        const updatedPurchasedHair = [...purchasedHair, ...newPurchases.hair];
-        const updatedPurchasedEyes = [...purchasedEyes, ...newPurchases.eyes];
-        const updatedPurchasedMouth = [...purchasedMouth, ...newPurchases.mouth];
-        const updatedPurchasedAccessories = [...purchasedAccessories, ...newPurchases.accessories];
         const user = yield database_1.prisma.user.update({
             where: { id: userId },
             data: {
@@ -260,12 +247,7 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 avatarHair,
                 avatarEyes,
                 avatarMouth,
-                avatarAccessories: avatarAccessories || 'none',
-                provePoints: currentUser.provePoints - totalCost,
-                purchasedHair: JSON.stringify(updatedPurchasedHair),
-                purchasedEyes: JSON.stringify(updatedPurchasedEyes),
-                purchasedMouth: JSON.stringify(updatedPurchasedMouth),
-                purchasedAccessories: JSON.stringify(updatedPurchasedAccessories)
+                avatarAccessories: avatarAccessories || 'none'
             },
             select: {
                 id: true,
@@ -279,14 +261,10 @@ const updateUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 avatarHair: true,
                 avatarEyes: true,
                 avatarMouth: true,
-                avatarAccessories: true,
-                purchasedHair: true,
-                purchasedEyes: true,
-                purchasedMouth: true,
-                purchasedAccessories: true
+                avatarAccessories: true
             }
         });
-        res.json(Object.assign({ message: totalCost > 0 ? `Avatar updated! ${totalCost} PP deducted.` : "Avatar updated successfully!", costDeducted: totalCost }, user));
+        res.json(Object.assign({ message: totalRequirement > 0 ? `Avatar updated! Features unlocked with ${totalRequirement} PP requirement.` : "Avatar updated successfully!", requirementMet: totalRequirement, unlockedFeatures: unlockedItems }, user));
     }
     catch (error) {
         console.error('Error updating avatar:', error);

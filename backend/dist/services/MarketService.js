@@ -41,25 +41,40 @@ class MarketService {
     }
     getMarketById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const market = yield this.prisma.market.findUnique({
-                where: { id },
-                include: {
-                    article: true,
-                    stakes: {
-                        include: {
-                            user: {
-                                select: {
-                                    id: true,
-                                    username: true,
+            var _a, _b;
+            try {
+                const market = yield this.prisma.market.findUnique({
+                    where: { id },
+                    include: {
+                        article: true,
+                        stakes: {
+                            include: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        username: true,
+                                    },
                                 },
                             },
                         },
                     },
-                },
-            });
-            if (!market)
-                throw new Error('Market not found');
-            return market;
+                });
+                if (!market)
+                    throw new Error('Market not found');
+                return market;
+            }
+            catch (error) {
+                if (((_a = error.message) === null || _a === void 0 ? void 0 : _a.includes('Inconsistent query result')) || ((_b = error.message) === null || _b === void 0 ? void 0 : _b.includes('required to return data'))) {
+                    console.warn(`MarketService: Relationship inconsistency for market ${id}, fetching without includes`);
+                    const market = yield this.prisma.market.findUnique({
+                        where: { id }
+                    });
+                    if (!market)
+                        throw new Error('Market not found');
+                    return Object.assign(Object.assign({}, market), { article: null, stakes: [] });
+                }
+                throw error;
+            }
         });
     }
     createMarket(articleId) {
@@ -314,6 +329,12 @@ class MarketService {
             const newSharesFalse = !predictedOutcome
                 ? market.sharesFalse + sharesBought
                 : market.sharesFalse;
+            const marketExists = yield this.prisma.market.findUnique({
+                where: { id: marketId }
+            });
+            if (!marketExists) {
+                throw new Error(`Market ${marketId} not found for shares update`);
+            }
             yield this.prisma.market.update({
                 where: { id: marketId },
                 data: {
@@ -322,6 +343,12 @@ class MarketService {
                 },
             });
             const { probTrue, probFalse } = yield this.getImpliedProbability(marketId);
+            const marketStillExists = yield this.prisma.market.findUnique({
+                where: { id: marketId }
+            });
+            if (!marketStillExists) {
+                throw new Error(`Market ${marketId} not found for probability update`);
+            }
             yield this.prisma.market.update({
                 where: { id: marketId },
                 data: {

@@ -42,7 +42,7 @@ class StakeService {
             yield marketService.updateOdds(marketId, prediction, sharesBought);
             const updatedMarket = yield this.prisma.market.findUnique({
                 where: { id: marketId },
-                select: { probTrue: true, probFalse: true }
+                select: { probTrue: true, probFalse: true, probHistory: true }
             });
             return this.prisma.$transaction((tx) => __awaiter(this, void 0, void 0, function* () {
                 const stake = yield tx.stake.create({
@@ -63,11 +63,7 @@ class StakeService {
                         }
                     }
                 });
-                const currentMarket = yield tx.market.findUnique({
-                    where: { id: marketId },
-                    select: { probHistory: true }
-                });
-                const currentHistory = (currentMarket === null || currentMarket === void 0 ? void 0 : currentMarket.probHistory) || [];
+                const currentHistory = (updatedMarket === null || updatedMarket === void 0 ? void 0 : updatedMarket.probHistory) || [];
                 const newHistoryEntry = {
                     timestamp: new Date().toISOString(),
                     probTrue: updatedMarket.probTrue,

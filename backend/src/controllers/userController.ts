@@ -204,7 +204,7 @@ export const updateUserAvatar = async (req: AuthRequest, res: Response): Promise
       return;
     }
 
-    // Get current user to check what they already own and their PP balance
+    // Get current user to check their PP balance
     const currentUser = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -213,14 +213,9 @@ export const updateUserAvatar = async (req: AuthRequest, res: Response): Promise
         avatarHair: true,
         avatarEyes: true,
         avatarMouth: true,
-        avatarAccessories: true,
-        // @ts-ignore - purchased fields exist but not in current type definition
-        purchasedHair: true,
-        purchasedEyes: true,
-        purchasedMouth: true,
-        purchasedAccessories: true
+        avatarAccessories: true
       }
-    }) as any; // Type assertion after query
+    });
 
     if (!currentUser) {
       res.status(404).json({ message: "User not found" });
@@ -247,59 +242,44 @@ export const updateUserAvatar = async (req: AuthRequest, res: Response): Promise
       }
     };
 
-    // Calculate cost for new items only
-    let totalCost = 0;
+    // Calculate unlock requirements for premium items (NO COST - just requirements to unlock)
+    let totalRequirement = 0;
+    const unlockedItems: string[] = [];
 
-    // Parse purchased items (stored as JSON strings) - using any to avoid TS errors during transition
-    const purchasedHair = JSON.parse((currentUser as any).purchasedHair || '[]');
-    const purchasedEyes = JSON.parse((currentUser as any).purchasedEyes || '[]');
-    const purchasedMouth = JSON.parse((currentUser as any).purchasedMouth || '[]');
-    const purchasedAccessories = JSON.parse((currentUser as any).purchasedAccessories || '[]');
-
-    // Items to add to purchased lists
-    const newPurchases = {
-      hair: [] as string[],
-      eyes: [] as string[],
-      mouth: [] as string[],
-      accessories: [] as string[]
-    };
-
-    // Only charge for premium items they haven't purchased before
-    if (avatarHair !== 'shortHair' && !purchasedHair.includes(avatarHair)) {
-      totalCost += AVATAR_REQUIREMENTS.hairStyle[avatarHair as keyof typeof AVATAR_REQUIREMENTS.hairStyle] || 50;
-      newPurchases.hair.push(avatarHair);
+    // Check unlock requirements for premium items based on current PP balance
+    if (avatarHair !== 'shortHair') {
+      const requirement = AVATAR_REQUIREMENTS.hairStyle[avatarHair as keyof typeof AVATAR_REQUIREMENTS.hairStyle] || 50;
+      totalRequirement = Math.max(totalRequirement, requirement);
+      unlockedItems.push(`Hair: ${avatarHair} (${requirement} PP required)`);
     }
     
-    if (avatarEyes !== 'normal' && !purchasedEyes.includes(avatarEyes)) {
-      totalCost += AVATAR_REQUIREMENTS.eyes[avatarEyes as keyof typeof AVATAR_REQUIREMENTS.eyes] || 30;
-      newPurchases.eyes.push(avatarEyes);
+    if (avatarEyes !== 'normal') {
+      const requirement = AVATAR_REQUIREMENTS.eyes[avatarEyes as keyof typeof AVATAR_REQUIREMENTS.eyes] || 30;
+      totalRequirement = Math.max(totalRequirement, requirement);
+      unlockedItems.push(`Eyes: ${avatarEyes} (${requirement} PP required)`);
     }
     
-    if (avatarMouth !== 'teethSmile' && !purchasedMouth.includes(avatarMouth)) {
-      totalCost += AVATAR_REQUIREMENTS.mouth[avatarMouth as keyof typeof AVATAR_REQUIREMENTS.mouth] || 30;
-      newPurchases.mouth.push(avatarMouth);
+    if (avatarMouth !== 'teethSmile') {
+      const requirement = AVATAR_REQUIREMENTS.mouth[avatarMouth as keyof typeof AVATAR_REQUIREMENTS.mouth] || 30;
+      totalRequirement = Math.max(totalRequirement, requirement);
+      unlockedItems.push(`Mouth: ${avatarMouth} (${requirement} PP required)`);
     }
     
-    if (avatarAccessories !== 'none' && !purchasedAccessories.includes(avatarAccessories)) {
-      totalCost += AVATAR_REQUIREMENTS.accessories[avatarAccessories as keyof typeof AVATAR_REQUIREMENTS.accessories] || 100;
-      newPurchases.accessories.push(avatarAccessories);
+    if (avatarAccessories !== 'none') {
+      const requirement = AVATAR_REQUIREMENTS.accessories[avatarAccessories as keyof typeof AVATAR_REQUIREMENTS.accessories] || 100;
+      totalRequirement = Math.max(totalRequirement, requirement);
+      unlockedItems.push(`Accessories: ${avatarAccessories} (${requirement} PP required)`);
     }
 
-    // Check if user can afford the total cost
-    if (totalCost > currentUser.provePoints) {
+    // Check if user meets the unlock requirements (PP balance, not deduction)
+    if (totalRequirement > currentUser.provePoints) {
       res.status(400).json({ 
-        message: `Insufficient ProvePoints. Required: ${totalCost}, Available: ${currentUser.provePoints}` 
+        message: `Insufficient ProvePoints to unlock these features. Required: ${totalRequirement} PP, Available: ${currentUser.provePoints} PP` 
       });
       return;
     }
 
-    // Update purchased lists with new items
-    const updatedPurchasedHair = [...purchasedHair, ...newPurchases.hair];
-    const updatedPurchasedEyes = [...purchasedEyes, ...newPurchases.eyes];
-    const updatedPurchasedMouth = [...purchasedMouth, ...newPurchases.mouth];
-    const updatedPurchasedAccessories = [...purchasedAccessories, ...newPurchases.accessories];
-
-    // Update user with new avatar and deduct PP
+    // Update user with new avatar (NO PP DEDUCTION - just unlock system)
     const user = await prisma.user.update({
       where: { id: userId },
       data: {
@@ -308,12 +288,7 @@ export const updateUserAvatar = async (req: AuthRequest, res: Response): Promise
         avatarHair,
         avatarEyes,
         avatarMouth,
-        avatarAccessories: avatarAccessories || 'none',
-        provePoints: currentUser.provePoints - totalCost,
-        purchasedHair: JSON.stringify(updatedPurchasedHair),
-        purchasedEyes: JSON.stringify(updatedPurchasedEyes),
-        purchasedMouth: JSON.stringify(updatedPurchasedMouth),
-        purchasedAccessories: JSON.stringify(updatedPurchasedAccessories)
+        avatarAccessories: avatarAccessories || 'none'
       } as any, // Temporary type assertion until Prisma client is fully updated
       select: { 
         id: true, 
@@ -327,18 +302,14 @@ export const updateUserAvatar = async (req: AuthRequest, res: Response): Promise
         avatarHair: true,
         avatarEyes: true,
         avatarMouth: true,
-        avatarAccessories: true,
-        // @ts-ignore - purchased fields exist but not in current type definition
-        purchasedHair: true,
-        purchasedEyes: true,
-        purchasedMouth: true,
-        purchasedAccessories: true
+        avatarAccessories: true
       }
     });
     
     res.json({ 
-      message: totalCost > 0 ? `Avatar updated! ${totalCost} PP deducted.` : "Avatar updated successfully!", 
-      costDeducted: totalCost,
+      message: totalRequirement > 0 ? `Avatar updated! Features unlocked with ${totalRequirement} PP requirement.` : "Avatar updated successfully!", 
+      requirementMet: totalRequirement,
+      unlockedFeatures: unlockedItems,
       ...user 
     });
   } catch (error) {

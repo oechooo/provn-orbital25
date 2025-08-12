@@ -395,8 +395,18 @@ Provn.io features a comprehensive avatar customization system powered by DiceBea
 1. Navigate to your Profile page or click "Avatar Shop" in the navigation
 2. Click on your current avatar image or use the Avatar Editor page
 3. Choose from different customization categories (skin, hair, eyes, mouth, accessories)
-4. Premium features require sufficient ProvePoints to unlock
-5. Save your changes to update your profile across the platform
+4. Premium features require sufficient ProvePoints to **unlock** (no PP are deducted from your account)
+5. Once unlocked, you can freely switch between any cosmetics you have enough PP for
+6. Save your changes to update your profile across the platform
+
+### Unlock System
+- **Skin Color & Hair Color**: Always free
+- **Premium Hair Styles**: Require 15-80 PP to unlock
+- **Premium Eyes**: Require 20-40 PP to unlock  
+- **Premium Mouth**: Require 20-50 PP to unlock
+- **Premium Accessories**: Require 30-100 PP to unlock
+
+The system checks your current ProvePoint balance and unlocks features based on the highest requirement of your selected cosmetics. Your PP balance is never reduced - it's purely an unlock system!
 
 ## Project Structure
 
