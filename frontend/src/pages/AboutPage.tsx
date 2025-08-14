@@ -40,7 +40,7 @@ const AboutPage: React.FC = () => {
                 <iframe
                   className="absolute top-0 left-0 w-full h-full rounded-lg"
                   src="https://www.youtube.com/embed/vFl8LxjZz70"
-                  title="ProveN - Prediction Markets for News Verification"
+                  title="Provn.io - Prediction Markets for News Verification"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
@@ -85,7 +85,7 @@ const AboutPage: React.FC = () => {
               <div>
                 <h3 className="text-xl font-semibold text-purple-400 mb-4">Our Solution: Crowdsourced Truth</h3>
                 <p className="text-slate-300 mb-4 leading-relaxed">
-                  ProveN harnesses <strong className="text-white">crowd wisdom</strong> through prediction markets, 
+                  Provn.io harnesses <strong className="text-white">crowd wisdom</strong> through prediction markets, 
                   creating a scalable, real-time verification system that grows more accurate as more people participate.
                 </p>
                 <ul className="text-slate-300 space-y-2">

@@ -189,7 +189,7 @@ const HomePage: React.FC = () => {
               <iframe
                 className="absolute top-0 left-0 w-full h-full rounded-lg"
                 src="https://www.youtube.com/embed/vFl8LxjZz70"
-                title="ProveN - Prediction Markets for News Verification"
+                title="Provn.io - Prediction Markets for News Verification"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
